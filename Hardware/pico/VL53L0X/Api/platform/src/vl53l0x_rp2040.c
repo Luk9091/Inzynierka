@@ -60,11 +60,8 @@ void VL53L0X_i2c_Init(i2c_inst_t *i2c_instance, uint sda, uint scl, uint32_t spe
 }
 
 VL53L0X_Error VL53L0X_dev_init_i2c_newAddress(VL53L0X_Dev_t *pDevice, uint32_t RangeProfile, uint8_t newAddress){
-    VL53L0X_Error status;
     if (newAddress != 0){
-        status = VL53L0X_SetDeviceAddress(pDevice, newAddress);
-        if (status != VL53L0X_ERROR_NONE)
-            return status;
+        VL53L0X_SetDeviceAddress(pDevice, newAddress);
         pDevice->I2cDevAddr = newAddress;
     }
 
@@ -253,7 +250,7 @@ VL53L0X_Error VL53L0X_SingleRanging(VL53L0X_Dev_t *pDevice, uint16_t *MeasuredDa
     } else {
         *MeasuredData = ranging/valid_count;
     }
-    */ 
+    /**/ 
     return Status;
 }
 
