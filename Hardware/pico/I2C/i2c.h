@@ -9,7 +9,7 @@
 
 // Value in Hz
 // Example: 100 * 1000 = 100kHz
-#define I2C_FREQUENCY 100 * 1000
+#define I2C_FREQUENCY 400 * 1000
 
 #define I2C_CHANNEL i2c1
 #define I2C_SDA_PIN 18
@@ -23,8 +23,10 @@ int I2C_scan();
 // uint8_t I2C_read(uint8_t dev);
 // #define I2C_read(dev, data) i2c_read_blocking(I2C_CHANNEL, dev, data, 1, false)
 
-void I2C_writeReg(uint8_t dev, uint8_t reg, uint8_t data);
+int I2C_writeReg(uint8_t dev, uint8_t reg, uint8_t data);
+
 uint8_t I2C_readReg(uint8_t dev, uint8_t reg);
+int I2C_readNReg(uint8_t dev, uint8_t startReg, uint8_t *data, size_t size);
 
 
 #endif

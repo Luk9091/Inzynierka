@@ -1,5 +1,10 @@
 # Projekt Inżynierski
-# Temat: Pojazdy autonomiczne z rozwiązywaniem arbitrażu
+# Temat: Pojazdy autonomiczne z możliwością oceny aktualnej sytuacji na drodze
+
+Opis:
+Projekt zakłada zbudowanie autonomicznego pojazdu, który potrafiłby poruszać się po modelu miasta w sposób bezobsługowy. 
+Układ rozpoznaje tor po którym się porusza. 
+Samochód tworzy dwu-wymiarową mapę przestrzeni, a dla tak stworzonej mapy potrafi wyznaczyć optymalną trasę do punktu docelowego.
 
 Powyższe repozytorium przedstawia *Projekt pracy inżynierskiej* będzie zbudowanie pojazdów autonomicznych, których zadaniem będzie poruszanie się po makiecie miasta.
 Znajdowanie optymalnej trasy oraz możliwość rozwiązywania problemów dynamicznie pojawiających się problemów na wyznaczonej trasie.
@@ -31,3 +36,8 @@ Każdy z pojazdów powinien spełniać poniższe założenia:
 
 # Budowanie mapy
 Mapa będzie przedstawiać, kwadratowe tile o ustalonych wymiarach `8b x 8b`
+
+
+# Wymagania do zbudowania:
+- C code lib:
+    - RayLib

@@ -42,15 +42,20 @@ int I2C_scan(){
     return 0;
 }
 
-void I2C_writeReg(uint8_t dev, uint8_t reg, uint8_t data){
+int I2C_writeReg(uint8_t dev, uint8_t reg, uint8_t data){
     uint8_t table[2] = {reg, data};
-    i2c_write_blocking(I2C_CHANNEL, dev, table, 2, false);
+    return i2c_write_blocking(I2C_CHANNEL, dev, table, 2, false);
 }
 
 uint8_t I2C_readReg(uint8_t dev, uint8_t reg){
     uint8_t data;
     i2c_write_blocking(I2C_CHANNEL, dev, &reg, 1,  true);
-    if (i2c_read_blocking(I2C_CHANNEL, dev, &data, 1, false) == 0)
+    if (i2c_read_blocking(I2C_CHANNEL, dev, &data, 1, false) >= 0)
         return data;
     return 0;
+}
+
+int I2C_readNReg(uint8_t dev, uint8_t startReg, uint8_t *data, size_t size){
+    i2c_write_blocking(I2C_CHANNEL, dev, &startReg, 1, true);
+    return i2c_read_blocking(I2C_CHANNEL, dev, data, size, false);
 }
