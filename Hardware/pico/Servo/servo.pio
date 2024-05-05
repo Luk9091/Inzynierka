@@ -1,0 +1,6 @@
+.program servo
+
+; step:
+;     pull ()
+;     out (pins, 4)
+
