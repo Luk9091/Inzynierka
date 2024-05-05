@@ -15,13 +15,21 @@ pico_sdk_init()
 
 add_executable(${PROJECT_NAME}
     main.c
+    ToF/tof.c
     I2C/i2c.c
+    MPU6050/mpu6050.c
+    # Servo/servo.c
 )
 
+# pico_generate_pio_header(servo_pio ${CMAKE_CURRENT_LIST_DIR}/Servo/servo.pio)
 
 pico_add_extra_outputs(${PROJECT_NAME})
 include_directories(
+    .
     I2C
+    ToF
+    MPU6050
+    Servo
 )
 add_subdirectory(VL53L0X/Api)
 
@@ -32,6 +40,7 @@ target_link_libraries(${PROJECT_NAME}
     pico_cyw43_arch_none
     hardware_gpio
     hardware_i2c
+    # hardware_pio
 
     vl53l0x_api_rp2040
 )
