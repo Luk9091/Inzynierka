@@ -48,14 +48,20 @@ int I2C_writeReg(uint8_t dev, uint8_t reg, uint8_t data){
 }
 
 uint8_t I2C_readReg(uint8_t dev, uint8_t reg){
-    uint8_t data;
+    uint8_t data = 0;
     i2c_write_blocking(I2C_CHANNEL, dev, &reg, 1,  true);
-    if (i2c_read_blocking(I2C_CHANNEL, dev, &data, 1, false) >= 0)
-        return data;
+    if (i2c_read_blocking(I2C_CHANNEL, dev, &data, 1, false) >= 0) return data;
     return 0;
 }
 
 int I2C_readNReg(uint8_t dev, uint8_t startReg, uint8_t *data, size_t size){
     i2c_write_blocking(I2C_CHANNEL, dev, &startReg, 1, true);
     return i2c_read_blocking(I2C_CHANNEL, dev, data, size, false);
+}
+
+void I2C_changeReg(uint dev, uint reg, uint8_t data, uint8_t mask){
+    uint8_t oldData = I2C_readReg(dev, reg);
+    oldData = oldData & ~mask;
+    data = oldData | data;
+    I2C_writeReg(dev, reg, data);
 }
