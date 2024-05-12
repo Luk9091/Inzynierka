@@ -38,20 +38,4 @@
 
 #define MPU6050_SIGNAL_PATH_RESET       0x68
 
-
-typedef enum{
-    RANGE_2G = 0,
-    RANGE_4G = 1,
-    RANGE_8G = 2,
-    RANGE_16G= 3,
-} MPU6050_ACC_RANGE_t;
-
-// DPS = degree per second
-typedef enum{
-    RANGE_250DPS  = 0,
-    RANGE_500DPS  = 1,
-    RANGE_1000DPS = 2,
-    RANGE_2000DPS = 3,
-} MPU6050_GYRO_RANGE_t;
-
 #endif

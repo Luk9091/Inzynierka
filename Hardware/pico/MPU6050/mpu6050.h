@@ -35,6 +35,21 @@
 // #define MPU6050_CALIBRATION_DATA_ACC_OFFSET_Y  -400
 // #define MPU6050_CALIBRATION_DATA_ACC_OFFSET_Z  -880
 
+typedef enum{
+    RANGE_2G = 1,
+    RANGE_4G = 2,
+    RANGE_8G = 3,
+    RANGE_16G= 4,
+} MPU6050_ACC_RANGE_t;
+
+// DPS = degree per second
+typedef enum{
+    RANGE_250DPS  = 0,
+    RANGE_500DPS  = 1,
+    RANGE_1000DPS = 2,
+    RANGE_2000DPS = 3,
+} MPU6050_GYRO_RANGE_t;
+
 
 typedef enum {
     MPU6050_OK  = 0,

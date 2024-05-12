@@ -1,5 +1,5 @@
 #include "mpu6050.h"
-#include "mpu6065_regMap.h"
+#include "mpu6050_regMap.h"
 
 #include <stdlib.h>
 #include <math.h>
@@ -79,6 +79,7 @@ int mpu6050_gyro_setRange(MPU6050_GYRO_RANGE_t range){
 
 void mpu6050_Init(){
     I2C_writeReg(I2C_MPU6050_ADDRESS, MPU6050_POW_MANAGEMENT_1_REG, 0b00000000);
+
     mpu6050_acc_setRange(RANGE_2G);
     mpu6050_gyro_setRange(RANGE_500DPS);
     
@@ -110,9 +111,6 @@ void mpu6050_readAcc(axis_t *acc){
     acc->x = (acc->x) * mpu6050_calibrationData.acc.range_per_digit;
     acc->y = (acc->y) * mpu6050_calibrationData.acc.range_per_digit;
     acc->z = (acc->z) * mpu6050_calibrationData.acc.range_per_digit;
-    // acc->x = (acc->x - mpu6050_calibrationData.acc.offset.x) * mpu6050_calibrationData.acc.range_per_digit;
-    // acc->y = (acc->y - mpu6050_calibrationData.acc.offset.y) * mpu6050_calibrationData.acc.range_per_digit;
-    // acc->z = (acc->z - mpu6050_calibrationData.acc.offset.z) * mpu6050_calibrationData.acc.range_per_digit;
 }
 
 
@@ -161,7 +159,7 @@ void mpu6050_gyro_calibration(){
     uint sample = 0;
 
     printf("Start GYROSCOPE calibration process, dont move\n");
-    for(uint i = 3; i >= 0; i--){
+    for(int i = 3; i >= 0; i--){
         printf("In: %i", i);
     }
 
@@ -198,49 +196,3 @@ void mpu6050_gyro_calibration(){
     printf("Threshold: %4hi, %4hi, %4hi\n", mpu6050_calibrationData.gyro.threshold.x, mpu6050_calibrationData.gyro.threshold.y, mpu6050_calibrationData.gyro.threshold.z);
     printf("\n\n");
 }
-
-
-// void mpu6050_acc_calibration(){
-//     axis_t measure;
-//     axis_t max = {-32768, -32768, -32768,};
-//     axis_t min = { 32767,  32767,  32767,};
-
-
-//     printf("Start ACCELEROMETER calibration process, move\n");
-//     for(int i = 3; i >= 0; i--){
-//         printf("In: %i\n", i);
-//         sleep_ms(1000);
-//     }
-    
-//     uint start = time_us_32();
-//     for(uint i = 0; i < 1000; i++){
-//     // while((time_us_32() - start) < ACC_CALIBRATION_TIME){
-//         mpu6050_readRawAcc(&measure);
-
-//         if(measure.x > max.x) max.x = measure.x;
-//         if(measure.y > max.y) max.y = measure.y;
-//         if(measure.z > max.z) max.z = measure.z;
-
-//         if(measure.x < min.x) min.x = measure.x;
-//         if(measure.y < min.y) min.y = measure.y;
-//         if(measure.z < min.z) min.z = measure.z;
-//         sleep_ms(10);
-//     }
-    
-//     // printf("X: min: %6hi, max: %hi)
-//     // max = ax_max + b
-//     // min = ax_min + b
-//     // max - min = a(x_max - x_min)
-//     // a = (max - min) / (x_max - x_min)
-//     // b = max - ax_max 
-
-//     mpu6050_calibrationData.acc.offset = (axis_t){
-//         .x = (max.x + min.x)/2,
-//         .y = (max.y + min.y)/2,
-//         .z = (max.z + min.z)/2
-//     };
-
-//     printf("Accelerometer calibration done\n");
-//     printf("Offset value: %4hi, %4hi, %4hi\n", mpu6050_calibrationData.acc.offset.x, mpu6050_calibrationData.acc.offset.y, mpu6050_calibrationData.acc.offset.z);
-    
-// }
