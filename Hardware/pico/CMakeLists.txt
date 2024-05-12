@@ -18,7 +18,8 @@ add_executable(${PROJECT_NAME}
     ToF/tof.c
     I2C/i2c.c
     MPU6050/mpu6050.c
-    # Servo/servo.c
+
+    TCP/tcp.c
 )
 
 # pico_generate_pio_header(servo_pio ${CMAKE_CURRENT_LIST_DIR}/Servo/servo.pio)
@@ -29,20 +30,23 @@ include_directories(
     I2C
     ToF
     MPU6050
-    Servo
+    TCP
 )
 add_subdirectory(VL53L0X/Api)
+add_subdirectory(FreeRTOS)
 
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
     pico_stdlib
 
-    pico_cyw43_arch_none
+    # pico_cyw43_arch_none
+    pico_cyw43_arch_lwip_poll
     hardware_gpio
     hardware_i2c
     # hardware_pio
 
     vl53l0x_api_rp2040
+    FreeRTOS
 )
 
 
