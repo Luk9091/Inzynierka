@@ -28,6 +28,7 @@
 
 
 
+void ToF_init(VL53L0X_Dev_t *left, VL53L0X_Dev_t *center, VL53L0X_Dev_t *right);
 VL53L0X_Error ToF_sensorInit(VL53L0X_Dev_t *tof, uint8_t address, uint32_t pin);
 int16_t ToF_measure(VL53L0X_Dev_t *tof);
 

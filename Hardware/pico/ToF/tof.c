@@ -1,5 +1,16 @@
 #include "tof.h"
 
+void ToF_init(VL53L0X_Dev_t *left, VL53L0X_Dev_t *center, VL53L0X_Dev_t *right){
+    uint pinMask = 1 << ToF_LEFT_PIN | 1 << ToF_CENTER_PIN | 1 << ToF_RIGHT_PIN;
+    gpio_init_mask(pinMask);
+    gpio_set_dir_masked(pinMask, pinMask);
+    gpio_put_masked(pinMask, ~pinMask);
+
+    ToF_sensorInit(left, ToF_LEFT_ADDRESS, ToF_LEFT_PIN);
+    ToF_sensorInit(center, ToF_CENTER_ADDRESS, ToF_CENTER_PIN);
+    ToF_sensorInit(right, ToF_RIGHT_ADDRESS, ToF_RIGHT_PIN);
+}
+
 VL53L0X_Error ToF_sensorInit(VL53L0X_Dev_t *tof, uint8_t address, uint32_t pin){
     tof->I2cDevAddr = ToF_DEFAULT_ADDRESS;
     tof->comms_speed_khz = I2C_FREQUENCY/1000;
