@@ -8,6 +8,10 @@ typedef struct{
     int16_t z;
 } axis_t;
 
-
+typedef struct{
+    float x;
+    float y;
+    float z;
+} axis_ft_t;
 
 #endif
