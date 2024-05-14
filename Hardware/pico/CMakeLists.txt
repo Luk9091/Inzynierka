@@ -47,6 +47,8 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
     pico_cyw43_arch_lwip_poll
     hardware_gpio
     hardware_i2c
+    hardware_pwm
+    hardware_adc
     # hardware_pio
 
     vl53l0x_api_rp2040
