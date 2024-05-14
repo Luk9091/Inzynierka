@@ -86,7 +86,8 @@ void mpu6050_Init(){
     #if MPU6050_CALIBRATE_GYRO
     mpu6050_gyro_calibration();
     #else
-    mpu6050_calibrationData.gyro.offset = (axis_t){MPU6050_CALIBRATION_DATA_GYRO_OFFSET_X, MPU6050_CALIBRATION_DATA_GYRO_OFFSET_Y, MPU6050_CALIBRATION_DATA_GYRO_OFFSET_Z};
+    mpu6050_calibrationData.gyro.offset = MPU6050_CALIBRATION_DATA_GYRO_OFFSET;
+    mpu6050_calibrationData.gyro.threshold = MPU6050_CALIBRATION_DATA_GYRO_THRESHOLD;
     #endif
 
     // #if MPU6050_CALIBRATION_ACC
