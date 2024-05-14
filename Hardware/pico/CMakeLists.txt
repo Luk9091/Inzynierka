@@ -18,6 +18,8 @@ add_executable(${PROJECT_NAME}
     ToF/tof.c
     I2C/i2c.c
     MPU6050/mpu6050.c
+    Compass/compass.c
+    Servo/servo.c
 
     TCP/tcp.c
 )
@@ -30,6 +32,8 @@ include_directories(
     I2C
     ToF
     MPU6050
+    Compass
+    Servo
     TCP
 )
 add_subdirectory(VL53L0X/Api)
