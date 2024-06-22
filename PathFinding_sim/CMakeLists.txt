@@ -7,10 +7,13 @@ set(CMAKE_C_STANDARD 11)
 add_executable(${PROJECT_NAME}
     main.c
     Map/map.c
+    Map/test/test_map.c
 )
 
 include_directories(${PROJECT_NAME}
+    .
     Map
+    Map/test
 )
 
 target_link_libraries(${PROJECT_NAME}

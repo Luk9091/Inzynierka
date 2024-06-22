@@ -3,8 +3,8 @@
 
 #include <raylib.h>
 
-
 #include "map.h"
+#include "test_map.h"
 
 
 int main(){
@@ -18,11 +18,19 @@ int main(){
         .b = 0x30
     };
 
+    
+    TEST_MAP_crossMap();
+
     while (!WindowShouldClose()){
         BeginDrawing();
         ClearBackground(DARKGRAY);
         DrawText("Working in progress", 0, 0, 24, LIGHTGRAY);
 
+        MAP_draw();
+        MAP_drawGrid();
+        CAR_draw(0, 0);
+        CAR_draw(0, 1);
+        
         EndDrawing();
     }
 
