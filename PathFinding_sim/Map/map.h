@@ -16,16 +16,14 @@
 
 typedef union cell_t{
     uint64_t cell;
-    uint8_t y[CELL_SIZE_Y];
+    uint8_t subcell[8][8];
 } cell_t;
 
-// extern cell_t MAP_CELL_up_down;
-// extern cell_t MAP_CELL_right_left;
 
 void MAP_addCell(uint x, uint y, cell_t cell);
 cell_t MAP_getCell(uint x, uint y);
 
-// void MAP_draw(uint x, uint y);
+void MAP_draw(uint x, uint y);
 
 
 

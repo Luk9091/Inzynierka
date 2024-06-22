@@ -2,12 +2,12 @@
 #include "utility.h"
 
 #include <raylib.h>
-#include "Map/map.h"
 
+
+#include "map.h"
 
 
 int main(){
-    // union cell_t map[8][8];
     printf("Hello, world!\n");
 
     InitWindow(screenWidth, screenHeight, "Map test");
@@ -22,7 +22,6 @@ int main(){
         BeginDrawing();
         ClearBackground(DARKGRAY);
         DrawText("Working in progress", 0, 0, 24, LIGHTGRAY);
-        // map_draw(4, 4);
 
         EndDrawing();
     }
