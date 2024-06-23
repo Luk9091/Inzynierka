@@ -12,8 +12,8 @@ typedef unsigned int uint;
 #define screenHeight 600
 #define FPS_LIMIT 60
 
-#define MAP_OFFSET_X 16
-#define MAP_OFFSET_Y 16
+#define MAP_OFFSET_X 0
+#define MAP_OFFSET_Y 0
 
 #define DEVICE "PC"
 

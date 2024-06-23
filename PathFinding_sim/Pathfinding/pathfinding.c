@@ -15,12 +15,16 @@ bool PATHFINDING_isValid(point_t current, point_t next, DIRECTION direction){
     
     cell_t current_cell = MAP_getCell(current.x, current.y);
     cell_t next_cell = MAP_getCell(next.x, next.y);
+    int road = 0;
 
     switch (direction){
         case NORTH:{
             for (uint i = 0; i < CELL_SIZE_X; i++){
                 if (current_cell.type[i][0] != next_cell.type[i][CELL_SIZE_Y - 1]){
                     return false;
+                }
+                if (current_cell.type[i][0] == ROAD){
+                    road++;
                 }
             }
         } break;
@@ -29,12 +33,18 @@ bool PATHFINDING_isValid(point_t current, point_t next, DIRECTION direction){
                 if (current_cell.type[CELL_SIZE_X - 1][i] != next_cell.type[0][i]){
                     return false;
                 }
+                if (current_cell.type[CELL_SIZE_X - 1][i] == ROAD){
+                    road++;
+                }
             }
         } break;
         case SOUTH:{
             for (uint i = 0; i < CELL_SIZE_X; i++){
                 if (current_cell.type[i][CELL_SIZE_Y - 1] != next_cell.type[i][0]){
                     return false;
+                }
+                if (current_cell.type[i][CELL_SIZE_Y - 1] == ROAD){
+                    road++;
                 }
             }
         } break;
@@ -43,11 +53,14 @@ bool PATHFINDING_isValid(point_t current, point_t next, DIRECTION direction){
                 if (current_cell.type[0][i] != next_cell.type[CELL_SIZE_X - 1][i]){
                     return false;
                 }
+                if (current_cell.type[0][i] == ROAD){
+                    road++;
+                }
             }
         } break;
     }
 
-    return true;
+    return road > 0;
 }
 
 void PATHFINDING_initNodes(node_t nodes[MAP_SIZE_X][MAP_SIZE_Y]){
@@ -105,7 +118,7 @@ int PATHFINDING_dijkstra(point_t start, point_t destination, DIRECTION preferred
     }
 
     int index = 0;
-     for (point_t at = destination; at.x != -1; at = nodes[at.x][at.y].prev) {
+    for (point_t at = destination; at.x != -1; at = nodes[at.x][at.y].prev) {
         path[index++] = at;
     }
 

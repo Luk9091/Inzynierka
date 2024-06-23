@@ -13,8 +13,8 @@ int main(){
     printf("Hello, world!\n");
     TEST_MAP_crossMap();
     point_t path[MAP_SIZE_X * MAP_SIZE_Y] = {0};
-    point_t start = {0, 0};
-    point_t end = {MAP_SIZE_X - 1, MAP_SIZE_Y - 1};
+    point_t start = {0, 2};
+    point_t end = {4, 1};
 
     int pathStep = PATHFINDING_dijkstra(start, end, NORTH, path);
 
@@ -41,11 +41,14 @@ int main(){
 
         MAP_draw(MAP_OFFSET_X, MAP_OFFSET_Y);
         MAP_drawGrid(MAP_OFFSET_X, MAP_OFFSET_Y);
+        MAP_drawIndex(MAP_OFFSET_X, MAP_OFFSET_Y);
         
         
         for (int i = 0; i < pathStep; i++){
-            CAR_draw(path[i].x, path[i].y, MAP_OFFSET_X, MAP_OFFSET_Y);
+            CAR_draw(path[i].x, path[i].y, ORANGE);
         }
+        CAR_draw(start.x, start.y, BLUE);
+        CAR_draw(end.x, end.y, PURPLE);
         
         EndDrawing();
     }
