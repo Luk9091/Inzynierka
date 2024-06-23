@@ -114,48 +114,61 @@ void MAP_addCost(uint x, uint y, int cost){
     map[x][y].distance = cost;
 }
 
-void MAP_drawCell(uint _x, uint _y){
+void MAP_drawCell(uint _x, uint _y, int offset_x, int offset_y){
     uint x, y;
     cell_t cell = map[_x][_y];
 
 
     for (uint j = 0; j < CELL_SIZE_Y; j++){
         for (uint i = 0; i < CELL_SIZE_X; i++){
-            x = _x*CELL_SIZE_X*CELL_SIZE_X + i*CELL_SIZE_X;
-            y = _y*CELL_SIZE_Y*CELL_SIZE_Y + j*CELL_SIZE_Y;
+            x = _x*CELL_SIZE_X*CELL_SIZE_X + i*CELL_SIZE_X + offset_x;
+            y = _y*CELL_SIZE_Y*CELL_SIZE_Y + j*CELL_SIZE_Y + offset_y;
 
             DrawRectangle(x, y, CELL_SIZE_X, CELL_SIZE_Y, cell.color[i][j]);
         }
     }
 }
 
-void MAP_draw(){
+void MAP_draw(int offset_x, int offset_y){
     for (uint x = 0; x < MAP_SIZE_X; x++){
         for (uint y = 0; y < MAP_SIZE_Y; y++){
-            MAP_drawCell(x, y);
+            MAP_drawCell(x, y, offset_x, offset_y);
         }
     }
 }
 
-void MAP_drawGrid(){
+void MAP_drawGrid(int offset_x, int offset_y){
     for (uint x = 0; x < MAP_SIZE_X; x++){
         for (uint y = 0; y < MAP_SIZE_Y; y++){
             DrawRectangleLines(
-                x*CELL_SIZE_X*CELL_SIZE_X,
-                y*CELL_SIZE_Y*CELL_SIZE_Y,
+                x*CELL_SIZE_X*CELL_SIZE_X + offset_x,
+                y*CELL_SIZE_Y*CELL_SIZE_Y + offset_y,
                 CELL_SIZE_X*CELL_SIZE_X,
                 CELL_SIZE_Y*CELL_SIZE_Y,
                 BLACK
             );
         }
     }
+}
 
+void MAP_drawIndex(int offset_x, int offset_y){
+    for (uint x = 0; x < MAP_SIZE_X; x++){
+        for (uint y = 0; y < MAP_SIZE_Y; y++){
+            DrawText(
+                TextFormat("%d, %d", x, y),
+                x*CELL_SIZE_X*CELL_SIZE_X + offset_x,
+                y*CELL_SIZE_Y*CELL_SIZE_Y + offset_y,
+                10,
+                BLACK
+            );
+        }
+    }
 }
 
 
-void CAR_draw(uint x, uint y){
-    x = x*CELL_SIZE_X*CELL_SIZE_X + 2.5*CELL_SIZE_X;
-    y = y*CELL_SIZE_Y*CELL_SIZE_Y + 2.5*CELL_SIZE_Y;
+void CAR_draw(uint x, uint y, int offset_x, int offset_y){
+    x = x*CELL_SIZE_X*CELL_SIZE_X + 2.5*CELL_SIZE_X + offset_x;
+    y = y*CELL_SIZE_Y*CELL_SIZE_Y + 2.5*CELL_SIZE_Y + offset_y;
     DrawRectangle(
         x, y,
         3*CELL_SIZE_X, 3*CELL_SIZE_Y,

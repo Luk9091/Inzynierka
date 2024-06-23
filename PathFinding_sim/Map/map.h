@@ -47,11 +47,12 @@ cell_t MAP_getCell(uint x, uint y);
 void MAP_addCost(uint x, uint y, int cost);
 
 
-void MAP_drawCell(uint x, uint y);
-void MAP_draw();
-void MAP_drawGrid();
+void MAP_drawCell(uint x, uint y, int offsetX, int offsetY);
+void MAP_draw(int offsetX, int offsetY);
+void MAP_drawGrid(int offsetX, int offsetY);
+void MAP_drawIndex(int offset_x, int offset_y);
 
-void CAR_draw();
+void CAR_draw(uint x, uint y, int offsetX, int offsetY);
 
 
 #endif
