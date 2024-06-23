@@ -4,26 +4,32 @@
 #include <stdio.h>
 #include <memory.h>
 #include <raylib.h>
+#include <stdbool.h>
 
+#include "map.h"
 #include "utility.h"
 
-typedef struct {
-    void *node;
-    float angle;
-    int distance;
-} next_node_t;
+#define INF INT16_MAX
 
 typedef struct {
-    uint x;
-    uint y;
-    
-    next_node_t *next;
-    uint children;
+    int x;
+    int y;
+} point_t;
+
+typedef enum DIRECTION_t{
+    NORTH = 0,
+    EAST  = 1,
+    SOUTH = 2,
+    WEST  = 3
+} DIRECTION;
+
+typedef struct {
+    point_t prev;
+    int distance;
 } node_t;
 
 
-
-void PATHFINDING_init(uint start_x, uint start_y, uint end_x, uint end_y);
+int PATHFINDING_dijkstra(point_t start, point_t destination, DIRECTION preferredDirection, point_t path[MAP_SIZE_X * MAP_SIZE_Y]);
 
 
 
