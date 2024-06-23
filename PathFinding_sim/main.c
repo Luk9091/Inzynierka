@@ -13,8 +13,8 @@ int main(){
     printf("Hello, world!\n");
     TEST_MAP_crossMap();
     point_t path[MAP_SIZE_X * MAP_SIZE_Y] = {0};
-    point_t start = {0, 2};
-    point_t end = {4, 1};
+    point_t start = {0, 0};
+    point_t end = {8, 8};
 
     int pathStep = PATHFINDING_dijkstra(start, end, NORTH, path);
 
