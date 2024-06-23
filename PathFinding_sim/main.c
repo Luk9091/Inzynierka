@@ -5,10 +5,14 @@
 
 #include "map.h"
 #include "test_map.h"
+#include "pathfinding.h"
 
 
 int main(){
     printf("Hello, world!\n");
+
+    // PATHFINDING_init(0, 0, 0, 1);
+    
 
     InitWindow(screenWidth, screenHeight, "Map test");
     SetTargetFPS(FPS_LIMIT);

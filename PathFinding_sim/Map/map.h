@@ -44,6 +44,7 @@ cell_t MAP_rotate(cell_t cell, float angle);
 
 void MAP_addCell(uint x, uint y, cell_t cell);
 cell_t MAP_getCell(uint x, uint y);
+void MAP_addCost(uint x, uint y, int cost);
 
 
 void MAP_drawCell(uint x, uint y);

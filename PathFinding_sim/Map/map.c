@@ -110,6 +110,10 @@ cell_t MAP_getCell(uint x, uint y){
     return map[y][x];
 }
 
+void MAP_addCost(uint x, uint y, int cost){
+    map[y][x].distance = cost;
+}
+
 void MAP_drawCell(uint _x, uint _y){
     uint x, y;
     cell_t cell = map[_x][_y];
