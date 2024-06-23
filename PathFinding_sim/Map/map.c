@@ -2,7 +2,7 @@
 #include <raylib.h>
 #include <math.h>
 
-static cell_t map[MAP_SIZE_Y][MAP_SIZE_X];
+static cell_t map[MAP_SIZE_X][MAP_SIZE_Y];
 
 
 Color _MAP_type2color(cellType_t type){
@@ -107,11 +107,11 @@ void MAP_addCell(uint x, uint y, cell_t cell){
 }
 
 cell_t MAP_getCell(uint x, uint y){
-    return map[y][x];
+    return map[x][y];
 }
 
 void MAP_addCost(uint x, uint y, int cost){
-    map[y][x].distance = cost;
+    map[x][y].distance = cost;
 }
 
 void MAP_drawCell(uint _x, uint _y){
