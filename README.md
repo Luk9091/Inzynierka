@@ -9,6 +9,8 @@ Samochód tworzy dwu-wymiarową mapę przestrzeni, a dla tak stworzonej mapy pot
 Powyższe repozytorium przedstawia *Projekt pracy inżynierskiej* będzie zbudowanie pojazdów autonomicznych, których zadaniem będzie poruszanie się po makiecie miasta.
 Znajdowanie optymalnej trasy oraz możliwość rozwiązywania problemów dynamicznie pojawiających się problemów na wyznaczonej trasie.
 
+# Uwagi do projektu!
+Niezwykle ważne jest aby korzystać z określonej wersji FreeRTOS'a u mnie działa <u>**83da5fc95**</u>.
 
 # Założenia budowy:
 Projekt zakłada zbudowanie przynajmniej dwóch pojazdów. 

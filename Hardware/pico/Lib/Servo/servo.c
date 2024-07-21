@@ -15,7 +15,6 @@
 
 
 void Servo_init(Servo_t *servo){
-    // static uint PWM_STATE = 0;
     static uint ADC_STATE = 0;
     servo->start = true;
 

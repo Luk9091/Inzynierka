@@ -15,36 +15,35 @@ pico_sdk_init()
 
 add_executable(${PROJECT_NAME}
     main.c
-    ToF/tof.c
-    I2C/i2c.c
-    MPU6050/mpu6050.c
-    Compass/compass.c
-    Servo/servo.c
-
-    TCP/tcp.c
+    Lib/ToF/tof.c
+    Lib/I2C/i2c.c
+    Lib/MPU6050/mpu6050.c
+    Lib/Compass/compass.c
+    Lib/Servo/servo.c
+    Lib/StepperMotor/steppermotor.c
 )
 
-# pico_generate_pio_header(servo_pio ${CMAKE_CURRENT_LIST_DIR}/Servo/servo.pio)
+# pico_generate_pio_header(${PROJECT_NAME} ${CMAKE_CURRENT_LIST_DIR}/StepperMotor/counter.pio)
 
 pico_add_extra_outputs(${PROJECT_NAME})
 include_directories(
     .
-    I2C
-    ToF
-    MPU6050
-    Compass
-    Servo
-    TCP
+    Lib/I2C
+    Lib/ToF
+    Lib/MPU6050
+    Lib/Compass
+    Lib/Servo
+    Lib/StepperMotor
 )
-add_subdirectory(VL53L0X/Api)
-add_subdirectory(FreeRTOS)
+
+add_subdirectory(Lib/VL53L0X/Api)
+# add_subdirectory(FreeRTOS)
 
 
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
     pico_stdlib
 
-    # pico_cyw43_arch_none
-    pico_cyw43_arch_lwip_poll
+    pico_cyw43_arch_none
     hardware_gpio
     hardware_i2c
     hardware_pwm
@@ -52,7 +51,7 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
     # hardware_pio
 
     vl53l0x_api_rp2040
-    FreeRTOS
+#     # FreeRTOS
 )
 
 

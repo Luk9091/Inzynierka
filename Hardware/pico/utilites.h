@@ -1,6 +1,7 @@
 #ifndef __UTILITIES__H
 #define __UTILITIES__H
 
+#define π 3.1415926F
 
 typedef struct{
     int16_t x;
