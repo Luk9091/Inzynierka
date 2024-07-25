@@ -7,6 +7,7 @@ cell_t TEST_MAP_streetCell();
 cell_t TEST_MAP_XcrossCell();
 cell_t TEST_MAP_TcrossCell();
 cell_t TEST_MAP_turnCell();
+cell_t TEST_MAP_wallCell();
 
 
 void TEST_MAP_circleMap();

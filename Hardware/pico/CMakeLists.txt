@@ -21,6 +21,7 @@ add_executable(${PROJECT_NAME}
     Lib/Compass/compass.c
     Lib/Servo/servo.c
     Lib/StepperMotor/steppermotor.c
+    Lib/Motor/motor.c
 )
 
 # pico_generate_pio_header(${PROJECT_NAME} ${CMAKE_CURRENT_LIST_DIR}/StepperMotor/counter.pio)
@@ -34,6 +35,7 @@ include_directories(
     Lib/Compass
     Lib/Servo
     Lib/StepperMotor
+    Lib/Motor
 )
 
 add_subdirectory(Lib/VL53L0X/Api)

@@ -3,8 +3,8 @@
 #include <pico/cyw43_arch.h>
 
 
-
 #include "servo.h"
+#include "motor.h"
 
 
 int main(){
@@ -19,8 +19,14 @@ int main(){
     Servo_init(&servo);
     Servo_setAngle(&servo, 90);
 
-
+    Motor_init();
+    Motor_forward();
+    // sleep_ms(1000);
+    // Motor_backward();
+    // sleep_ms(1000);
+    // Motor_stop();
     while(1){
+
     }
 
     return 0;

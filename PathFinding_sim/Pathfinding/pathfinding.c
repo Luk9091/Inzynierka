@@ -108,15 +108,15 @@ int PATHFINDING_dijkstra(point_t start, point_t destination, DIRECTION preferred
         }
         visited[minPoint.x][minPoint.y] = true;
 
-        for (int i = 0; i < 4; i++){
+        for (int dir = preferredDirection; dir < preferredDirection+4; dir++){
+            int i = dir % 4;
             point_t new = {minPoint.x + direction[i].x, minPoint.y + direction[i].y};
 
             if (PATHFINDING_isValid(minPoint, new, i) && !visited[new.x][new.y] && nodes[minPoint.x][minPoint.y].distance + 1 < nodes[new.x][new.y].distance){
                 nodes[new.x][new.y].distance = nodes[minPoint.x][minPoint.y].distance + 1;
                 nodes[new.x][new.y].prev = minPoint;
                 if (minPoint.x == start.x && minPoint.y == start.y && i != preferredDirection){
-                    // break;
-                    nodes[new.x][new.y].distance += 10;
+                    nodes[new.x][new.y].distance += 20;
                 }
             }
         }

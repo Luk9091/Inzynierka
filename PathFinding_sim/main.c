@@ -11,12 +11,16 @@
 
 int main(){
     printf("Hello, world!\n");
-    TEST_MAP_crossMap();
+    // TEST_MAP_crossMap();
+    TEST_MAP_circleMap();
+    MAP_addCell(0, 0, TEST_MAP_wallCell());
     point_t path[MAP_SIZE_X * MAP_SIZE_Y] = {0};
-    point_t start = {0, 0};
-    point_t end = {8, 8};
 
-    int pathStep = PATHFINDING_dijkstra(start, end, NORTH, path);
+    DIRECTION prefer_direction = NORTH;
+    point_t start = {0, 8};
+    point_t end = {1, 8};
+
+    int pathStep = PATHFINDING_dijkstra(start, end, prefer_direction, path);
 
     if (pathStep == 0){
         printf(T_RED "No path found\n" T_RESET);

@@ -33,6 +33,12 @@ cell_t TEST_MAP_turnCell(){
     return cell;
 }
 
+cell_t TEST_MAP_wallCell(){
+    cell_t cell;
+    MAP_fillCell(&cell, WALL);
+    return cell;
+}
+
 void TEST_MAP_circleMap(){
     MAP_fill(WALL);
     cell_t street_y = TEST_MAP_streetCell();
