@@ -7,13 +7,15 @@
 #include <hardware/gpio.h>
 #include <hardware/i2c.h>
 
+#include "my_gpio.h"
+
 // Value in Hz
 // Example: 100 * 1000 = 100kHz
 #define I2C_FREQUENCY 400 * 1000
 
-#define I2C_CHANNEL i2c1
-#define I2C_SDA_PIN 18
-#define I2C_SCL_PIN 19
+#define I2C_CHANNEL GPIO_I2C_CHANNEL
+#define I2C_SDA_PIN GPIO_I2C_SDA
+#define I2C_SCL_PIN GPIO_I2C_SCL
 
 void I2C_Init();
 int I2C_scan(i2c_inst_t *channel);

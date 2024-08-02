@@ -220,9 +220,6 @@ VL53L0X_Error VL53L0X_SingleRanging(VL53L0X_Dev_t *pDevice, uint16_t *MeasuredDa
     VL53L0X_RangingMeasurementData_t RangingMeasurementData;
     
     *MeasuredData=0; 
-    Status = VL53L0X_SetDeviceMode(pDevice, VL53L0X_DEVICEMODE_SINGLE_RANGING); // Setup in single ranging mode
-    if(Status != VL53L0X_ERROR_NONE) return Status;
-
     Status = VL53L0X_PerformSingleRangingMeasurement(pDevice,
                 &RangingMeasurementData);
     if (Status == VL53L0X_ERROR_NONE && RangingMeasurementData.RangeStatus == 0) {

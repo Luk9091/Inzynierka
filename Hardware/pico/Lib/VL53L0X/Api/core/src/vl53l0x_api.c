@@ -2642,9 +2642,9 @@ VL53L0X_Error VL53L0X_PerformSingleRangingMeasurement(VL53L0X_DEV Dev,
 	/* This function will do a complete single ranging
 	 * Here we fix the mode!
 	 */
-	Status = VL53L0X_SetDeviceMode(Dev, VL53L0X_DEVICEMODE_SINGLE_RANGING);
+	// Status = VL53L0X_SetDeviceMode(Dev, VL53L0X_DEVICEMODE_SINGLE_RANGING);
 
-	if (Status == VL53L0X_ERROR_NONE)
+	// if (Status == VL53L0X_ERROR_NONE)
 		Status = VL53L0X_PerformSingleMeasurement(Dev);
 
 
