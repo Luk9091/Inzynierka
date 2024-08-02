@@ -22,6 +22,7 @@ add_executable(${PROJECT_NAME}
     Lib/Servo/servo.c
     Lib/StepperMotor/steppermotor.c
     Lib/Motor/motor.c
+    Lib/Counter/counter.c
 )
 
 # pico_generate_pio_header(${PROJECT_NAME} ${CMAKE_CURRENT_LIST_DIR}/StepperMotor/counter.pio)
@@ -36,6 +37,7 @@ include_directories(
     Lib/Servo
     Lib/StepperMotor
     Lib/Motor
+    Lib/Counter
 )
 
 add_subdirectory(Lib/VL53L0X/Api)
@@ -57,5 +59,5 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
 )
 
 
-pico_enable_stdio_usb(${PROJECT_NAME} 0)
+pico_enable_stdio_usb(${PROJECT_NAME} 1)
 pico_enable_stdio_uart(${PROJECT_NAME} 1)
