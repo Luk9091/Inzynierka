@@ -2,14 +2,38 @@
 
 point_t direction[] = {
     { 0, -1},   // North
-    // { 1, -1},   // North East
+    { 1, -1},   // North East
     { 1,  0},   // East
-    // { 1,  1},   // South East
+    { 1,  1},   // South East
     { 0,  1},   // South
-    // {-1,  1},   // South West
+    {-1,  1},   // South West
     {-1,  0},   // West
-    // {-1, -1}    // North West
+    {-1, -1}    // North West
 };
+
+
+bool isRightAngleTurn(point_t oldDir, point_t newDir){
+    if (oldDir.x != newDir.x && oldDir.y != newDir.y){
+        return true;
+    }
+
+    return false;
+}
+
+bool isOppositeDirection(point_t oldDir, point_t newDir){
+    point_t direction = {
+        .x = oldDir.x + newDir.x,
+        .y = oldDir.y + newDir.y
+    };
+    if (direction.x == 0 && direction.y == 0){
+        printf("Old: %i, %i\n", oldDir.x, oldDir.y);
+        printf("New: %i, %i\n", newDir.x, newDir.y);
+        printf("Opposite direction\n");
+        return true;
+    }
+
+    return false;
+}
 
 bool PATHFINDING_isValid(point_t current, point_t dir){
     // printf("Current on index: %4i, %4i\n", current.x, current.y);
@@ -78,6 +102,7 @@ int PATHFINDING_dijkstra(point_t start, point_t destination, point_t preferredDi
                 if (!visited[x][y] && nodes[x][y].distance <= min){
                     min = nodes[x][y].distance;
                     minPoint = (point_t){x, y};
+                    preferredDirection = (point_t){x - nodes[x][y].prev.x, y - nodes[x][y].prev.y};
                 }
             }
         }
@@ -88,17 +113,20 @@ int PATHFINDING_dijkstra(point_t start, point_t destination, point_t preferredDi
         visited[minPoint.x][minPoint.y] = true;
 
         for (int i = 0; i < sizeof(direction) / sizeof(direction[0]); i++){
-            point_t new = {minPoint.x + direction[i].x, minPoint.y + direction[i].y};
             if (PATHFINDING_isValid(minPoint, direction[i])){
+                point_t new = {minPoint.x + direction[i].x, minPoint.y + direction[i].y};
                 int distance = abs(direction[i].x) + abs(direction[i].y);
                 if (preferredDirection.x != direction[i].x || preferredDirection.y != direction[i].y){
                     distance = distance * 4;
+                    if(isRightAngleTurn(preferredDirection, direction[i])){
+                        distance = distance * 4;
+                    }
                 }
-                if ( !visited[new.x][new.y] && nodes[minPoint.x][minPoint.y].distance + distance < nodes[new.x][new.y].distance){
+                if (!visited[new.x][new.y] && nodes[minPoint.x][minPoint.y].distance + distance < nodes[new.x][new.y].distance){
                     nodes[new.x][new.y].distance = nodes[minPoint.x][minPoint.y].distance + distance;
                     nodes[new.x][new.y].prev = minPoint;
-                    preferredDirection = direction[i];
                 }
+
             }
         }
     }

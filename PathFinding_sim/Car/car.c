@@ -1,7 +1,7 @@
 #include "car.h"
 
 static car_t car;
-point_t path[MAP_SIZE_X * MAP_SIZE_Y * CELL_SIZE_X * CELL_SIZE_Y] = {0};
+static point_t path[MAP_SIZE_X * MAP_SIZE_Y * CELL_SIZE_X * CELL_SIZE_Y] = {0};
 static uint step;
 static int pathLen;
 
@@ -159,29 +159,17 @@ uint CAR_moveByPath(){
         }
         step++;
     }
-
-    // if (step >= pathLen){
-    //     if (car.position.x != path[pathLen-1].x || car.position.y != path[pathLen-1].y){
-    //         CAR_findPath(path[pathLen-1].x, path[pathLen-1].y);
-    //     }
-    // }
     
-
     return step;
 }
 
 int CAR_findPath(uint x, uint y){
     point_t start = {.x = car.position.x, .y = car.position.y};
     point_t end = {.x = x, .y = y};
-    point_t prefer = {.x = cosf(car.angle), y = sinf(car.angle)};
+    point_t prefer = {.x = ceilf(cosf(car.angle)), y = ceilf(sinf(car.angle))};
 
     pathLen = PATHFINDING_dijkstra(start, end, prefer, path);
 
-    // if (pathLen){
-    //     for (int i = 0; i < pathLen; i++){
-    //         printf("%2i, %2i\n", path[i].x, path[i].y);
-    //     }
-    // }
-    step = 0;
+    step = 1;
     return pathLen;
 }

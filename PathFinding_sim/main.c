@@ -11,17 +11,10 @@
 int main(){
     printf("Hello, world!\n");
     TEST_MAP_crossMap();
-    // MAP_addCell(0, 2, TEST_MAP_wallCell());
-    // MAP_addCell(4, 2, TEST_MAP_wallCell());
-    // MAP_addCell(4, 6, TEST_MAP_wallCell());
-    // MAP_addCell(8, 6, TEST_MAP_wallCell());
     point_t path[MAP_SIZE_X * MAP_SIZE_Y * CELL_SIZE_X * CELL_SIZE_Y] = {0};
 
     CAR_init(2.5, 2.5, 0);
 
-
-    // return 0;
-    
     InitWindow(screenWidth, screenHeight, "Map test");
     SetTargetFPS(FPS_LIMIT);
     Color background = {
@@ -50,12 +43,13 @@ int main(){
             CAR_move();
             CAR_changeAngle(180);
         }
-        if (IsKeyPressed(KEY_SPACE)){
+        if (IsKeyPressed(KEY_BACKSPACE)){
             CAR_setAngle(0);
         }
 
         currentTime = GetTime();
         if (currentTime - lastTime >= 0.1){
+        // if (IsKeyPressed(KEY_SPACE) ^ IsKeyPressedRepeat(KEY_SPACE)){
             CAR_moveByPath();
             lastTime = currentTime;
         }
@@ -100,3 +94,4 @@ int main(){
     CloseWindow();
     return 0;
 }
+// */
