@@ -166,12 +166,41 @@ void MAP_drawIndex(){
 }
 
 
-void CAR_draw(uint x, uint y, Color color){
-    x = x*CELL_SIZE_X*CELL_SIZE_X + 2.5*CELL_SIZE_X + MAP_OFFSET_X;
-    y = y*CELL_SIZE_Y*CELL_SIZE_Y + 2.5*CELL_SIZE_Y + MAP_OFFSET_Y;
-    DrawRectangle(
-        x, y,
-        3*CELL_SIZE_X, 3*CELL_SIZE_Y,
-        color
-    );
+
+void POINT_draw(uint x, uint y, Color color){
+    x = x * CELL_SIZE_X;
+    y = y * CELL_SIZE_Y;
+    DrawRectangle(x, y, CELL_SIZE_X, CELL_SIZE_Y, color);
+}
+
+
+
+bool _MAP_collisionDetect(uint map_x, uint map_y, uint cell_x, uint cell_y){
+    if (map_x >= MAP_SIZE_X || map_y >= MAP_SIZE_Y) return true;
+    if (cell_x >= CELL_SIZE_X || cell_y >= CELL_SIZE_Y) return true;
+    if (map_x < 0 || map_y < 0) return true;
+    if (cell_x < 0 || cell_y < 0) return true;
+
+    return map[map_x][map_y].type[cell_x][cell_y] == WALL;
+}
+
+
+bool MAP_collisionDetect(uint x, uint y){
+    return _MAP_collisionDetect(x/CELL_SIZE_X, y/CELL_SIZE_Y, x%CELL_SIZE_X, y%CELL_SIZE_Y);
+}
+
+
+cellType_t MAP_getType(uint x, uint y){
+    uint map_x = x/CELL_SIZE_X;
+    uint map_y = y/CELL_SIZE_Y;
+
+    uint cell_x = x%CELL_SIZE_X;
+    uint cell_y = y%CELL_SIZE_Y;
+
+    // printf("Map cell: %2i, %2i\n", map_x, map_y);
+    // printf("Cell: %2i, %2i\n", cell_x, cell_y);
+
+    cell_t cell = MAP_getCell(map_x, map_y);
+    cellType_t type = cell.type[cell_x][cell_y];
+    return type;
 }

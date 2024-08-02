@@ -6,29 +6,21 @@
 #include "printf_color.h"
 #include "map.h"
 #include "test_map.h"
-#include "pathfinding.h"
-
+#include "car.h"
 
 int main(){
     printf("Hello, world!\n");
-    // TEST_MAP_crossMap();
-    TEST_MAP_circleMap();
-    MAP_addCell(0, 0, TEST_MAP_wallCell());
-    point_t path[MAP_SIZE_X * MAP_SIZE_Y] = {0};
+    TEST_MAP_crossMap();
+    // MAP_addCell(0, 2, TEST_MAP_wallCell());
+    // MAP_addCell(4, 2, TEST_MAP_wallCell());
+    // MAP_addCell(4, 6, TEST_MAP_wallCell());
+    // MAP_addCell(8, 6, TEST_MAP_wallCell());
+    point_t path[MAP_SIZE_X * MAP_SIZE_Y * CELL_SIZE_X * CELL_SIZE_Y] = {0};
 
-    DIRECTION prefer_direction = NORTH;
-    point_t start = {0, 8};
-    point_t end = {1, 8};
+    CAR_init(2.5, 2.5, 0);
 
-    int pathStep = PATHFINDING_dijkstra(start, end, prefer_direction, path);
 
-    if (pathStep == 0){
-        printf(T_RED "No path found\n" T_RESET);
-    } else {
-        for (int i = 0; i < pathStep; i++){
-        printf("Path[%d]: %d, %d\n", i, path[i].x, path[i].y);
-        }
-    }
+    // return 0;
     
     InitWindow(screenWidth, screenHeight, "Map test");
     SetTargetFPS(FPS_LIMIT);
@@ -38,7 +30,49 @@ int main(){
         .b = 0x30
     };
 
+    double lastTime = GetTime();
+    double currentTime;
     while (!WindowShouldClose()){
+        Vector2 mouse = GetMousePosition();
+        mouse.x /= 8;
+        mouse.y /= 8;
+        if (IsKeyPressed(KEY_W) ^ IsKeyPressedRepeat(KEY_W)){
+            CAR_move();
+        }
+        if (IsKeyPressed(KEY_A) ^ IsKeyPressedRepeat(KEY_A)){
+            CAR_changeAngle(-15);
+        }
+        if (IsKeyPressed(KEY_D) ^ IsKeyPressedRepeat(KEY_D)){
+            CAR_changeAngle(15);
+        }
+        if (IsKeyPressed(KEY_S) ^ IsKeyPressedRepeat(KEY_S)){
+            CAR_changeAngle(180);
+            CAR_move();
+            CAR_changeAngle(180);
+        }
+        if (IsKeyPressed(KEY_SPACE)){
+            CAR_setAngle(0);
+        }
+
+        currentTime = GetTime();
+        if (currentTime - lastTime >= 0.1){
+            CAR_moveByPath();
+            lastTime = currentTime;
+        }
+
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+            int pathSteps = CAR_findPath(mouse.x, mouse.y);
+            if (pathSteps == 0){
+                printf(T_RED "No path found\n" T_RESET);
+            } 
+            // else {
+            //     for (int i = 0; i < pathSteps; i++){
+            //         printf("Path[%d]: %d, %d\n", i, path[i].x, path[i].y);
+            //     }
+            // }
+        }
+
+
         BeginDrawing();
         ClearBackground(DARKGRAY);
         // DrawText("Working in progress", 0, 0, 24, LIGHTGRAY);
@@ -48,12 +82,18 @@ int main(){
         MAP_drawIndex(MAP_OFFSET_X, MAP_OFFSET_Y);
         
         
-        for (int i = 0; i < pathStep; i++){
-            CAR_draw(path[i].x, path[i].y, ORANGE);
-        }
-        CAR_draw(start.x, start.y, BLUE);
-        CAR_draw(end.x, end.y, PURPLE);
         
+        CAR_draw();
+        CAR_drawBeam(0, 50);
+        CAR_drawBeam(30, 50);
+        CAR_drawBeam(-30, 50);
+
+        DrawText(
+            TextFormat("Mouse, %2i, %2i", (int)mouse.x, (int)mouse.y),
+            584, 76, 
+            20, WHITE
+        );
+
         EndDrawing();
     }
 

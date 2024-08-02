@@ -8,6 +8,8 @@
 
 typedef unsigned int uint;
 
+#define π 3.14159f
+
 #define screenWidth 800
 #define screenHeight 600
 #define FPS_LIMIT 60
@@ -16,5 +18,8 @@ typedef unsigned int uint;
 #define MAP_OFFSET_Y 0
 
 #define DEVICE "PC"
+
+
+float rounds(float value, uint decimalPlace);
 
 #endif

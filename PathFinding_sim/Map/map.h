@@ -12,8 +12,8 @@
 #define CELL_SIZE_X 8
 #define CELL_SIZE_Y 8
 
-#define PIXEL_SIZE_X 2
-#define PIXEL_SIZE_Y 2
+#define PIXEL_SIZE_X 4
+#define PIXEL_SIZE_Y 4
 
 typedef enum{
     NONE,
@@ -52,7 +52,10 @@ void MAP_draw();
 void MAP_drawGrid();
 void MAP_drawIndex();
 
-void CAR_draw(uint x, uint y, Color color);
+void POINT_draw(uint x, uint y, Color color);
 
+// bool MAP_collisionDetect(uint map_x, uint map_y, uint cell_x, uint cell_y);
+bool MAP_collisionDetect(uint x, uint y);
+cellType_t MAP_getType(uint x, uint y);
 
 #endif

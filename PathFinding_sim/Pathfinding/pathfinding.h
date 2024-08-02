@@ -16,20 +16,13 @@ typedef struct {
     int y;
 } point_t;
 
-typedef enum DIRECTION_t{
-    NORTH = 0,
-    EAST  = 1,
-    SOUTH = 2,
-    WEST  = 3
-} DIRECTION;
-
 typedef struct {
     point_t prev;
     int distance;
 } node_t;
 
 
-int PATHFINDING_dijkstra(point_t start, point_t destination, DIRECTION preferredDirection, point_t path[MAP_SIZE_X * MAP_SIZE_Y]);
+int PATHFINDING_dijkstra(point_t start_map, point_t destination, point_t preferredDirection, point_t path[MAP_SIZE_X * MAP_SIZE_Y]);
 
 
 
