@@ -23,6 +23,7 @@ add_executable(${PROJECT_NAME}
     Lib/StepperMotor/steppermotor.c
     Lib/Motor/motor.c
     Lib/Counter/counter.c
+    Lib/UDP/udp.c
 )
 
 # pico_generate_pio_header(${PROJECT_NAME} ${CMAKE_CURRENT_LIST_DIR}/StepperMotor/counter.pio)
@@ -38,6 +39,7 @@ include_directories(
     Lib/StepperMotor
     Lib/Motor
     Lib/Counter
+    Lib/UDP
 )
 
 add_subdirectory(Lib/VL53L0X/Api)
@@ -46,8 +48,10 @@ add_subdirectory(Lib/VL53L0X/Api)
 
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
     pico_stdlib
+    pico_multicore
 
-    pico_cyw43_arch_none
+    # pico_cyw43_arch_none
+    pico_cyw43_arch_lwip_poll
     hardware_gpio
     hardware_i2c
     hardware_pwm
@@ -55,7 +59,7 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
     # hardware_pio
 
     vl53l0x_api_rp2040
-#     # FreeRTOS
+    # FreeRTOS
 )
 
 
