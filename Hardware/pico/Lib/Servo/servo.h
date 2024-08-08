@@ -43,6 +43,7 @@ void Servo_init(Servo_t *servo);
 void Servo_setAngle(Servo_t *servo, uint angle);
 int Servo_readAngle(Servo_t *servo);
 
+void Servo_reachAngle(Servo_t *servo);
 void Servo_goto(Servo_t *servo);
 
 void Servo_start(Servo_t *servo);

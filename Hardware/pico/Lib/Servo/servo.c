@@ -61,6 +61,16 @@ int Servo_readAngle(Servo_t *servo){
     return value;
 }
 
+void Servo_reachAngle(Servo_t *servo){
+    if (servo->angle > servo->max){servo->angle = servo->max;} else
+    if (servo->angle < servo->min){servo->angle = servo->min;}
+
+    uint16_t level = LEVEL_MIN +  servo->angle * ((LEVEL_MAX - LEVEL_MIN) / 180);
+    servo->current_angle = servo->angle;
+    pwm_set_gpio_level(servo->GPIO, level);
+
+}
+
 
 void Servo_goto(Servo_t *servo){
     if (!servo->start) return;

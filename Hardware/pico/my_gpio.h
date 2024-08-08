@@ -18,8 +18,8 @@
 #define GPIO_MOTOR_LEFT_PWM             16
 
 #define GPIO_FRONT_SERVO                13
-#define FRONT_SERVO_MIN                 70
-#define FRONT_SERVO_MAX                 110
+#define FRONT_SERVO_MIN                 60
+#define FRONT_SERVO_MAX                 120
 
 #define GPIO_RIGHT_BACK_SENSOR          27
 #define GPIO_LEFT_BACK_SENSOR           26
