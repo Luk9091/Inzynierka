@@ -6,15 +6,15 @@
 
 void Counter_irq(){
     uint status = pwm_get_irq_status_mask();
-    printf("Irq status: %u\n", status);
+    // printf("Irq status: %u\n", status);
 
-    if (status & (1u << 2)){
-        printf("Right encoder up\n");
-    }
+    // if (status & (1u << 2)){
+    //     printf("Right encoder up\n");
+    // }
     
-    if (status & (1u << 1)){
-        printf("Left encoder up\n");
-    }
+    // if (status & (1u << 1)){
+    //     printf("Left encoder up\n");
+    // }
     Motor_stop();
 
 
@@ -61,6 +61,7 @@ void Counter_setCountTo(uint8_t pin, uint16_t countTo){
     uint slice = pwm_gpio_to_slice_num(pin);
 
     pwm_set_enabled(slice, false);
+    pwm_set_counter(slice, 0);
     pwm_set_wrap(slice, countTo);
     pwm_set_enabled(slice, true);
 }

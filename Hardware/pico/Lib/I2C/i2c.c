@@ -15,7 +15,7 @@ void I2C_Init(){
     isInit = 1;
 }
 
-int I2C_scan(i2c_inst_t *channel){
+int I2C_scan(i2c_inst_t *channel, int *devList){
     I2C_Init();
     int ret = 0;
     uint8_t rxData;
@@ -29,8 +29,8 @@ int I2C_scan(i2c_inst_t *channel){
 
         if (ret >= 0){
             printf("Address: 0x");
-            if(address < 16) printf("0");
-            printf("%X\n", address);
+            printf("%02X\n", address);
+            devList[dev] = address;
             dev++;
         }
     }
@@ -39,7 +39,7 @@ int I2C_scan(i2c_inst_t *channel){
         printf("Dont find any devices!\n");
         return -1;
     }
-    return 0;
+    return dev;
 }
 
 int I2C_writeReg(uint8_t dev, uint8_t reg, uint8_t data){

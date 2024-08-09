@@ -21,8 +21,6 @@
 */
 #define MPU6050_CALIBRATE_GYRO false
 
-static const axis_t MPU6050_CALIBRATION_DATA_GYRO_OFFSET    = {-630, 311,  65};
-static const axis_t MPU6050_CALIBRATION_DATA_GYRO_THRESHOLD = {10, 12, 10};
 
 // #define MPU6050_CALIBRATION_ACC false
 
@@ -51,15 +49,15 @@ typedef enum {
 } MPU6050_ERROR_t;
 
 
-void mpu6050_Init();
-void mpu6050_reset();
+void MPU6050_Init();
+void MPU6050_reset();
 
 /*
  * Read linear acceleration in mm/s²
 */
-void mpu6050_readAcc(axis_t *acc);
-void mpu6050_readGyro(axis_t *gyro);
-void mpu6050_readTemp(float *temp);
+void MPU6050_readAcc(axis_t *acc);
+void MPU6050_readGyro(axis_t *gyro);
+void MPU6050_readTemp(float *temp);
 
 
 /*
@@ -67,10 +65,10 @@ void mpu6050_readTemp(float *temp);
  * Rotate acceleration in deg/s² ax int16
  * Temperature in float
 */
-void mpu6050_readData(axis_t *acc, axis_t *gyro, float *temp);
+void MPU6050_readData(axis_t *acc, axis_t *gyro, float *temp);
 
 
-void mpu6050_gyro_calibration();
-void mpu6050_acc_calibration();
+void MPU6050_gyro_calibration();
+void MPU6050_acc_calibration();
 
 #endif

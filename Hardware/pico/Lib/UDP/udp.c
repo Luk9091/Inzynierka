@@ -99,7 +99,7 @@ void UDP_main() {
 
 
     while (true) {
-        if (!queue_is_empty(&send_queue)){
+        while (!queue_is_empty(&send_queue)){
             char msg[UDP_MSG_LEN_MAX] = {0};
             queue_remove_blocking(&send_queue, msg);
             UDP_write(msg);

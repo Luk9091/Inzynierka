@@ -22,9 +22,13 @@ static struct {
 #define GYRO_CALIBRATION_TIME 1e6
 #define ACC_CALIBRATION_TIME 10e6
 
+static const axis_t MPU6050_CALIBRATION_DATA_GYRO_OFFSET    = {-630, 311,  65};
+static const axis_t MPU6050_CALIBRATION_DATA_GYRO_THRESHOLD = {10, 12, 10};
+
+static const axis_t MPU6050_CALIBRATION_DATA_ACC_OFFSET = {272, -66, -864};
 
 
-int mpu6050_acc_setRange(MPU6050_ACC_RANGE_t range){
+int MPU6050_acc_setRange(MPU6050_ACC_RANGE_t range){
     int status = I2C_writeReg(I2C_MPU6050_ADDRESS, MPU6050_ACCEL_CONFIG, range<<3);
     if(status >= 0) {
         switch(range){
@@ -49,7 +53,7 @@ int mpu6050_acc_setRange(MPU6050_ACC_RANGE_t range){
     return status;
 }
 
-int mpu6050_gyro_setRange(MPU6050_GYRO_RANGE_t range){
+int MPU6050_gyro_setRange(MPU6050_GYRO_RANGE_t range){
     int status = I2C_writeReg(I2C_MPU6050_ADDRESS, MPU6050_GYRO_CONFIG, range << 3 );
     if (status >= 0) {
         switch (range){
@@ -77,14 +81,14 @@ int mpu6050_gyro_setRange(MPU6050_GYRO_RANGE_t range){
 }
 
 
-void mpu6050_Init(){
+void MPU6050_Init(){
     I2C_writeReg(I2C_MPU6050_ADDRESS, MPU6050_POW_MANAGEMENT_1_REG, 0b00000000);
 
-    mpu6050_acc_setRange(RANGE_2G);
-    mpu6050_gyro_setRange(RANGE_500DPS);
+    MPU6050_acc_setRange(RANGE_2G);
+    MPU6050_gyro_setRange(RANGE_500DPS);
     
     #if MPU6050_CALIBRATE_GYRO
-    mpu6050_gyro_calibration();
+    MPU6050_gyro_calibration();
     #else
     mpu6050_calibrationData.gyro.offset    = MPU6050_CALIBRATION_DATA_GYRO_OFFSET;
     mpu6050_calibrationData.gyro.threshold = MPU6050_CALIBRATION_DATA_GYRO_THRESHOLD;
@@ -98,7 +102,7 @@ void mpu6050_Init(){
 
 }
 
-void mpu6050_readRawAcc(axis_t *acc){
+void MPU6050_readRawAcc(axis_t *acc){
     uint8_t buffer[6];
 
     I2C_readNReg(I2C_MPU6050_ADDRESS, MPU6050_ACCEL_XH, buffer, 6);
@@ -107,15 +111,15 @@ void mpu6050_readRawAcc(axis_t *acc){
     acc->z = (int16_t)((buffer[4]) << 8) | buffer[5];
 }
 
-void mpu6050_readAcc(axis_t *acc){
-    mpu6050_readRawAcc(acc);
-    acc->x = (acc->x) * mpu6050_calibrationData.acc.range_per_digit;
-    acc->y = (acc->y) * mpu6050_calibrationData.acc.range_per_digit;
-    acc->z = (acc->z) * mpu6050_calibrationData.acc.range_per_digit;
+void MPU6050_readAcc(axis_t *acc){
+    MPU6050_readRawAcc(acc);
+    acc->x = (acc->x) * mpu6050_calibrationData.acc.range_per_digit - mpu6050_calibrationData.acc.offset.x;
+    acc->y = (acc->y) * mpu6050_calibrationData.acc.range_per_digit - mpu6050_calibrationData.acc.offset.y;
+    acc->z = (acc->z) * mpu6050_calibrationData.acc.range_per_digit - mpu6050_calibrationData.acc.offset.z;
 }
 
 
-void mpu6050_readRawGyro(axis_t *gyro){
+void MPU6050_readRawGyro(axis_t *gyro){
     uint8_t buffer[6];
 
     I2C_readNReg(I2C_MPU6050_ADDRESS, MPU6050_GYRO_XH, buffer, 6);
@@ -124,8 +128,8 @@ void mpu6050_readRawGyro(axis_t *gyro){
     gyro->z = (int16_t)((buffer[4]) << 8) | buffer[5];
 }
 
-void mpu6050_readGyro(axis_t *gyro){
-    mpu6050_readRawGyro(gyro);
+void MPU6050_readGyro(axis_t *gyro){
+    MPU6050_readRawGyro(gyro);
     gyro->x = (gyro->x - mpu6050_calibrationData.gyro.offset.x) * mpu6050_calibrationData.gyro.dps_per_digit;
     gyro->y = (gyro->y - mpu6050_calibrationData.gyro.offset.y) * mpu6050_calibrationData.gyro.dps_per_digit;
     gyro->z = (gyro->z - mpu6050_calibrationData.gyro.offset.z) * mpu6050_calibrationData.gyro.dps_per_digit;
@@ -135,7 +139,7 @@ void mpu6050_readGyro(axis_t *gyro){
     if (abs(gyro->z) < mpu6050_calibrationData.gyro.threshold.z) gyro->z = 0;
 }
 
-void mpu6050_readRawTemp(float *temp){
+void MPU6050_readRawTemp(float *temp){
     int16_t data;
     uint8_t buffer[2];
     I2C_readNReg(I2C_MPU6050_ADDRESS, MPU6050_TEMP_H, buffer, 2);
@@ -146,14 +150,14 @@ void mpu6050_readRawTemp(float *temp){
 
 
 
-void mpu6050_readData(axis_t *acc, axis_t *gyro, float *temp){
-    mpu6050_readAcc(acc);
-    mpu6050_readGyro(gyro);
-    mpu6050_readRawTemp(temp);
+void MPU6050_readData(axis_t *acc, axis_t *gyro, float *temp){
+    MPU6050_readAcc(acc);
+    MPU6050_readGyro(gyro);
+    MPU6050_readRawTemp(temp);
 }
 
 
-void mpu6050_gyro_calibration(){
+void MPU6050_gyro_calibration(){
     axis_t measure;
     float sumX = 0, sumY = 0, sumZ = 0;
     float sigmaX = 0, sigmaY = 0, sigmaZ = 0;
@@ -166,7 +170,7 @@ void mpu6050_gyro_calibration(){
 
     uint start = time_us_32();
     while((time_us_32() - start) < (GYRO_CALIBRATION_TIME)){
-        mpu6050_readRawGyro(&measure);
+        MPU6050_readRawGyro(&measure);
 
         sumX += measure.x;
         sumY += measure.y;
