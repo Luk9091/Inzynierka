@@ -27,6 +27,10 @@ int I2C_scan(i2c_inst_t *channel, int *devList);
 
 int I2C_writeReg(uint8_t dev, uint8_t reg, uint8_t data);
 
+int I2C_setBit(uint8_t dev, uint8_t reg, uint8_t bit);
+int I2C_clearBit(uint8_t dev, uint8_t reg, uint8_t bit);
+int I2C_toggleBit(uint8_t dev, uint8_t reg, uint8_t bit);
+
 uint8_t I2C_readReg(uint8_t dev, uint8_t reg);
 int I2C_readNReg(uint8_t dev, uint8_t startReg, uint8_t *data, size_t size);
 

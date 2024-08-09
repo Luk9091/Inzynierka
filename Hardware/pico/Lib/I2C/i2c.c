@@ -47,6 +47,24 @@ int I2C_writeReg(uint8_t dev, uint8_t reg, uint8_t data){
     return i2c_write_blocking(I2C_CHANNEL, dev, table, 2, false);
 }
 
+int I2C_setBit(uint8_t dev, uint8_t reg, uint8_t bit){
+    uint8_t data = I2C_readReg(dev, reg);
+    data |= 1 << bit;
+    return I2C_writeReg(dev, reg, data);
+}
+
+int I2C_clearBit(uint8_t dev, uint8_t reg, uint8_t bit){
+    uint8_t data = I2C_readReg(dev, reg);
+    data &= ~(1 << bit);
+    return I2C_writeReg(dev, reg, data);
+}
+
+int I2C_toggleBit(uint8_t dev, uint8_t reg, uint8_t bit){
+    uint8_t data = I2C_readReg(dev, reg);
+    data ^= 1 << bit;
+    return I2C_writeReg(dev, reg, data);
+}
+
 uint8_t I2C_readReg(uint8_t dev, uint8_t reg){
     uint8_t data = 0;
     i2c_write_blocking(I2C_CHANNEL, dev, &reg, 1,  true);
