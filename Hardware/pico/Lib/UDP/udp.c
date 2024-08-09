@@ -95,7 +95,7 @@ void UDP_main() {
         printf("UDP init failed\n");
         return;
     }
-    UDP_send("Run server\n");
+    UDP_write("Run server\n");
 
 
     while (true) {
