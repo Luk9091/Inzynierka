@@ -11,6 +11,7 @@
 void Counter_init(uint8_t pin);
 
 void Counter_enabledIRQ(uint8_t pin);
+void Counter_disabledIRQ(uint8_t pin);
 void Counter_setCountTo(uint8_t pin, uint16_t countTo);
 void Counter_clear(uint8_t pin);
 
