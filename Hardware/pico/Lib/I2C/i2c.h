@@ -26,6 +26,7 @@ int I2C_scan(i2c_inst_t *channel, int *devList);
 // #define I2C_read(dev, data) i2c_read_blocking(I2C_CHANNEL, dev, data, 1, false)
 
 int I2C_writeReg(uint8_t dev, uint8_t reg, uint8_t data);
+int I2C_writeRegMask(uint8_t dev, uint8_t reg, uint8_t mask, uint8_t data);
 
 int I2C_setBit(uint8_t dev, uint8_t reg, uint8_t bit);
 int I2C_clearBit(uint8_t dev, uint8_t reg, uint8_t bit);

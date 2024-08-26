@@ -30,7 +30,9 @@ int I2C_scan(i2c_inst_t *channel, int *devList){
         if (ret >= 0){
             printf("Address: 0x");
             printf("%02X\n", address);
-            devList[dev] = address;
+            if (devList != NULL){
+                devList[dev] = address;
+            }
             dev++;
         }
     }
@@ -45,6 +47,13 @@ int I2C_scan(i2c_inst_t *channel, int *devList){
 int I2C_writeReg(uint8_t dev, uint8_t reg, uint8_t data){
     uint8_t table[2] = {reg, data};
     return i2c_write_blocking(I2C_CHANNEL, dev, table, 2, false);
+}
+
+int I2C_writeRegMask(uint8_t dev, uint8_t reg, uint8_t mask, uint8_t data){
+    uint8_t oldData = I2C_readReg(dev, reg);
+    oldData = oldData & ~mask;
+    data = oldData | data;
+    return I2C_writeReg(dev, reg, data);
 }
 
 int I2C_setBit(uint8_t dev, uint8_t reg, uint8_t bit){
