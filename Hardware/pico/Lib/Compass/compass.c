@@ -4,7 +4,9 @@
 
 #define COMPASS_CALIBRATION_TIME 10e6
 
-axis_t COMPASS_calibrationOffset = {340, -2020, -1061};
+static axis_t offset = {-3907, 2370, 668};
+static axis_t min = {32767, 32767, 32767};
+static axis_t max = {-32768,-32768,-32768};
 
 void COMPASS_Init(){
     I2C_writeReg(I2C_COMPASS_ADDRESS, COMPASS_CONTROL_1_REG, CONTINUE_MODE | FREQ_10HZ | RANGE_2G | SAMPLE_512);
@@ -24,14 +26,17 @@ void COMPASS_rawRead(axis_t *axis){
 void COMPASS_read(axis_t *axis){
     axis_t raw;
     COMPASS_rawRead(&raw);
+#if COMPASS_AUTO_CALIBRATION_PROCESS == true
+    COMPASS_addToCalibrate(&raw);
+#endif
     *axis = COMPASS_calibrateRaw(raw);
 }
 
 axis_t COMPASS_calibrateRaw(axis_t raw){
     axis_t calibrated;
-    calibrated.x = (raw.x - COMPASS_calibrationOffset.x);
-    calibrated.y = (raw.y - COMPASS_calibrationOffset.y);
-    calibrated.z = (raw.z - COMPASS_calibrationOffset.z);
+    calibrated.x = (raw.x - offset.x);
+    calibrated.y = (raw.y - offset.y);
+    calibrated.z = (raw.z - offset.z);
     return calibrated;
 }
 
@@ -41,6 +46,33 @@ float COMPASS_getAzimuth(float x, float y){
     if (angle < 0) angle += 2 * π;
     else if (angle > 2 * π) angle -= 2 * π;
 
-    angle = angle * 180 / π;
+    angle = angle * 180 / π + MAGNETIC_DECLINATION;
     return angle;
+}
+
+
+void COMPASS_addToCalibrate(axis_t *raw){
+    if (raw->x < min.x) min.x = raw->x;
+    if (raw->x > max.x) max.x = raw->x;
+
+    if (raw->y < min.y) min.y = raw->y;
+    if (raw->y > max.y) max.y = raw->y;
+
+    if (raw->z < min.z) min.z = raw->z;
+    if (raw->z > max.z) max.z = raw->z;
+}
+
+void COMPASS_applyCalibration(){
+    offset.x = (max.x + min.x) / 2;
+    offset.y = (max.y + min.y) / 2;
+    offset.z = (max.z + min.z) / 2;
+}
+
+
+axis_t COMPASS_getMin(){
+    return min;
+}
+
+axis_t COMPASS_getMax(){
+    return max;
 }
