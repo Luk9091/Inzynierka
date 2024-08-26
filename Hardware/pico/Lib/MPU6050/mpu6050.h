@@ -11,6 +11,7 @@
 // LOW address of MPU6050
 #define I2C_MPU6050_ADDRESS 0x68
 #define GRAVITY_CONTAIN 9.80665f
+#define MPU6050_RANGE_MULTIPLY 1000
 
 
 /*
@@ -52,18 +53,27 @@ typedef enum {
 void MPU6050_Init();
 void MPU6050_reset();
 
+void MPU6050_readRawAcc(axis_t *acc);
+void MPU6050_readRawGyro(axis_t *gyro);
+
 /*
- * Read linear acceleration in mm/s²
+ * Read linear acceleration in `MPU6050_RANGE_MULTIPLY` * mm/s²
 */
 void MPU6050_readAcc(axis_t *acc);
+/*
+ * Rotate acceleration in `MPU6050_RANGE_MULTIPLY` deg/s² ax int16
+*/
 void MPU6050_readGyro(axis_t *gyro);
+/*
+ * Temperature in C as float with 0.1C precision
+*/
 void MPU6050_readTemp(float *temp);
 
 
 /*
- * Linear acceleration in mm/s² ax int16
- * Rotate acceleration in deg/s² ax int16
- * Temperature in float
+ * Linear acceleration in `MPU6050_RANGE_MULTIPLY` mm/s² ax int16
+ * Rotate acceleration in `MPU6050_RANGE_MULTIPLY` deg/s² ax int16
+ * Temperature in C as float with 0.1C precision
 */
 void MPU6050_readData(axis_t *acc, axis_t *gyro, float *temp);
 

@@ -13,36 +13,33 @@ static struct {
 
     struct {
         axis_t offset;
-        axis_t threshold;
         float dps_per_digit;
     } gyro;
 } mpu6050_calibrationData;
 
-#define RANGE_MULTIPLY 1000
 #define GYRO_CALIBRATION_TIME 1e6
 #define ACC_CALIBRATION_TIME 10e6
 
 static const axis_t MPU6050_CALIBRATION_DATA_GYRO_OFFSET    = {-630, 311,  65};
-static const axis_t MPU6050_CALIBRATION_DATA_GYRO_THRESHOLD = {10, 12, 10};
 
 static const axis_t MPU6050_CALIBRATION_DATA_ACC_OFFSET = {272, -66, -864};
 
 
 int MPU6050_acc_setRange(MPU6050_ACC_RANGE_t range){
-    int status = I2C_writeReg(I2C_MPU6050_ADDRESS, MPU6050_ACCEL_CONFIG, range<<3);
+    int status = I2C_writeRegMask(I2C_MPU6050_ADDRESS, MPU6050_ACCEL_CONFIG, 0b11 << 3, range<<3);
     if(status >= 0) {
         switch(range){
              case RANGE_2G:
-                mpu6050_calibrationData.acc.range_per_digit = 0.000061f * GRAVITY_CONTAIN * RANGE_MULTIPLY;
+                mpu6050_calibrationData.acc.range_per_digit = 0.000061f * GRAVITY_CONTAIN * MPU6050_RANGE_MULTIPLY;
                 break;
             case RANGE_4G:
-                mpu6050_calibrationData.acc.range_per_digit = 0.000122f * GRAVITY_CONTAIN * RANGE_MULTIPLY;
+                mpu6050_calibrationData.acc.range_per_digit = 0.000122f * GRAVITY_CONTAIN * MPU6050_RANGE_MULTIPLY;
                 break;
             case RANGE_8G:
-                mpu6050_calibrationData.acc.range_per_digit = 0.000244f * GRAVITY_CONTAIN * RANGE_MULTIPLY;
+                mpu6050_calibrationData.acc.range_per_digit = 0.000244f * GRAVITY_CONTAIN * MPU6050_RANGE_MULTIPLY;
                 break;
             case RANGE_16G:
-                mpu6050_calibrationData.acc.range_per_digit = 0.0004882f * GRAVITY_CONTAIN * RANGE_MULTIPLY;
+                mpu6050_calibrationData.acc.range_per_digit = 0.0004882f * GRAVITY_CONTAIN * MPU6050_RANGE_MULTIPLY;
                 break;
 
             default:
@@ -54,20 +51,20 @@ int MPU6050_acc_setRange(MPU6050_ACC_RANGE_t range){
 }
 
 int MPU6050_gyro_setRange(MPU6050_GYRO_RANGE_t range){
-    int status = I2C_writeReg(I2C_MPU6050_ADDRESS, MPU6050_GYRO_CONFIG, range << 3 );
+    int status = I2C_writeRegMask(I2C_MPU6050_ADDRESS, MPU6050_GYRO_CONFIG, 0b11 << 3, range << 3 );
     if (status >= 0) {
         switch (range){
         case RANGE_250DPS:
-            mpu6050_calibrationData.gyro.dps_per_digit = 0.007633f;// * RANGE_MULTIPLY;
+            mpu6050_calibrationData.gyro.dps_per_digit = 0.007633f * MPU6050_RANGE_MULTIPLY;
             break;
         case RANGE_500DPS:
-            mpu6050_calibrationData.gyro.dps_per_digit = 0.015267f;// * RANGE_MULTIPLY;
+            mpu6050_calibrationData.gyro.dps_per_digit = 0.015267f * MPU6050_RANGE_MULTIPLY;
             break;
         case RANGE_1000DPS:
-            mpu6050_calibrationData.gyro.dps_per_digit = 0.030487f;
+            mpu6050_calibrationData.gyro.dps_per_digit = 0.030487f * MPU6050_RANGE_MULTIPLY;
             break;
         case RANGE_2000DPS:
-            mpu6050_calibrationData.gyro.dps_per_digit = 0.060975f;
+            mpu6050_calibrationData.gyro.dps_per_digit = 0.060975f * MPU6050_RANGE_MULTIPLY;
             break;
 
         default:
@@ -87,11 +84,10 @@ void MPU6050_Init(){
     MPU6050_acc_setRange(RANGE_2G);
     MPU6050_gyro_setRange(RANGE_500DPS);
     
-    #if MPU6050_CALIBRATE_GYRO
+    #if MPU6050_CALIBRATE_GYRO == true
     MPU6050_gyro_calibration();
     #else
     mpu6050_calibrationData.gyro.offset    = MPU6050_CALIBRATION_DATA_GYRO_OFFSET;
-    mpu6050_calibrationData.gyro.threshold = MPU6050_CALIBRATION_DATA_GYRO_THRESHOLD;
     #endif
 
     // #if MPU6050_CALIBRATION_ACC
@@ -133,10 +129,6 @@ void MPU6050_readGyro(axis_t *gyro){
     gyro->x = (gyro->x - mpu6050_calibrationData.gyro.offset.x) * mpu6050_calibrationData.gyro.dps_per_digit;
     gyro->y = (gyro->y - mpu6050_calibrationData.gyro.offset.y) * mpu6050_calibrationData.gyro.dps_per_digit;
     gyro->z = (gyro->z - mpu6050_calibrationData.gyro.offset.z) * mpu6050_calibrationData.gyro.dps_per_digit;
-
-    if (abs(gyro->x) < mpu6050_calibrationData.gyro.threshold.x) gyro->x = 0;
-    if (abs(gyro->y) < mpu6050_calibrationData.gyro.threshold.y) gyro->y = 0;
-    if (abs(gyro->z) < mpu6050_calibrationData.gyro.threshold.z) gyro->z = 0;
 }
 
 void MPU6050_readRawTemp(float *temp){
@@ -156,7 +148,7 @@ void MPU6050_readData(axis_t *acc, axis_t *gyro, float *temp){
     MPU6050_readRawTemp(temp);
 }
 
-
+#if MPU6050_CALIBRATE_GYRO == 1
 void MPU6050_gyro_calibration(){
     axis_t measure;
     float sumX = 0, sumY = 0, sumZ = 0;
@@ -201,3 +193,4 @@ void MPU6050_gyro_calibration(){
     printf("Threshold: %4hi, %4hi, %4hi\n", mpu6050_calibrationData.gyro.threshold.x, mpu6050_calibrationData.gyro.threshold.y, mpu6050_calibrationData.gyro.threshold.z);
     printf("\n\n");
 }
+#endif
