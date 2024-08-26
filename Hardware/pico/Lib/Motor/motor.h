@@ -51,9 +51,15 @@ void Motor_forward();
 void Motor_backward();
 void Motor_stop();
 
-// Set distance in mm
+/*
+ * Set distance in mm,
+ * with precision `0.11mm`
+*/
 void Motor_forwardDistance(float distance);
-// Set distance in mm
+/*
+ * Set distance in mm
+ * with precision `0.11mm`
+*/
 void Motor_backwardDistance(float distance);
 
 void Motor_setSpeed(uint16_t speed);
@@ -61,14 +67,29 @@ void Motor_setSpeedRight(uint16_t speed);
 void Motor_setSpeedLeft(uint16_t speed);
 
 
-static inline float pulseToDistance(uint pulse){
+inline float pulseToDistance(uint pulse){
     return pulse * (MOTOR_WHEEL_DIAMETER * 3.1415f / MOTOR_ENCODER_RESOLUTION);
 }
 
-// Distance in mm
-static inline uint16_t distanceToPulse(float distance){
+/*
+ * Set distance in mm
+ * with precision `0.11mm`
+*/
+inline uint16_t distanceToPulse(float distance){
     return distance * (MOTOR_ENCODER_RESOLUTION / (MOTOR_WHEEL_DIAMETER * 3.1415f));
 }
+
+/*
+ * Set distance in mm
+ * with precision `0.11mm`
+*/
+void Motor_set_leftDistance(float distance);
+
+/*
+ * Set distance in mm
+ * with precision `0.11mm`
+*/
+void Motor_set_rightDistance(float distance);
 
 static inline float Motor_get_leftDistance(){
     return pulseToDistance(pwm_get_counter(pwm_gpio_to_slice_num(MOTOR_ENCODER_LEFT_UP)));

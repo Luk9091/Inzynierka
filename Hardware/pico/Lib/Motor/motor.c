@@ -66,18 +66,20 @@ void Motor_stop(){
 }
 
 
-// Set distance in mm
 void Motor_forwardDistance(float distance){
     uint pulse = distanceToPulse(distance);
+    Counter_clear(MOTOR_ENCODER_RIGHT_UP);
+    Counter_clear(MOTOR_ENCODER_LEFT_UP);
     Counter_setCountTo(MOTOR_ENCODER_RIGHT_UP, pulse);
     Counter_setCountTo(MOTOR_ENCODER_LEFT_UP,  pulse);
     Motor_forward();
 }
 
 
-// Set distance in mm
 void Motor_backwardDistance(float distance){
     uint pulse = distanceToPulse(distance);
+    Counter_clear(MOTOR_ENCODER_RIGHT_UP);
+    Counter_clear(MOTOR_ENCODER_LEFT_UP);
     Counter_setCountTo(MOTOR_ENCODER_RIGHT_UP, pulse);
     Counter_setCountTo(MOTOR_ENCODER_LEFT_UP,  pulse);
     Motor_backward();
@@ -85,21 +87,23 @@ void Motor_backwardDistance(float distance){
 
 
 void Motor_setSpeed(uint16_t speed){
-    // if (speed < MOTOR_THREE_QUARTER_SPEED){
-    //     speed = 0;
-    // }
     pwm_set_gpio_level(MOTOR_LEFT_PWM, speed);
     pwm_set_gpio_level(MOTOR_RIGHT_PWM, speed);
 }
 
 void Motor_setSpeedRight(uint16_t speed){
-    // if (speed > MOTOR_THREE_QUARTER_SPEED)
-    //     speed = 0;
     pwm_set_gpio_level(MOTOR_RIGHT_PWM, speed);
 }
 
 void Motor_setSpeedLeft(uint16_t speed){
-    // if (speed > MOTOR_THREE_QUARTER_SPEED)
-    //     speed = 0;
     pwm_set_gpio_level(MOTOR_LEFT_PWM, speed);
+}
+
+
+void Motor_set_leftDistance(float distance){
+    Counter_setCountTo(MOTOR_ENCODER_LEFT_UP, (uint16_t)distanceToPulse(distance));
+}
+
+void Motor_set_rightDistance(float distance){
+    Counter_setCountTo(MOTOR_ENCODER_RIGHT_UP, (uint16_t)distanceToPulse(distance));
 }
