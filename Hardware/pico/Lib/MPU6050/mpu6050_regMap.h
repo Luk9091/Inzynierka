@@ -13,6 +13,10 @@
 #define MPU6050_ACCEL_CONFIG            0x28
 #define MPU6050_FIFO_EN                 0x23
 
+#define MPU6050_INT_PIN_CONFIG          0x37
+#define MPU6050_INT_EN                  0x38
+#define MPU6050_INT_STATUS              0x3A
+
 #define MPU6050_ACCEL_XH                0x3B
 #define MPU6050_ACCEL_XL                0x3C
 #define MPU6050_ACCEL_YH                0x3D
@@ -37,5 +41,20 @@
 #define MPU6050_WHOAMI                  0x75
 
 #define MPU6050_SIGNAL_PATH_RESET       0x68
+
+#define DEV_RESET_BIT                   7
+
+#define FIFO_RESET_BIT                  2
+#define FIFO_EN_BIT                     6
+#define FIFO_OV_EN_INT_BIT              4
+#define GX_FIFO_EN_BIT                  6
+#define GY_FIFO_EN_BIT                  5
+#define GZ_FIFO_EN_BIT                  4
+#define ACCEL_FIFO_EN_BIT               3
+
+#define INT_LEVEL_BIT                   7
+#define INT_OPEN_BIT                    6
+#define LATCH_INT_EN_BIT                5
+#define INT_RD_CLEAR_BIT                4
 
 #endif
