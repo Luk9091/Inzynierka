@@ -13,7 +13,7 @@
 #include "PASS.h"
 
 #define UDP_PORT 4444
-#define UDP_INTERVAL_MS 100
+#define UDP_INTERVAL_MS 10
 
 static struct udp_pcb* pcb;
 static ip_addr_t addr;
@@ -95,7 +95,6 @@ void UDP_main() {
         printf("UDP init failed\n");
         return;
     }
-    UDP_write("Run server\n");
 
 
     while (true) {
