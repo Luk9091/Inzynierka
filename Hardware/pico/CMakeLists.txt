@@ -15,6 +15,7 @@ pico_sdk_init()
 
 add_executable(${PROJECT_NAME}
     main.c
+    utilites.c
     Lib/ToF/tof.c
     Lib/I2C/i2c.c
     Lib/MPU6050/mpu6050.c
@@ -24,6 +25,7 @@ add_executable(${PROJECT_NAME}
     Lib/Motor/motor.c
     Lib/Counter/counter.c
     Lib/UDP/udp.c
+    Lib/PID/pid.c
 )
 
 # pico_generate_pio_header(${PROJECT_NAME} ${CMAKE_CURRENT_LIST_DIR}/StepperMotor/counter.pio)
@@ -40,6 +42,7 @@ include_directories(
     Lib/Motor
     Lib/Counter
     Lib/UDP
+    Lib/PID
 )
 
 add_subdirectory(Lib/VL53L0X/Api)

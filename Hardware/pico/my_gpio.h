@@ -33,5 +33,8 @@
 #define GPIO_ToF_CENTER_CONTROL_PIN     10
 #define GPIO_ToF_LEFT_CONTROL_PIN       11
 
+#define GPIO_COMPASS_INT_PIN            22
+#define GPIO_MPU6050_INT_PIN            23
+
 
 #endif
