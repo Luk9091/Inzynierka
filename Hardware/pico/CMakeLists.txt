@@ -26,6 +26,7 @@ add_executable(${PROJECT_NAME}
     Lib/Counter/counter.c
     Lib/UDP/udp.c
     Lib/PID/pid.c
+    Lib/24C04/24c04.c
 )
 
 # pico_generate_pio_header(${PROJECT_NAME} ${CMAKE_CURRENT_LIST_DIR}/StepperMotor/counter.pio)
@@ -43,6 +44,7 @@ include_directories(
     Lib/Counter
     Lib/UDP
     Lib/PID
+    Lib/24C04
 )
 
 add_subdirectory(Lib/VL53L0X/Api)
