@@ -28,8 +28,29 @@ int I2C_scan(i2c_inst_t *channel, int *devList);
 int I2C_writeReg(uint8_t dev, uint8_t reg, uint8_t data);
 int I2C_writeRegMask(uint8_t dev, uint8_t reg, uint8_t mask, uint8_t data);
 
+/*
+ * I2C set pin function
+ * \param
+ * dev - device address
+ * reg - register number
+ * bit - number of set bit
+*/
 int I2C_setBit(uint8_t dev, uint8_t reg, uint8_t bit);
+/*
+ * I2C set pin function
+ * \param
+ * dev - device address
+ * reg - register number
+ * bit - number of clear bit
+*/
 int I2C_clearBit(uint8_t dev, uint8_t reg, uint8_t bit);
+/*
+ * I2C set pin function
+ * \param
+ * dev - device address
+ * reg - register number
+ * bit - number of toggle bit
+*/
 int I2C_toggleBit(uint8_t dev, uint8_t reg, uint8_t bit);
 
 uint8_t I2C_readReg(uint8_t dev, uint8_t reg);
