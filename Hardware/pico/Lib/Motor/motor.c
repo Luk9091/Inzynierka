@@ -1,5 +1,6 @@
 #include "motor.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <pico/stdlib.h>
 #include <pico/stdio.h>
 #include "counter.h"
@@ -14,17 +15,59 @@ static uint MOTOR_MASK_FORWARD = (1 << MOTOR_RIGHT_PIN_FORWARD) | (1 << MOTOR_LE
 static uint MOTOR_MASK_BACKWARD = (1 << MOTOR_RIGHT_PIN_BACKWARD) | (1 << MOTOR_LEFT_PIN_BACKWARD);
 
 Encoder_t right, left;
+repeating_timer_t pid_timer;
+PID_t pid;
+uint16_t Motor_speedLeft, Motor_speedRight;
 
 
 
 
-void Motor_init(uint16_t default_speed) {
+bool Motor_pid_distanceCorrection(repeating_timer_t *timer){
+    const float dt = MOTOR_PID_DT / (1000.f);
+    
+    int countLeft = Counter_getCount(MOTOR_ENCODER_LEFT_UP);
+    int countRight= Counter_getCount(MOTOR_ENCODER_RIGHT_UP);
+    int diff = countLeft - countRight;
+    int ans = PID_update(&pid, diff, dt);
+
+    int speedLeft = Motor_getSpeed(MOTOR_LEFT_PWM) - ans;
+    int speedRight = Motor_getSpeed(MOTOR_RIGHT_PWM) + ans;
+
+    if (speedLeft > MOTOR_FULL_SPEED){
+        speedLeft = MOTOR_FULL_SPEED;
+    } else if (speedLeft < 0){
+        speedLeft = 0;
+    }
+
+    if (speedRight > MOTOR_FULL_SPEED){
+        speedRight = MOTOR_FULL_SPEED;
+    } else if (speedRight < 0){
+        speedRight = 0;
+    }
+
+    // printf("Impulse: %6u, %6u, speed: %6u, %6u\n", countLeft, countRight, speedLeft, speedRight);
+    Motor_setSpeedLeft(speedLeft);
+    Motor_setSpeedRight(speedRight);
+    return true;
+}
+
+void Motor_pid_run(){
+    Counter_clear(MOTOR_ENCODER_RIGHT_UP);
+    Counter_clear(MOTOR_ENCODER_LEFT_UP);
+    PID_reset(&pid);
+    add_repeating_timer_ms(MOTOR_PID_DT, Motor_pid_distanceCorrection, NULL, &pid_timer);
+}
+
+void Motor_pid_stop(){
+    cancel_repeating_timer(&pid_timer);
+}
+
+
+void Motor_init() {
     gpio_init_mask(MOTOR_MASK);
+    gpio_init_mask(1 << MOTOR_ENCODER_LEFT_UP | 1 << MOTOR_ENCODER_LEFT_DOWN | 1 << MOTOR_ENCODER_RIGHT_UP | 1 << MOTOR_ENCODER_RIGHT_DOWN);
 
-    gpio_set_dir(MOTOR_RIGHT_PIN_FORWARD, GPIO_OUT);
-    gpio_set_dir(MOTOR_RIGHT_PIN_BACKWARD, GPIO_OUT);
-    gpio_set_dir(MOTOR_LEFT_PIN_FORWARD, GPIO_OUT);
-    gpio_set_dir(MOTOR_LEFT_PIN_BACKWARD, GPIO_OUT);
+    gpio_set_dir_out_masked(MOTOR_MASK);
 
     Counter_init(MOTOR_ENCODER_RIGHT_UP);
     Counter_init(MOTOR_ENCODER_LEFT_UP);
@@ -43,7 +86,8 @@ void Motor_init(uint16_t default_speed) {
     pwm_init(slice_left, &config, true);
     pwm_init(slice_right, &config, true);
 
-    Motor_setSpeed(default_speed);
+    Motor_setSpeed(0);
+    PID_init(&pid, 1.75f, 0.35f, 3.00f);
 }
 
 
@@ -59,6 +103,14 @@ void Motor_backward(){
     Counter_clear(MOTOR_ENCODER_RIGHT_UP);
     Counter_clear(MOTOR_ENCODER_LEFT_UP);
     gpio_set_mask(MOTOR_MASK_BACKWARD);
+}
+
+void Motor_stopLeft(){
+    gpio_clr_mask(1 << MOTOR_LEFT_PIN_BACKWARD | 1 << MOTOR_LEFT_PIN_FORWARD);
+}
+
+void Motor_stopRight(){
+    gpio_clr_mask(1 << MOTOR_RIGHT_PIN_BACKWARD | 1 << MOTOR_RIGHT_PIN_FORWARD);
 }
 
 void Motor_stop(){
@@ -83,20 +135,6 @@ void Motor_backwardDistance(float distance){
     Counter_setCountTo(MOTOR_ENCODER_RIGHT_UP, pulse);
     Counter_setCountTo(MOTOR_ENCODER_LEFT_UP,  pulse);
     Motor_backward();
-}
-
-
-void Motor_setSpeed(uint16_t speed){
-    pwm_set_gpio_level(MOTOR_LEFT_PWM, speed);
-    pwm_set_gpio_level(MOTOR_RIGHT_PWM, speed);
-}
-
-void Motor_setSpeedRight(uint16_t speed){
-    pwm_set_gpio_level(MOTOR_RIGHT_PWM, speed);
-}
-
-void Motor_setSpeedLeft(uint16_t speed){
-    pwm_set_gpio_level(MOTOR_LEFT_PWM, speed);
 }
 
 
