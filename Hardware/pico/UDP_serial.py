@@ -6,8 +6,10 @@ import time
 from time import sleep
 
 
+UDP_SERVER_PORT = 4444
+UDP_CLIENT_PORT = 4445
 run = True
-pc_address   = ("10.42.0.1", 4444)
+pc_address   = ("10.42.0.1", UDP_SERVER_PORT)
 MAX_UDP_PACKET_SIZE = 128
 
 
@@ -19,7 +21,6 @@ def receive(udp_socket: socket.socket):
         data = data.decode("utf-8")
 
         try: 
-            # if data[0].isdigit() or (data[0] == "-" and data[1].isdigit()):
             with open("data.csv", "a") as file:
                 file.write(data)
         except IndexError:
@@ -27,8 +28,6 @@ def receive(udp_socket: socket.socket):
 
         if data.endswith("\n"):
             data = data + "\r"
-        # if not data.endswith("\r"):
-        #     data = data + "\n\r"
         print(data, end="")
 
 
@@ -42,7 +41,7 @@ def main():
     else:
         address = "10.42.0.22"
 
-    pico_address = (address, 4444)
+    pico_address = (address, UDP_CLIENT_PORT)
     print(f"UDP Serial IP: {pico_address[0]}:{pico_address[1]}")
 
 
@@ -56,13 +55,7 @@ def main():
 
     try:
         while run:
-            # char = getchar(False)
-            # if char == "\r":
-            #     print()
-            #     continue
-            # elif char == '=':
             char = input()
-            # print(f">> {char}")
 
             udp_socket.sendto(char.encode(), pico_address)
     except (KeyboardInterrupt, EOFError):

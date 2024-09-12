@@ -12,7 +12,8 @@
 #include "lwip/udp.h"
 #include "PASS.h"
 
-#define UDP_PORT 4444
+#define UDP_SEVER_PORT 4445
+#define UDP_CLIENT_PORT 4444
 #define UDP_INTERVAL_MS 10
 
 static struct udp_pcb* pcb;
@@ -36,7 +37,7 @@ err_t UDP_write(const char *msg){
     char *req = (char *)p->payload;
     memset(req, 0, UDP_MSG_LEN_MAX);
     snprintf(req, UDP_MSG_LEN_MAX-1, "%s", msg);
-    err_t er = udp_sendto(pcb, p, &addr, UDP_PORT);
+    err_t er = udp_sendto(pcb, p, &addr, UDP_CLIENT_PORT);
     pbuf_free(p);
 
     return er;
@@ -79,14 +80,13 @@ int UDP_init(){
 
     ipaddr_aton(WIFI_CLIENT_IP, &addr);
 
-    udp_bind(pcb, &server, UDP_PORT);
+    udp_bind(pcb, &server, UDP_SEVER_PORT);
     udp_recv(pcb, (udp_recv_fn)UDP_recvCallback, pcb);
 
     return 0;
 }
 
 void UDP_main() {
-    multicore_lockout_victim_init();
     queue_init(&send_queue, UDP_MSG_LEN_MAX, UDP_SEND_QUEUE_SIZE);
     queue_init(&recv_queue, UDP_MSG_LEN_MAX, UDP_RECV_QUEUE_SIZE);
 

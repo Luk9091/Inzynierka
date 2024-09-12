@@ -5,8 +5,8 @@
 #include "lwip/err.h"
 
 #define UDP_MSG_LEN_MAX 128
-#define UDP_SEND_QUEUE_SIZE 10
-#define UDP_RECV_QUEUE_SIZE 10
+#define UDP_SEND_QUEUE_SIZE 100
+#define UDP_RECV_QUEUE_SIZE 20
 
 void UDP_main();
 
