@@ -12,6 +12,12 @@
 #include "lwip/udp.h"
 #include "PASS.h"
 
+#define UDP_SEND_TO_MIRROR          true
+#if UDP_SEND_TO_MIRROR == true
+#define UDP_MIRROR_PORT 4446
+#endif
+
+
 #define UDP_SEVER_PORT 4445
 #define UDP_CLIENT_PORT 4444
 #define UDP_INTERVAL_MS 10
@@ -32,12 +38,12 @@ int get_IP(char *out){
     return strlen(out);
 }
 
-err_t UDP_write(const char *msg){
+err_t UDP_write(const char *msg, uint16_t PORT){
     struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, UDP_MSG_LEN_MAX, PBUF_RAM);
     char *req = (char *)p->payload;
     memset(req, 0, UDP_MSG_LEN_MAX);
     snprintf(req, UDP_MSG_LEN_MAX-1, "%s", msg);
-    err_t er = udp_sendto(pcb, p, &addr, UDP_CLIENT_PORT);
+    err_t er = udp_sendto(pcb, p, &addr, PORT);
     pbuf_free(p);
 
     return er;
@@ -101,7 +107,10 @@ void UDP_main() {
         while (!queue_is_empty(&send_queue)){
             char msg[UDP_MSG_LEN_MAX] = {0};
             queue_remove_blocking(&send_queue, msg);
-            UDP_write(msg);
+            UDP_write(msg, UDP_CLIENT_PORT);
+        #if UDP_SEND_TO_MIRROR == true
+            UDP_write(msg, UDP_MIRROR_PORT);
+        #endif
         }
         // UDP_write("Hello World");
         // Note in practice for this simple UDP transmitter,

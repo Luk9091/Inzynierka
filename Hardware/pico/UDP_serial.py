@@ -9,7 +9,6 @@ from time import sleep
 UDP_SERVER_PORT = 4444
 UDP_CLIENT_PORT = 4445
 run = True
-pc_address   = ("10.42.0.1", UDP_SERVER_PORT)
 MAX_UDP_PACKET_SIZE = 128
 
 
@@ -40,8 +39,16 @@ def main():
         address = f"10.42.0.{args[0]}"
     else:
         address = "10.42.0.22"
+    
+    if len(args) > 1:
+        global UDP_SERVER_PORT
+        UDP_SERVER_PORT = int(args[1])
+    pc_address   = ("10.42.0.1", UDP_SERVER_PORT)
+
+        
 
     pico_address = (address, UDP_CLIENT_PORT)
+    print(f"Server IP:     {pc_address[0]}:{pc_address[1]}")
     print(f"UDP Serial IP: {pico_address[0]}:{pico_address[1]}")
 
 
