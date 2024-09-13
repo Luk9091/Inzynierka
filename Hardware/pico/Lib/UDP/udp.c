@@ -20,7 +20,7 @@
 
 #define UDP_SEVER_PORT 4445
 #define UDP_CLIENT_PORT 4444
-#define UDP_INTERVAL_MS 10
+#define UDP_INTERVAL_MS 1
 
 static struct udp_pcb* pcb;
 static ip_addr_t addr;
@@ -104,7 +104,7 @@ void UDP_main() {
 
 
     while (true) {
-        while (!queue_is_empty(&send_queue)){
+        if (!queue_is_empty(&send_queue)){
             char msg[UDP_MSG_LEN_MAX] = {0};
             queue_remove_blocking(&send_queue, msg);
             UDP_write(msg, UDP_CLIENT_PORT);
