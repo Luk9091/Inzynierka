@@ -11,6 +11,9 @@ add_executable(${PROJECT_NAME}
     Map/test/test_map.c
     Pathfinding/pathfinding.c
     Car/car.c
+    UDP/udp.c
+    Queue/queue.c
+    GUI/slider_panel.c
 )
 
 include_directories(${PROJECT_NAME}
@@ -19,6 +22,9 @@ include_directories(${PROJECT_NAME}
     Map/test
     Pathfinding
     Car
+    UDP
+    Queue
+    GUI
 )
 
 target_link_libraries(${PROJECT_NAME}
