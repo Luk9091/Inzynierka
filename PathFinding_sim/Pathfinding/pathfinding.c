@@ -61,15 +61,15 @@ bool PATHFINDING_isValid(point_t current, point_t dir){
 
     cellType_t currentType = MAP_getType(current.x, current.y);
     cellType_t nextType = MAP_getType(next.x, next.y);
+    
+    if (nextType == NONE ){
+            return true;
+    }
 
     if (nextType != ROAD){
         return false;
     }
     
-    if (nextType == NONE || currentType == NONE){
-        if (nextType != currentType)
-            return false;
-    }
 
     return true;
 }
