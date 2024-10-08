@@ -12,8 +12,8 @@
 #include "map.h"
 #include "udp.h"
 
-#define CAR_SIZE_X 16/2
-#define CAR_SIZE_Y 16/2
+#define CAR_SIZE_X (16/2)
+#define CAR_SIZE_Y (16/2)
 #define CAR_SEE_RANGE 6
 
 // Odległość przedniej osi od tylnej w mm
@@ -52,6 +52,8 @@ Vector2 CAR_getPosition();
 bool CAR_move();
 bool CAR_moveBackward();
 uint CAR_moveByPath();
+
 int CAR_findPath(uint x, uint y);
+int CAR_addPath(uint x, uint y);
 
 #endif

@@ -11,8 +11,8 @@ static double path_time = 0;
 
 void _CAR_moveTriangle(){
     Vector2 center = {
-        .x  = car.position.x * PIXEL_SIZE_X - cosf(car.angle) * CELL_SIZE_X * PIXEL_SIZE_X / 8 +MAP_OFFSET_X,
-        .y  = car.position.y * PIXEL_SIZE_Y - sinf(car.angle) * CELL_SIZE_Y * PIXEL_SIZE_Y / 8 +MAP_OFFSET_Y
+        .x  = car.position.x * PIXEL_SIZE_X - cosf(car.angle) * CELL_SIZE_X + MAP_OFFSET_X,
+        .y  = car.position.y * PIXEL_SIZE_Y - sinf(car.angle) * CELL_SIZE_Y + MAP_OFFSET_Y
     };
 
     car.top.x = center.x + cosf(car.angle) * CAR_SIZE_X;
@@ -34,7 +34,7 @@ void CAR_drawTurnCircle(){
     point_t center;
     float r = CAR_PHYSICAL_LEN / sin(angle);
 
-    if (getAngle() > 90){
+    if (getAngle() < 90){
         center.x = car.top.x + r * sin(angle);
         center.y = car.top.y - r * cos(angle);
     } else {
@@ -63,7 +63,7 @@ void _CAR_drawMessage(const char *str){
 
 void _CAR_drawPath(){
     for (int i = step; i < pathLen; i += 1){
-        POINT_draw(path[i].x, path[i].y, PIXEL_SIZE_X/4, ORANGE);
+        POINT_draw(path[i].x, path[i].y, 0.5f, 0.5f, PIXEL_SIZE_X/4, ORANGE);
     }
 }
 
@@ -273,5 +273,21 @@ int CAR_findPath(uint x, uint y){
     path_time = (double)(t_end - t_start) / CLOCKS_PER_SEC;
 
     step = 1;
+    return pathLen;
+}
+
+int CAR_addPath(uint x, uint y){
+    point_t start = path[pathLen-1];
+    point_t end = {x, y};
+    point_t prefer = {
+        .x = path[pathLen - 1].x - path[pathLen - 2].x,
+        .y = path[pathLen - 1].y - path[pathLen - 2].y,
+    };
+
+    clock_t t_start = clock();
+    pathLen += PATHFINDING_dijkstra(start, end, prefer, path + pathLen - 1) - 1;
+    clock_t t_end = clock();
+    path_time = (double)(t_end - t_start) / CLOCKS_PER_SEC;
+
     return pathLen;
 }
