@@ -70,10 +70,10 @@ void TEST_MAP_crossMap(){
     
 
     for(uint i = 1; i <= MAP_SIZE_X-2; i++){
-        MAP_addCell(i, 4, street_x);
+        MAP_addCell(i, center_x, street_x);
     }
     for(uint i = 1; i <= MAP_SIZE_Y-2; i++){
-        MAP_addCell(4, i, street_y);
+        MAP_addCell(center_y, i, street_y);
     }
 
     MAP_addCell(center_x, center_y, TEST_MAP_XcrossCell());
@@ -81,4 +81,13 @@ void TEST_MAP_crossMap(){
     MAP_addCell(center_x, MAP_SIZE_Y - 1, MAP_rotate(TEST_MAP_TcrossCell(), 90));
     MAP_addCell(MAP_SIZE_X - 1, center_y, MAP_rotate(TEST_MAP_TcrossCell(), 180));
     MAP_addCell(center_x, 0, MAP_rotate(TEST_MAP_TcrossCell(), 270));
+}
+
+
+void TEST_MAP_fullRoad(){
+    MAP_fill(ROAD);
+}
+
+void TEST_MAP_empty(){
+    MAP_fill(NONE);
 }

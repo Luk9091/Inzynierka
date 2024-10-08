@@ -12,5 +12,7 @@ cell_t TEST_MAP_wallCell();
 
 void TEST_MAP_circleMap();
 void TEST_MAP_crossMap();
+void TEST_MAP_fullRoad();
+void TEST_MAP_empty();
 
 #endif

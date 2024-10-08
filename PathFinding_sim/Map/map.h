@@ -6,14 +6,6 @@
 #include "utility.h"
 #include <raylib.h>
 
-#define MAP_SIZE_X 9
-#define MAP_SIZE_Y 9
-
-#define CELL_SIZE_X 8
-#define CELL_SIZE_Y 8
-
-#define PIXEL_SIZE_X 4
-#define PIXEL_SIZE_Y 4
 
 typedef enum{
     NONE,
@@ -21,7 +13,7 @@ typedef enum{
     WALL
 } cellType_t;
 
-typedef struct{
+typedef struct CELL_t{
     cellType_t type[CELL_SIZE_X][CELL_SIZE_Y];
     Color color[CELL_SIZE_X][CELL_SIZE_Y];
     int distance;
@@ -52,7 +44,19 @@ void MAP_draw();
 void MAP_drawGrid();
 void MAP_drawIndex();
 
-void POINT_draw(uint x, uint y, Color color);
+/*
+ * \param x absolut coordination of X on map
+ * \param y absolut coordination of Y on map
+ *
+ * For example: x = 10, y = 0
+ * this mean:
+ * cell address: 1, 0
+ * point in cell: 2, 0
+ * 
+*/
+void MAP_setType(uint x, uint y, cellType_t type);
+
+void POINT_draw(uint x, uint y, float sub_x, float sub_y, uint pixel_size, Color color);
 
 // bool MAP_collisionDetect(uint map_x, uint map_y, uint cell_x, uint cell_y);
 bool MAP_collisionDetect(uint x, uint y);

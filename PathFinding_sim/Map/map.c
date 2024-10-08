@@ -8,7 +8,7 @@ static cell_t map[MAP_SIZE_X][MAP_SIZE_Y];
 Color _MAP_type2color(cellType_t type){
     switch (type){
         case NONE:
-            return RED;
+            return DARKBLUE;
         case ROAD:
             return BLACK;
         case WALL:
@@ -96,6 +96,16 @@ cell_t MAP_rotate(cell_t cell, float angle){
     return newCell;
 }
 
+void MAP_setType(uint x, uint y, cellType_t type){
+    uint _x = x / CELL_SIZE_X;
+    uint _y = y / CELL_SIZE_Y;
+    uint  i = x % CELL_SIZE_X;
+    uint  j = y % CELL_SIZE_Y;
+
+
+    map[_x][_y].color[i][j] = _MAP_type2color(type);
+    map[_x][_y].type[i][j] = type;
+}
 
 void MAP_addCell(uint x, uint y, cell_t cell){
     for (uint i = 0; i < CELL_SIZE_X; i++){
@@ -121,10 +131,10 @@ void MAP_drawCell(uint _x, uint _y){
 
     for (uint j = 0; j < CELL_SIZE_Y; j++){
         for (uint i = 0; i < CELL_SIZE_X; i++){
-            x = _x*CELL_SIZE_X*CELL_SIZE_X + i*CELL_SIZE_X + MAP_OFFSET_X;
-            y = _y*CELL_SIZE_Y*CELL_SIZE_Y + j*CELL_SIZE_Y + MAP_OFFSET_Y;
+            x = _x*CELL_SIZE_X*PIXEL_SIZE_X + i*PIXEL_SIZE_X + MAP_OFFSET_X;
+            y = _y*CELL_SIZE_Y*PIXEL_SIZE_Y + j*PIXEL_SIZE_Y + MAP_OFFSET_Y;
 
-            DrawRectangle(x, y, CELL_SIZE_X, CELL_SIZE_Y, cell.color[i][j]);
+            DrawRectangle(x, y, PIXEL_SIZE_X, PIXEL_SIZE_Y, cell.color[i][j]);
         }
     }
 }
@@ -137,28 +147,53 @@ void MAP_draw(){
     }
 }
 
+void MAP_drawSmallGrid(uint x, uint y){
+    uint posX, posY;
+    x = x + MAP_OFFSET_X;
+    y = y + MAP_OFFSET_Y;
+
+    for (uint _x = 0; _x < CELL_SIZE_X; _x++){
+        posX = x + _x * PIXEL_SIZE_X;
+        for (uint _y = 0; _y < CELL_SIZE_Y; _y++){
+            posY = y + _y * PIXEL_SIZE_Y;
+
+            DrawRectangleLines(
+                posX, posY,
+                PIXEL_SIZE_X, PIXEL_SIZE_Y,
+                GRAY
+            );
+        }
+    }
+}
+
+
 void MAP_drawGrid(){
+    uint size_x = CELL_SIZE_X*PIXEL_SIZE_X;
+    uint size_y = CELL_SIZE_Y*PIXEL_SIZE_Y;
     for (uint x = 0; x < MAP_SIZE_X; x++){
         for (uint y = 0; y < MAP_SIZE_Y; y++){
+            MAP_drawSmallGrid(x*size_x, y*size_y);
             DrawRectangleLines(
-                x*CELL_SIZE_X*CELL_SIZE_X + MAP_OFFSET_X,
-                y*CELL_SIZE_Y*CELL_SIZE_Y + MAP_OFFSET_Y,
-                CELL_SIZE_X*CELL_SIZE_X,
-                CELL_SIZE_Y*CELL_SIZE_Y,
-                BLACK
+                x*size_x + MAP_OFFSET_X,
+                y*size_y + MAP_OFFSET_Y,
+                size_x,
+                size_y,
+                GRAY
             );
         }
     }
 }
 
 void MAP_drawIndex(){
+    int size = PIXEL_SIZE_X*PIXEL_SIZE_Y/2;
+    if (size > 16) size = 16;
     for (uint x = 0; x < MAP_SIZE_X; x++){
         for (uint y = 0; y < MAP_SIZE_Y; y++){
             DrawText(
                 TextFormat("%d, %d", x, y),
-                x*CELL_SIZE_X*CELL_SIZE_X + MAP_OFFSET_X,
-                y*CELL_SIZE_Y*CELL_SIZE_Y + MAP_OFFSET_Y,
-                16,
+                x*CELL_SIZE_X*PIXEL_SIZE_X + MAP_OFFSET_X,
+                y*CELL_SIZE_Y*PIXEL_SIZE_Y + MAP_OFFSET_Y,
+                size,
                 GRAY
             );
         }
@@ -167,10 +202,10 @@ void MAP_drawIndex(){
 
 
 
-void POINT_draw(uint x, uint y, Color color){
-    x = x * CELL_SIZE_X;
-    y = y * CELL_SIZE_Y;
-    DrawRectangle(x, y, CELL_SIZE_X, CELL_SIZE_Y, color);
+void POINT_draw(uint x, uint y, float sub_x, float sub_y, uint pixel_size, Color color){
+    x = x * PIXEL_SIZE_X + MAP_OFFSET_X + sub_x * (PIXEL_SIZE_X - pixel_size);
+    y = y * PIXEL_SIZE_Y + MAP_OFFSET_Y + sub_y * (PIXEL_SIZE_X - pixel_size);
+    DrawRectangle(x, y, pixel_size, pixel_size, color);
 }
 
 
