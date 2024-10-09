@@ -163,16 +163,18 @@ Vector2 CAR_getPosition(){
 bool CAR_move(){
     if (!calculateSpeed()) return false;
     bool collision = false;
-    float deltaAngle = abs(getAngle() - 90) * DEG2RAD;
+    float deltaAngle = abs(90 - getAngle()) * DEG2RAD;
     
     Vector2 move = {
-        .x = rounds(cos(deltaAngle)*cosf(car.angle), 2),
-        .y = rounds(cos(deltaAngle)*sinf(car.angle), 2)
+        .x = cosf(deltaAngle)*cosf(car.angle),
+        .y = cosf(deltaAngle)*sinf(car.angle)
     };
     Vector2 newPos = {
         .x = car.position.x + move.x,
-        .y = car.position.y + move.y
+        .y = car.position.y + move.y,
     };
+    newPos.x = rounds(newPos.x, 2);
+    newPos.y = rounds(newPos.y, 2);
 
     if (MAP_collisionDetect(newPos.x, car.position.y) || !(car.position.x + move.x >= 0 && car.position.x + move.x < (MAP_SIZE_X*CELL_SIZE_X))){
         newPos.x = roundf(car.position.x) - move.x/100;
@@ -185,47 +187,55 @@ bool CAR_move(){
 
 
     car.position = newPos;
-    CAR_changeAngle((90 - getAngle())/2);
-    
-    CAR_setBeamDistance(0, 0, 0);
+    CAR_changeAngle(getAngle() - 90);
     _CAR_moveTriangle();
     return !collision;
 }
 
 bool CAR_moveBackward(){
-    if (!calculateSpeed()) return false;
-    bool collision = false;
-    float deltaAngle = abs(getAngle() - 90) * DEG2RAD;
+    CAR_changeAngle(180);
+    bool run = CAR_move();
+    CAR_changeAngle(-180);
+    return run;
+
+
+
+    // if (!calculateSpeed()) return false;
+    // bool collision = false;
+    // float deltaAngle = abs(90 - getAngle()) * DEG2RAD;
     
-    Vector2 move = {
-        .x = - rounds(cos(deltaAngle)*cos(car.angle), 2),
-        .y = - rounds(cos(deltaAngle)*sin(car.angle), 2)
-    };
-    Vector2 newPos = {
-        .x = car.position.x + move.x,
-        .y = car.position.y + move.y
-    };
+    // Vector2 move = {
+    //     .x = cosf(deltaAngle)*cosf(car.angle),
+    //     .y = cosf(deltaAngle)*sinf(car.angle)
+    // };
+    // Vector2 newPos = {
+    //     .x = car.position.x - move.x,
+    //     .y = car.position.y - move.y
+    // };
+    // newPos.x = rounds(newPos.x, 2);
+    // newPos.y = rounds(newPos.y, 2);
 
-    if (MAP_collisionDetect(newPos.x, car.position.y) || !(car.position.x + move.x >= 0 && car.position.x + move.x < (MAP_SIZE_X*CELL_SIZE_X))){
-        newPos.x = roundf(car.position.x) - move.x/100;
-        collision = true;
-    } 
-    if (MAP_collisionDetect(car.position.x, newPos.y) || !(car.position.y + move.y >= 0 && car.position.y + move.y < (MAP_SIZE_Y*CELL_SIZE_Y))){
-        newPos.y = roundf(car.position.y) - move.y/100;
-        collision = true;
-    } 
+    // if (MAP_collisionDetect(newPos.x, car.position.y) || !(car.position.x + move.x >= 0 && car.position.x + move.x < (MAP_SIZE_X*CELL_SIZE_X))){
+    //     // newPos.x = roundf(car.position.x) + move.x/100;
+    //     newPos.x = (int)(car.position.x) + move.x/100;
+    //     collision = true;
+    // } 
+    // if (MAP_collisionDetect(car.position.x, newPos.y) || !(car.position.y - move.y >= 0 && car.position.y - move.y < (MAP_SIZE_Y*CELL_SIZE_Y))){
+    //     newPos.y = (int)(car.position.y) + move.y/100;
+    //     collision = true;
+    // } 
 
 
-    car.position = newPos;
-    CAR_changeAngle((90 - getAngle())/2);
+    // car.position = newPos;
+    // CAR_changeAngle(-(getAngle() - 90));
 
-    CAR_setBeamDistance(0, 0, 0);
-    _CAR_moveTriangle();
-    return !collision;
+    // CAR_setBeamDistance(0, 0, 0);
+    // _CAR_moveTriangle();
+    // return !collision;
 }
 
 uint CAR_moveByPath(){
-    const static float maxAngle = 20 * DEG2RAD;
+    const static float maxAngle = 30 * DEG2RAD;
     if (step < pathLen){
         int x = (int)(path[step].x) - (int)(car.position.x);
         int y = (int)(path[step].y) - (int)(car.position.y);
@@ -242,12 +252,12 @@ uint CAR_moveByPath(){
         if (delta < -maxAngle) delta = -maxAngle;
 
         // printf("Delta: %2.2f\n", delta * RAD2DEG);
-        car.angle += delta;
-        if ((oldDelta - delta)*RAD2DEG > 10){
+        // car.angle += delta;
+        // if ((oldDelta - delta)*RAD2DEG > 10){
             setDeltaAngle(delta*RAD2DEG);
-        } else {
-            setAngle(90);
-        }
+        // } else {
+        //     setAngle(90);
+        // }
         oldDelta = delta;
 
         CAR_move();
