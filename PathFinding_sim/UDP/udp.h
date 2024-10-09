@@ -3,12 +3,20 @@
 
 #include <pthread.h>
 
-#define UDP_SERVER_PORT 4444
-#define UDP_SERVER_IP "10.42.0.1"
+// #define UDP_SERVER_IP "10.42.0.1"
+// #define UDP_SERVER_IP "12.12.0.150"
 
-#define UDP_CLIENT_PORT 4445
+// #define UDP_SERVER_PORT 4444
+// #define UDP_CLIENT_PORT 4445
 // #define UDP_CLIENT_IP "10.42.0.210"
-#define UDP_CLIENT_IP "10.42.0.22"
+// #define UDP_CLIENT_IP "10.42.0.22"
+// #define UDP_CLIENT_IP "12.12.0.149"
+// #define UDP_CLIENT_IP "12.12.0.148"
+
+#define UDP_SERVER_IP "127.0.0.1"
+#define UDP_SERVER_PORT 4445
+#define UDP_CLIENT_PORT 4444
+#define UDP_CLIENT_IP "127.0.0.1"
 // #define UDP_CLIENT_IP "10.42.0.1"
 #define UDP_PACKET_SIZE 128
 

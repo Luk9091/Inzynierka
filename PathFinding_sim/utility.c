@@ -4,7 +4,8 @@
 
 
 float rounds(float value, uint decimalPlace){
-    return (int)(value * powf(10, decimalPlace)) / powf(10, decimalPlace);
+    float factor = powf(10, decimalPlace);
+    return roundf(value * factor) / factor;
 }
 
 int atoli(char *str, int *numbers){
@@ -13,14 +14,15 @@ int atoli(char *str, int *numbers){
     int sign = 1;
     int number = 0;
 
-    for (int i = 0; i < strlen(str); i++){
-        if (str[i] >= '0' && str[i] <= '9'){
+    int i = 0;
+    char c = str[i];
+
+    do{
+        if (c >= '0' && c <= '9'){
             if (new == false){
                 new = true;
                 if (i != 0 && str[i-1] == '-'){
                     sign = -1;
-                } else {
-                    sign = 1;
                 }
             }
 
@@ -31,8 +33,12 @@ int atoli(char *str, int *numbers){
             find++;
             number = 0;
             new = false;
+            sign = 1;
         }
-    }
+        
+        i++;
+        c = str[i];
+    } while (c > 0);
 
     if (new){
         numbers[find] = number * sign;

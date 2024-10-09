@@ -31,7 +31,7 @@ typedef unsigned int uint;
 #define MAP_OFFSET_Y 0
 
 // Distance in mm
-#define DISTANCE_PER_PIXEL 20
+#define DISTANCE_PER_PIXEL 100
 
 #define DEVICE "PC"
 
