@@ -3,24 +3,27 @@
 #include <stdio.h>
 #include <math.h>
 
+#define PADDING_X 20
+#define PADDING_Y 20
 static const float minSpeedFraction = 0.1f;
 
-static const int GUI_SPEED_PANEL_WIDTH  =  screenWidth * 2/10;
-static const int GUI_SPEED_PANEL_HEIGHT =  screenHeight * 1/20;
+static const int GUI_SPEED_PANEL_WIDTH  =  SCREEN_WIDTH * 2/10;
+static const int GUI_SPEED_PANEL_HEIGHT =  SCREEN_HEIGHT * 1/20;
 
-static const int GUI_SPEED_PANEL_X  =      MAP_SIZE_X * CELL_SIZE_X * PIXEL_SIZE_X + MAP_OFFSET_X + GUI_SPEED_PANEL_WIDTH * 0.1;
-static const int GUI_SPEED_PANEL_Y  =      MAP_SIZE_Y * CELL_SIZE_Y * PIXEL_SIZE_Y - GUI_SPEED_PANEL_HEIGHT  + MAP_OFFSET_Y;
+static const int GUI_SPEED_PANEL_X  =      SCREEN_WIDTH - GUI_SPEED_PANEL_WIDTH - PADDING_X;
+static const int GUI_SPEED_PANEL_Y  =      SCREEN_HEIGHT - GUI_SPEED_PANEL_HEIGHT - PADDING_Y;
 
 
 
 static const int maxAngle = 120;
 static const int minAngle = 60;
 
-static const int GUI_ANGLE_PANEL_WIDTH  =  screenWidth * 2/10;
-static const int GUI_ANGLE_PANEL_HEIGHT =  screenHeight * 1/20;
+static const int GUI_ANGLE_PANEL_WIDTH  =  SCREEN_WIDTH * 2/10;
+static const int GUI_ANGLE_PANEL_HEIGHT =  SCREEN_HEIGHT * 1/20;
 
-static const int GUI_ANGLE_PANEL_X  =      MAP_SIZE_X * CELL_SIZE_X * PIXEL_SIZE_X + MAP_OFFSET_X + GUI_SPEED_PANEL_WIDTH * 0.1;
-static const int GUI_ANGLE_PANEL_Y  =       MAP_SIZE_Y * CELL_SIZE_Y * PIXEL_SIZE_Y - 2* GUI_SPEED_PANEL_HEIGHT + MAP_OFFSET_Y;
+static const int GUI_ANGLE_PANEL_X  =      SCREEN_WIDTH - GUI_ANGLE_PANEL_WIDTH - PADDING_X;
+// static const int GUI_ANGLE_PANEL_Y  =       MAP_SIZE_Y * CELL_SIZE_Y * PIXEL_SIZE_Y - 2* GUI_SPEED_PANEL_HEIGHT + MAP_OFFSET_Y;
+static const int GUI_ANGLE_PANEL_Y  =      GUI_SPEED_PANEL_Y - GUI_ANGLE_PANEL_HEIGHT - PADDING_Y;
 static int angle = 90;
 
 
