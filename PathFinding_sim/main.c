@@ -2,20 +2,33 @@
 #include "utility.h"
 
 #include <raylib.h>
+#include <pthread.h>
+#include "queue.h"
 
+#include "GUI.h"
 #include "printf_color.h"
 #include "map.h"
 #include "test_map.h"
+
 #include "car.h"
+#include "udp.h"
+
+#define CAR_START_POS_X 2.5
+#define CAR_START_POS_Y 2.5
+#define CAR_START_ANGLE 0
+
+void keyRead();
+void readRecv();
 
 int main(){
-    printf("Hello, world!\n");
+    pthread_t UDP_thread;
+    pthread_create(&UDP_thread, NULL, udp_run, NULL);
+
     TEST_MAP_crossMap();
-    point_t path[MAP_SIZE_X * MAP_SIZE_Y * CELL_SIZE_X * CELL_SIZE_Y] = {0};
+    // TEST_MAP_empty();
 
-    CAR_init(2.5, 2.5, 0);
-
-    InitWindow(screenWidth, screenHeight, "Map test");
+    CAR_init(CAR_START_POS_X, CAR_START_POS_Y, CAR_START_ANGLE);
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Map test");
     SetTargetFPS(FPS_LIMIT);
     Color background = {
         .r = 0x30,
@@ -23,75 +36,123 @@ int main(){
         .b = 0x30
     };
 
-    double lastTime = GetTime();
-    double currentTime;
     while (!WindowShouldClose()){
-        Vector2 mouse = GetMousePosition();
-        mouse.x /= 8;
-        mouse.y /= 8;
-        if (IsKeyPressed(KEY_W) ^ IsKeyPressedRepeat(KEY_W)){
-            CAR_move();
-        }
-        if (IsKeyPressed(KEY_A) ^ IsKeyPressedRepeat(KEY_A)){
-            CAR_changeAngle(-15);
-        }
-        if (IsKeyPressed(KEY_D) ^ IsKeyPressedRepeat(KEY_D)){
-            CAR_changeAngle(15);
-        }
-        if (IsKeyPressed(KEY_S) ^ IsKeyPressedRepeat(KEY_S)){
-            CAR_changeAngle(180);
-            CAR_move();
-            CAR_changeAngle(180);
-        }
-        if (IsKeyPressed(KEY_BACKSPACE)){
-            CAR_setAngle(0);
-        }
-
-        currentTime = GetTime();
-        if (currentTime - lastTime >= 0.1){
-        // if (IsKeyPressed(KEY_SPACE) ^ IsKeyPressedRepeat(KEY_SPACE)){
-            CAR_moveByPath();
-            lastTime = currentTime;
-        }
-
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-            int pathSteps = CAR_findPath(mouse.x, mouse.y);
-            if (pathSteps == 0){
-                printf(T_RED "No path found\n" T_RESET);
-            } 
-            // else {
-            //     for (int i = 0; i < pathSteps; i++){
-            //         printf("Path[%d]: %d, %d\n", i, path[i].x, path[i].y);
-            //     }
-            // }
-        }
-
+        keyRead();
+        readRecv();
 
         BeginDrawing();
         ClearBackground(DARKGRAY);
-        // DrawText("Working in progress", 0, 0, 24, LIGHTGRAY);
 
-        MAP_draw(MAP_OFFSET_X, MAP_OFFSET_Y);
-        MAP_drawGrid(MAP_OFFSET_X, MAP_OFFSET_Y);
-        MAP_drawIndex(MAP_OFFSET_X, MAP_OFFSET_Y);
-        
-        
+        MAP_draw();
+        MAP_drawGrid(true);
+        MAP_drawIndex();
+        GUI_draw();
         
         CAR_draw();
-        CAR_drawBeam(0, 50);
-        CAR_drawBeam(30, 50);
-        CAR_drawBeam(-30, 50);
 
-        DrawText(
-            TextFormat("Mouse, %2i, %2i", (int)mouse.x, (int)mouse.y),
-            584, 76, 
-            20, WHITE
-        );
+        Vector2 mouse = GUI_getMousePosition();
+        GUI_print(TextFormat("Mouse, %2i, %2i", (int)mouse.x, (int)mouse.y), -1);
 
         EndDrawing();
+        GUI_resetLine();
     }
 
+    pthread_detach(UDP_thread);
+    udp_server_stop();
     CloseWindow();
     return 0;
 }
 // */
+
+
+
+
+void keyRead(){
+    if (IsKeyPressed(KEY_W) ^ IsKeyPressedRepeat(KEY_W)){
+        CAR_move();
+        udp_send("f");
+        udp_send("d %i", DISTANCE_PER_PIXEL);
+        udp_send("s %.2f", mapValue(calculateSpeed(), 0.1f, 1.f, 0.1f, 0.5f));
+        udp_send("\n");
+    }
+    if (IsKeyPressed(KEY_A) ^ IsKeyPressedRepeat(KEY_A)){
+        const int angle = 15;
+        if (setDeltaAngle(angle)){
+            CAR_changeAngle(-angle);
+        }
+        udp_send("r %i", getAngle());
+
+    }
+    if (IsKeyPressed(KEY_D) ^ IsKeyPressedRepeat(KEY_D)){
+        const int angle = -15;
+        if (setDeltaAngle(angle)){
+            CAR_changeAngle(-angle);
+        }
+        udp_send("r %i", getAngle());
+    }
+    if (IsKeyPressed(KEY_S) ^ IsKeyPressedRepeat(KEY_S)){
+        CAR_changeAngle(180);
+        CAR_move();
+        CAR_changeAngle(180);
+        udp_send("b");
+        udp_send("d %i", DISTANCE_PER_PIXEL);
+        udp_send("s %.2f", mapValue(calculateSpeed(), 0.1f, 1.f, 0.1f, 0.5f));
+        udp_send("\n");
+    }
+    if (IsKeyPressed(KEY_BACKSPACE)){
+        setAngle(90);
+        CAR_setAngle(CAR_START_ANGLE);
+        CAR_setPosition(CAR_START_POS_X, CAR_START_POS_Y);
+    }
+
+    if (IsKeyPressed(KEY_SPACE) ^ IsKeyPressedRepeat(KEY_SPACE)){
+        CAR_moveByPath();
+        udp_send("r %i", getAngle());
+        udp_send("d %i", DISTANCE_PER_PIXEL);
+        udp_send("f");
+        udp_send("s %.2f", mapValue(calculateSpeed(), 0.1f, 1.f, 0.1f, 0.5f));
+        udp_send("\n");
+    }
+
+    if (IsKeyPressed(KEY_M)){
+        udp_send("m");
+        CAR_setBeamDistance(0, 0, 0);
+    }
+    if (IsKeyPressed(KEY_I)){
+        udp_send("i");
+    }
+
+    Vector2 mouse = GUI_getMousePosition();
+    if (
+        IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && 
+        !(
+            mouse.x >= MAP_SIZE_X * CELL_SIZE_X ||
+            mouse.y >= MAP_SIZE_Y * CELL_SIZE_Y
+        )
+    ){
+        int pathSteps = 0;
+        if (!IsKeyDown(KEY_LEFT_SHIFT)){
+            pathSteps = CAR_findPath(mouse.x, mouse.y);
+        } else {
+            pathSteps = CAR_addPath(mouse.x, mouse.y);
+        }
+
+        if (pathSteps == 0){
+            printf(T_RED "No path found\n" T_RESET);
+        } 
+    }
+}
+
+
+void readRecv(){
+    char msg[UDP_PACKET_SIZE];
+    while(udp_tryRead(msg)){
+        switch (msg[0]){
+            case 'M':{
+                int distance[3];
+                atoli(msg + 1, distance);
+                CAR_setBeamDistance(distance[0], distance[1], distance[2]);
+            } break;
+        }
+    }
+}

@@ -13,7 +13,9 @@ add_executable(${PROJECT_NAME}
     Car/car.c
     UDP/udp.c
     Queue/queue.c
+    GUI/GUI.c
     GUI/slider_panel.c
+    GUI/message.c
 )
 
 include_directories(${PROJECT_NAME}
