@@ -41,7 +41,7 @@ void MAP_addCost(uint x, uint y, int cost);
 
 void MAP_drawCell(uint x, uint y);
 void MAP_draw();
-void MAP_drawGrid();
+void MAP_drawGrid(bool smallGrid);
 void MAP_drawIndex();
 
 /*

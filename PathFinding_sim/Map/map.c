@@ -167,12 +167,14 @@ void MAP_drawSmallGrid(uint x, uint y){
 }
 
 
-void MAP_drawGrid(){
+void MAP_drawGrid(bool smallGrid){
     uint size_x = CELL_SIZE_X*PIXEL_SIZE_X;
     uint size_y = CELL_SIZE_Y*PIXEL_SIZE_Y;
     for (uint x = 0; x < MAP_SIZE_X; x++){
         for (uint y = 0; y < MAP_SIZE_Y; y++){
-            MAP_drawSmallGrid(x*size_x, y*size_y);
+            if (smallGrid){
+                MAP_drawSmallGrid(x*size_x, y*size_y);
+            }
             DrawRectangleLines(
                 x*size_x + MAP_OFFSET_X,
                 y*size_y + MAP_OFFSET_Y,
@@ -210,7 +212,7 @@ void POINT_draw(uint x, uint y, float sub_x, float sub_y, uint pixel_size, Color
 
 
 
-bool _MAP_collisionDetect(uint map_x, uint map_y, uint cell_x, uint cell_y){
+static bool _MAP_collisionDetect(uint map_x, uint map_y, uint cell_x, uint cell_y){
     if (map_x >= MAP_SIZE_X || map_y >= MAP_SIZE_Y) return true;
     if (cell_x >= CELL_SIZE_X || cell_y >= CELL_SIZE_Y) return true;
     if (map_x < 0 || map_y < 0) return true;
