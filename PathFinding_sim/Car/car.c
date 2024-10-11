@@ -209,13 +209,13 @@ bool CAR_moveBackward(){
 }
 
 uint CAR_moveByPath(){
-    const static float maxAngle = 30 * DEG2RAD;
+    const float maxAngle = 30 * DEG2RAD;
+    static float oldDelta = 0;
     if (step < pathLen){
         int x = (int)(path[step].x) - (int)(car.position.x);
         int y = (int)(path[step].y) - (int)(car.position.y);
         float newAngle = rounds(atan2f(y, x), 2);
         
-        static float oldDelta = 0;
         float delta = car.angle - newAngle;
 
         if (delta > π) {delta -= 2*π;}
@@ -225,7 +225,7 @@ uint CAR_moveByPath(){
         if (delta > maxAngle) delta = maxAngle;
         if (delta < -maxAngle) delta = -maxAngle;
 
-        setDeltaAngle(delta*RAD2DEG);
+        setAngle(90 - delta*RAD2DEG);
         oldDelta = delta;
 
         CAR_move();
