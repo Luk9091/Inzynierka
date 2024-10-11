@@ -23,7 +23,6 @@ static const float CAR_PHYSICAL_LEN = 135 / PIXEL_SIZE_X;
 
 typedef struct{
     Vector2 position;
-    // Vector2 step;
     float angle;
     Color color;
 
@@ -32,12 +31,13 @@ typedef struct{
     Vector2 right;
 } car_t;
 
-// extern car_t car;
 
 void CAR_init(float x, float y, float direction);
 void CAR_draw();
+
 void CAR_drawBeam(float angle, float radius);
-void CAR_setBeamDistance(float left, float center, float right);
+void CAR_setBeamDistance(int left, int center, int right);
+
 Vector2 CAR_measureDistance(float angle);
 
 
@@ -45,7 +45,7 @@ Vector2 CAR_measureDistance(float angle);
 void CAR_setAngle(float angle);
 float CAR_getAngle();
 void CAR_changeAngle(float angle);
-void CAR_setPosition(int x, int y);
+void CAR_setPosition(float x, float y);
 Vector2 CAR_getPosition();
 
 

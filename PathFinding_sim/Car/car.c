@@ -6,7 +6,8 @@ static point_t path[MAP_SIZE_X * MAP_SIZE_Y * CELL_SIZE_X * CELL_SIZE_Y] = {0};
 
 static uint step;
 static int pathLen;
-static float beamDistance[3] = {0};
+static int beamDistance[3] = {0};
+const static float beam_mux = (float)(PIXEL_SIZE_X) / (float)(DISTANCE_PER_PIXEL);
 static double path_time = 0;
 
 void _CAR_moveTriangle(){
@@ -26,41 +27,6 @@ void _CAR_moveTriangle(){
 
 }
 
-//! Dont work
-// Circle shouldn't move when car is continuos 
-void CAR_drawTurnCircle(){
-    if (getAngle() == 90) return;
-    float angle = (float)(getAngle()-90) * DEG2RAD;
-    point_t center;
-    float r = CAR_PHYSICAL_LEN / sin(angle);
-
-    if (getAngle() < 90){
-        center.x = car.top.x + r * sin(angle);
-        center.y = car.top.y - r * cos(angle);
-    } else {
-        center.x = car.top.x - r * sin(angle);
-        center.y = car.top.y + r * cos(angle);
-    }
-
-    DrawCircleLines(center.x, center.y, r, WHITE);
-}
-
-
-void _CAR_drawMessage(const char *str){
-    const static int fontSize = 20;
-    static int height = fontSize/2;
-    // int width = screenWidth - MAP_SIZE_X*CELL_SIZE_X * 7/PIXEL_SIZE_X;
-    int width = screenWidth * 8/10;
-
-    DrawText(str, width, height, fontSize, WHITE);
-}
-
-// void _CAR_drawMessage(const char *str, int line){
-//     const static int fontSize = 20;
-//     int height = line * fontSize + (line + 1) * (fontSize/4);
-//     int width = screenHeight * 8/10;
-// }
-
 void _CAR_drawPath(){
     for (int i = step; i < pathLen; i += 1){
         POINT_draw(path[i].x, path[i].y, 0.5f, 0.5f, PIXEL_SIZE_X/4, ORANGE);
@@ -74,13 +40,13 @@ void CAR_init(float x, float y, float direction){
     car.color = BLUE;
 
     CAR_setAngle(direction);
+    CAR_setBeamDistance(0, 0, 0);
 }
 
-void CAR_setBeamDistance(float left, float center, float right){
-    const static float mux = (float)(PIXEL_SIZE_X) / (float)(DISTANCE_PER_PIXEL);
-    beamDistance[0] = left   * mux;
-    beamDistance[1] = center * mux;
-    beamDistance[2] = right  * mux;
+void CAR_setBeamDistance(int left, int center, int right){
+    beamDistance[0] = left  ;
+    beamDistance[1] = center;
+    beamDistance[2] = right ;
 
     for (int i = 0; i < 3; i++){
         if (beamDistance[i] < 0)
@@ -109,15 +75,16 @@ void CAR_draw(){
         car.left, car.top, car.right,
         RED
     );
-    CAR_drawBeam(-30, beamDistance[0]);
-    CAR_drawBeam(  0, beamDistance[1]);
-    CAR_drawBeam( 30, beamDistance[2]);
-
-    // CAR_drawTurnCircle();
+    CAR_drawBeam(-30, beamDistance[0] * beam_mux);
+    CAR_drawBeam(  0, beamDistance[1] * beam_mux);
+    CAR_drawBeam( 30, beamDistance[2] * beam_mux);
 
     
-    const char *str = TextFormat("Car pos: %2.2f, %2.2f\nAngle: %2.2f\nDestination: %2i, %2i\nPathfinding time: %.4f", car.position.x, car.position.y, car.angle * RAD2DEG, path[pathLen-1].x, path[pathLen-1].y, path_time);
-    _CAR_drawMessage(str);
+    GUI_print(TextFormat("Car pos: %2.2f, %2.2f", car.position.x, car.position.y), -1);
+    GUI_print(TextFormat("Angle: %2.2f", car.angle * RAD2DEG), -1);
+    GUI_print(TextFormat("Destination: %2i, %2i", path[pathLen-1].x, path[pathLen - 1].y), -1);
+    GUI_print(TextFormat("Time: %.4f", path_time), -1);
+    GUI_print(TextFormat("Distance %3i, %3i, %3i", beamDistance[0], beamDistance[1], beamDistance[2]), -1);
 }
 
 void CAR_drawBeam(float angle, float radius){
@@ -150,7 +117,7 @@ void CAR_changeAngle(float angle){
     CAR_setAngle((car.angle * RAD2DEG) + angle);
 }
 
-void CAR_setPosition(int x, int y){
+void CAR_setPosition(float x, float y){
     car.position.x = x;
     car.position.y = y;
     _CAR_moveTriangle();
@@ -177,14 +144,21 @@ bool CAR_move(){
     newPos.y = rounds(newPos.y, 2);
 
     if (MAP_collisionDetect(newPos.x, car.position.y) || !(car.position.x + move.x >= 0 && car.position.x + move.x < (MAP_SIZE_X*CELL_SIZE_X))){
-        newPos.x = roundf(car.position.x) - move.x/100;
+        if (move.x > 0){
+            newPos.x = floorf(newPos.x) - move.x/100;
+        } else {
+            newPos.x = ceilf(newPos.x) - move.x/100;
+        }
         collision = true;
     } 
     if (MAP_collisionDetect(car.position.x, newPos.y) || !(car.position.y + move.y >= 0 && car.position.y + move.y < (MAP_SIZE_Y*CELL_SIZE_Y))){
-        newPos.y = roundf(car.position.y) - move.y/100;
+        if (move.y > 0){
+            newPos.y = floorf(newPos.y) - move.y/100;
+        } else {
+            newPos.y = ceilf(newPos.y) - move.y/100;
+        }
         collision = true;
     } 
-
 
     car.position = newPos;
     CAR_changeAngle(getAngle() - 90);
@@ -194,12 +168,8 @@ bool CAR_move(){
 
 bool CAR_moveBackward(){
     CAR_changeAngle(180);
-    bool run = CAR_move();
+    CAR_move();
     CAR_changeAngle(-180);
-    return run;
-
-
-
     // if (!calculateSpeed()) return false;
     // bool collision = false;
     // float deltaAngle = abs(90 - getAngle()) * DEG2RAD;
@@ -210,26 +180,30 @@ bool CAR_moveBackward(){
     // };
     // Vector2 newPos = {
     //     .x = car.position.x - move.x,
-    //     .y = car.position.y - move.y
+    //     .y = car.position.y - move.y,
     // };
     // newPos.x = rounds(newPos.x, 2);
     // newPos.y = rounds(newPos.y, 2);
 
     // if (MAP_collisionDetect(newPos.x, car.position.y) || !(car.position.x + move.x >= 0 && car.position.x + move.x < (MAP_SIZE_X*CELL_SIZE_X))){
-    //     // newPos.x = roundf(car.position.x) + move.x/100;
-    //     newPos.x = (int)(car.position.x) + move.x/100;
+    //     if (move.x > 0){
+    //         newPos.x = floorf(newPos.x) - move.x/100;
+    //     } else {
+    //         newPos.x = ceilf(newPos.x) - move.x/100;
+    //     }
     //     collision = true;
     // } 
-    // if (MAP_collisionDetect(car.position.x, newPos.y) || !(car.position.y - move.y >= 0 && car.position.y - move.y < (MAP_SIZE_Y*CELL_SIZE_Y))){
-    //     newPos.y = (int)(car.position.y) + move.y/100;
+    // if (MAP_collisionDetect(car.position.x, newPos.y) || !(car.position.y + move.y >= 0 && car.position.y + move.y < (MAP_SIZE_Y*CELL_SIZE_Y))){
+    //     if (move.y > 0){
+    //         newPos.y = floorf(newPos.y) - move.y/100;
+    //     } else {
+    //         newPos.y = ceilf(newPos.y) - move.y/100;
+    //     }
     //     collision = true;
     // } 
-
 
     // car.position = newPos;
-    // CAR_changeAngle(-(getAngle() - 90));
-
-    // CAR_setBeamDistance(0, 0, 0);
+    // CAR_changeAngle(getAngle() - 90);
     // _CAR_moveTriangle();
     // return !collision;
 }
@@ -242,7 +216,7 @@ uint CAR_moveByPath(){
         float newAngle = rounds(atan2f(y, x), 2);
         
         static float oldDelta = 0;
-        float delta = newAngle - car.angle;
+        float delta = car.angle - newAngle;
 
         if (delta > π) {delta -= 2*π;}
         if (delta < -π){delta += 2*π;}
@@ -251,21 +225,10 @@ uint CAR_moveByPath(){
         if (delta > maxAngle) delta = maxAngle;
         if (delta < -maxAngle) delta = -maxAngle;
 
-        // printf("Delta: %2.2f\n", delta * RAD2DEG);
-        // car.angle += delta;
-        // if ((oldDelta - delta)*RAD2DEG > 10){
-            setDeltaAngle(delta*RAD2DEG);
-        // } else {
-        //     setAngle(90);
-        // }
+        setDeltaAngle(delta*RAD2DEG);
         oldDelta = delta;
 
         CAR_move();
-        // if (!CAR_move()) {
-        //     // car.angle += delta;
-        //     CAR_move();
-        //     CAR_findPath(path[pathLen-1].x, path[pathLen-1].y);
-        // }
         step++;
         return true;
     }
@@ -295,9 +258,12 @@ int CAR_addPath(uint x, uint y){
     };
 
     clock_t t_start = clock();
-    pathLen += PATHFINDING_dijkstra(start, end, prefer, path + pathLen - 1) - 1;
+    int steps = PATHFINDING_dijkstra(start, end, prefer, path + pathLen - 1);
     clock_t t_end = clock();
+    if (steps > 0){
+        pathLen += steps - 1;
+    }
     path_time = (double)(t_end - t_start) / CLOCKS_PER_SEC;
 
-    return pathLen;
+    return steps;
 }
