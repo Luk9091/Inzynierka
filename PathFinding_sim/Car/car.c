@@ -130,11 +130,11 @@ Vector2 CAR_getPosition(){
 bool CAR_move(){
     if (!calculateSpeed()) return false;
     bool collision = false;
-    float deltaAngle = abs(90 - getAngle()) * DEG2RAD;
+    // float deltaAngle = (90 - getAngle()) * DEG2RAD;
     
     Vector2 move = {
-        .x = cosf(deltaAngle)*cosf(car.angle),
-        .y = cosf(deltaAngle)*sinf(car.angle)
+        .x = cos(car.angle),
+        .y = sin(car.angle)
     };
     Vector2 newPos = {
         .x = car.position.x + move.x,
@@ -161,51 +161,48 @@ bool CAR_move(){
     } 
 
     car.position = newPos;
-    CAR_changeAngle(getAngle() - 90);
+    CAR_changeAngle((getAngle() - 90));
     _CAR_moveTriangle();
     return !collision;
 }
 
-bool CAR_moveBackward(){
-    CAR_changeAngle(180);
-    CAR_move();
-    CAR_changeAngle(-180);
-    // if (!calculateSpeed()) return false;
-    // bool collision = false;
-    // float deltaAngle = abs(90 - getAngle()) * DEG2RAD;
+bool CAR_moveBackward() {
+    if (!calculateSpeed()) return false;
+    bool collision = false;
+    float deltaAngle = (90 - getAngle()) * DEG2RAD;
     
-    // Vector2 move = {
-    //     .x = cosf(deltaAngle)*cosf(car.angle),
-    //     .y = cosf(deltaAngle)*sinf(car.angle)
-    // };
-    // Vector2 newPos = {
-    //     .x = car.position.x - move.x,
-    //     .y = car.position.y - move.y,
-    // };
-    // newPos.x = rounds(newPos.x, 2);
-    // newPos.y = rounds(newPos.y, 2);
+    Vector2 move = {
+        .x = -cos(car.angle + deltaAngle),
+        .y = -sin(car.angle + deltaAngle)
+    };
+    Vector2 newPos = {
+        .x = car.position.x + move.x,
+        .y = car.position.y + move.y,
+    };
+    newPos.x = rounds(newPos.x, 2);
+    newPos.y = rounds(newPos.y, 2);
 
-    // if (MAP_collisionDetect(newPos.x, car.position.y) || !(car.position.x + move.x >= 0 && car.position.x + move.x < (MAP_SIZE_X*CELL_SIZE_X))){
-    //     if (move.x > 0){
-    //         newPos.x = floorf(newPos.x) - move.x/100;
-    //     } else {
-    //         newPos.x = ceilf(newPos.x) - move.x/100;
-    //     }
-    //     collision = true;
-    // } 
-    // if (MAP_collisionDetect(car.position.x, newPos.y) || !(car.position.y + move.y >= 0 && car.position.y + move.y < (MAP_SIZE_Y*CELL_SIZE_Y))){
-    //     if (move.y > 0){
-    //         newPos.y = floorf(newPos.y) - move.y/100;
-    //     } else {
-    //         newPos.y = ceilf(newPos.y) - move.y/100;
-    //     }
-    //     collision = true;
-    // } 
+    if (MAP_collisionDetect(newPos.x, car.position.y) || !(car.position.x + move.x >= 0 && car.position.x + move.x < (MAP_SIZE_X * CELL_SIZE_X))) {
+        if (move.x > 0) {
+            newPos.x = floorf(newPos.x) - move.x / 100;
+        } else {
+            newPos.x = ceilf(newPos.x) - move.x / 100;
+        }
+        collision = true;
+    }
+    if (MAP_collisionDetect(car.position.x, newPos.y) || !(car.position.y + move.y >= 0 && car.position.y + move.y < (MAP_SIZE_Y * CELL_SIZE_Y))) {
+        if (move.y > 0) {
+            newPos.y = floorf(newPos.y) - move.y / 100;
+        } else {
+            newPos.y = ceilf(newPos.y) - move.y / 100;
+        }
+        collision = true;
+    }
 
-    // car.position = newPos;
-    // CAR_changeAngle(getAngle() - 90);
-    // _CAR_moveTriangle();
-    // return !collision;
+    car.position = newPos;
+    CAR_changeAngle(-(getAngle() - 90));
+    _CAR_moveTriangle();
+    return !collision;
 }
 
 uint CAR_moveByPath(){
