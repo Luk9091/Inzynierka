@@ -7,6 +7,7 @@
 
 #define STATUS_OK              0x00
 #define STATUS_FAIL            0x01
+#define I2C_TIMEOUT            1000
 
 i2c_inst_t* vl53l0x_i2c_port = i2c_default;
 uint vl53l0x_i2c_sda = PICO_DEFAULT_I2C_SDA_PIN;
@@ -129,7 +130,7 @@ int32_t VL53L0X_write_multi(uint8_t address, uint8_t index, uint8_t *pData, int3
     uint8_t i2c_buff[count+1];
     i2c_buff[0] = index;
     memcpy(i2c_buff+1, pData, count);
-    if ( i2c_write_blocking(vl53l0x_i2c_port, address, i2c_buff, count+1, false) == PICO_ERROR_GENERIC) {
+    if ( i2c_write_timeout_us(vl53l0x_i2c_port, address, i2c_buff, count+1, false, I2C_TIMEOUT) == PICO_ERROR_GENERIC) {
         status = STATUS_FAIL;
     }
     return status;
@@ -139,9 +140,9 @@ int32_t VL53L0X_read_multi(uint8_t address, uint8_t index, uint8_t *pData, int32
 {
     int32_t status = STATUS_OK;
 
-    int i2c_ret = i2c_write_blocking(vl53l0x_i2c_port, address, &index, 1, true);
+    int i2c_ret = i2c_write_timeout_us(vl53l0x_i2c_port, address, &index, 1, true, I2C_TIMEOUT);
     if (i2c_ret == PICO_ERROR_GENERIC) return STATUS_FAIL;
-    i2c_ret = i2c_read_blocking(vl53l0x_i2c_port, address, pData, count, false);
+    i2c_ret = i2c_read_timeout_us(vl53l0x_i2c_port, address, pData, count, false, I2C_TIMEOUT);
     if (i2c_ret == PICO_ERROR_GENERIC) return STATUS_FAIL;
     return status;
 }

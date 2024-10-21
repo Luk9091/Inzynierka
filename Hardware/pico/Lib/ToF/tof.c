@@ -1,24 +1,29 @@
 #include "tof.h"
 
-void ToF_Init(VL53L0X_Dev_t *left, VL53L0X_Dev_t *center, VL53L0X_Dev_t *right){
+int ToF_Init(VL53L0X_Dev_t *left, VL53L0X_Dev_t *center, VL53L0X_Dev_t *right){
     uint pinMask = 1 << ToF_LEFT_PIN | 1 << ToF_CENTER_PIN | 1 << ToF_RIGHT_PIN;
     gpio_init_mask(pinMask);
     gpio_set_dir_masked(pinMask, pinMask);
     gpio_clr_mask(pinMask);
 
     VL53L0X_Error error;
+    int sumError = 0;
     if (error = ToF_sensorInit(left, ToF_LEFT_ADDRESS, ToF_LEFT_PIN)      != VL53L0X_ERROR_NONE){
         printf("ToF_Init error: %i on device left\n", error);
         gpio_put(ToF_LEFT_PIN, 0);
+        sumError |= 0b1;
     }
     if (error = ToF_sensorInit(center, ToF_CENTER_ADDRESS, ToF_CENTER_PIN)!= VL53L0X_ERROR_NONE) {
         printf("ToF_Init error: %i on device center\n", error);
         gpio_put(ToF_CENTER_PIN, 0);
+        sumError |= 0b10;
     }
     if (error = ToF_sensorInit(right, ToF_RIGHT_ADDRESS, ToF_RIGHT_PIN)   != VL53L0X_ERROR_NONE) {
         printf("ToF_Init error: %i on device right\n", error);
         gpio_put(ToF_RIGHT_PIN, 0);
+        sumError |= 0b100;
     }
+    return sumError;
 }
 
 VL53L0X_Error ToF_sensorInit(VL53L0X_Dev_t *tof, uint8_t address, uint32_t pin){
@@ -51,6 +56,7 @@ void ToF_startContinuesMeasuring(VL53L0X_Dev_t *tof){
 
 
 int16_t ToF_oneShotMeasure(VL53L0X_Dev_t *tof){
+    // make_timeout_time_ms(200);
     int16_t data;
     int16_t error = VL53L0X_SingleRanging(tof, &data);
     if (error != VL53L0X_ERROR_NONE) return error;

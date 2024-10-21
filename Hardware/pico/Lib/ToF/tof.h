@@ -30,7 +30,7 @@ typedef VL53L0X_Dev_t ToF_t;
 
 
 
-void ToF_Init(VL53L0X_Dev_t *left, VL53L0X_Dev_t *center, VL53L0X_Dev_t *right);
+int ToF_Init(VL53L0X_Dev_t *left, VL53L0X_Dev_t *center, VL53L0X_Dev_t *right);
 VL53L0X_Error ToF_sensorInit(VL53L0X_Dev_t *tof, uint8_t address, uint32_t pin);
 void ToF_startContinuesMeasuring(VL53L0X_Dev_t *tof);
 

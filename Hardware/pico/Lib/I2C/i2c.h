@@ -11,7 +11,7 @@
 
 // Value in Hz
 // Example: 100 * 1000 = 100kHz
-#define I2C_FREQUENCY 400 * 1000
+#define I2C_FREQUENCY (400 * 1000)
 
 #define I2C_CHANNEL GPIO_I2C_CHANNEL
 #define I2C_SDA_PIN GPIO_I2C_SDA

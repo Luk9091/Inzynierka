@@ -1,5 +1,6 @@
 #include "i2c.h"
 
+#define I2C_TIMEOUT     1000
 
 
 
@@ -25,7 +26,7 @@ int I2C_scan(i2c_inst_t *channel, int *devList){
     
 
     for (uint8_t address = 0; address < 128; ++address){
-        ret = i2c_read_blocking(channel, address, &rxData, 1, false);
+        ret = i2c_read_timeout_us(channel, address, &rxData, 1, false, I2C_TIMEOUT);
 
         if (ret >= 0){
             printf("Address: 0x");
@@ -46,7 +47,7 @@ int I2C_scan(i2c_inst_t *channel, int *devList){
 
 int I2C_writeReg(uint8_t dev, uint8_t reg, uint8_t data){
     uint8_t table[2] = {reg, data};
-    return i2c_write_blocking(I2C_CHANNEL, dev, table, 2, false);
+    return i2c_write_timeout_us(I2C_CHANNEL, dev, table, 2, false, I2C_TIMEOUT);
 }
 
 int I2C_writeRegMask(uint8_t dev, uint8_t reg, uint8_t mask, uint8_t data){
@@ -76,8 +77,8 @@ int I2C_toggleBit(uint8_t dev, uint8_t reg, uint8_t bit){
 
 uint8_t I2C_readReg(uint8_t dev, uint8_t reg){
     uint8_t data = 0;
-    i2c_write_blocking(I2C_CHANNEL, dev, &reg, 1,  true);
-    if (i2c_read_blocking(I2C_CHANNEL, dev, &data, 1, false) >= 0) return data;
+    i2c_write_timeout_us(I2C_CHANNEL, dev, &reg, 1,  true, I2C_TIMEOUT);
+    if (i2c_read_timeout_us(I2C_CHANNEL, dev, &data, 1, false, I2C_TIMEOUT) >= 0) return data;
     return 0;
 }
 
