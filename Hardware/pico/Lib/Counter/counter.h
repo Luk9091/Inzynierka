@@ -4,6 +4,9 @@
 #include <hardware/gpio.h>
 #include <hardware/pwm.h>
 
+// extern bool stop;
+extern float angleError;
+
 /*!
  * \brief Use PWM as counter,
  *
@@ -18,7 +21,7 @@ void Counter_disabledIRQ(uint8_t pin);
 void Counter_setCountTo(uint8_t pin, uint16_t countTo);
 void Counter_clear(uint8_t pin);
 
-static inline uint16_t Counter_getCount(uint8_t pin){
+const static inline uint16_t Counter_getCount(uint8_t pin){
     return pwm_get_counter(pwm_gpio_to_slice_num(pin));
 }
 

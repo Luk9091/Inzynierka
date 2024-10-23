@@ -1,22 +1,34 @@
 #include "counter.h"
+#include <pico/stdlib.h>
 #include <stdio.h>
-#include <assert.h>
 #include "motor.h"
+#include "udp.h"
 
+#define COUNTER_FINISH_MEASURE_ANGLE 250
+
+// bool stop = false;
+int64_t SendAnglePostStop(alarm_id_t id, void *user_data){
+    UDP_send("C: %.2f", angleError);
+    return 0;
+}
 
 void Counter_irq(){
     uint status = pwm_get_irq_status_mask();
     // printf("Irq status: %u\n", status);
 
-    // if (status & (1u << 2)){
-    //     printf("Right encoder up\n");
-    // }
+    if (status & (1u << 2)){
+        UDP_send("Right encoder up\n");
+        // Motor_setSpeedRight(0);
+        Motor_stopRight();
+    }
     
-    // if (status & (1u << 1)){
-    //     printf("Left encoder up\n");
-    // }
+    if (status & (1u << 1)){
+        UDP_send("Left encoder up\n");
+        // Motor_setSpeedLeft(0);
+        Motor_stopLeft();
+    }
     Motor_stop();
-
+    add_alarm_in_ms(COUNTER_FINISH_MEASURE_ANGLE, SendAnglePostStop, NULL, true);
 
     pwm_hw->intr |= status;
 }
