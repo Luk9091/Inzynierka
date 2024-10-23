@@ -23,7 +23,7 @@
  * enableState = false -- use only if enabled mux is used
 */
 typedef struct SERVO {
-    bool start;
+    bool run;
     uint GPIO;
     uint ADC_PIN;
     bool flipRead;
@@ -36,7 +36,9 @@ typedef struct SERVO {
 } Servo_t;
 
 // Servo initialization function, enable PWM
-void Servo_init(Servo_t *servo);
+void Servo_init(Servo_t *servo, bool enable);
+void Servo_start(Servo_t *servo);
+void Servo_stop(Servo_t *servo);
 
 
 
@@ -45,8 +47,7 @@ int Servo_readAngle(Servo_t *servo);
 
 void Servo_reachAngle(Servo_t *servo);
 void Servo_goto(Servo_t *servo);
+void Servo_overshoot(Servo_t *servo, uint angle);
 
-void Servo_start(Servo_t *servo);
-void Servo_stop(Servo_t *servo);
 
 #endif

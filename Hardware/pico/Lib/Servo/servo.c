@@ -13,10 +13,14 @@
 #define ADC_MAX 3850
 #define ADC_MIN 260
 
+typedef struct ServoOvershoot_t {
+    Servo_t *servo;
+    int shoot;
+} ServoOvershoot_t;
 
-void Servo_init(Servo_t *servo){
+void Servo_init(Servo_t *servo, bool enable){
     static uint ADC_STATE = 0;
-    servo->start = true;
+    servo->run = enable;
 
     if (servo->step == 0)
         servo->step = 1;
@@ -30,7 +34,7 @@ void Servo_init(Servo_t *servo){
     config.div = PRESCALER << PWM_CH0_DIV_INT_LSB;
     config.top = TOP;
 
-    pwm_init(slice_num, &config, true);
+    pwm_init(slice_num, &config, enable);
 
     if (servo->ADC_PIN >= 26 && servo->ADC_PIN <= 28){
         adc_gpio_init(servo->ADC_PIN);
@@ -68,13 +72,10 @@ void Servo_reachAngle(Servo_t *servo){
     uint16_t level = LEVEL_MIN +  servo->angle * ((LEVEL_MAX - LEVEL_MIN) / 180);
     servo->current_angle = servo->angle;
     pwm_set_gpio_level(servo->GPIO, level);
-
 }
 
 
 void Servo_goto(Servo_t *servo){
-    if (!servo->start) return;
-    
     uint small_step = servo->step;
 
     if (servo->current_angle != servo->angle){
@@ -91,16 +92,43 @@ void Servo_goto(Servo_t *servo){
     }
 }
 
+uint64_t _Servo_backFromOvershoot(alarm_id_t id, void *args){
+    Servo_t *servo = (Servo_t *)args;
+
+    uint16_t level = LEVEL_MIN + (servo->angle) * ((LEVEL_MAX - LEVEL_MIN) / 180);
+    pwm_set_gpio_level(servo->GPIO, level);
+    servo->current_angle = servo->angle;
+
+    return 0;
+}
+
+
+void Servo_overshoot(Servo_t * servo, uint angle){
+    if (servo->angle > servo->max){servo->angle = servo->max;} else
+    if (servo->angle < servo->min){servo->angle = servo->min;}
+
+    int delta = angle - servo->current_angle;
+    int shoot = delta / 4;
+    if (shoot > 10) {shoot = 10;}
+    else if (shoot < -10) {shoot = -10;}
+    
+    uint16_t level = LEVEL_MIN + (angle + shoot) * ((LEVEL_MAX - LEVEL_MIN) / 180);
+    servo->angle = angle;
+    pwm_set_gpio_level(servo->GPIO, level);
+
+    add_alarm_in_ms(100, (alarm_callback_t)_Servo_backFromOvershoot, servo, false);
+}
+
 void Servo_start(Servo_t *servo){
-    servo->start = true;
+    servo->run = true;
     servo->angle = servo->backUp;
-    Servo_setAngle(servo, servo->angle);
+    Servo_setAngle(servo, servo->current_angle);
     uint slice = pwm_gpio_to_slice_num(servo->GPIO);
     pwm_set_enabled(slice, true);
 }
 
 void Servo_stop(Servo_t *servo){
-    servo->start = false;
+    servo->run = false;
     uint slice = pwm_gpio_to_slice_num(servo->GPIO);
     pwm_set_enabled(slice, false);
 }
