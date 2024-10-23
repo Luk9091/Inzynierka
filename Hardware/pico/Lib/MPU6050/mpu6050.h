@@ -1,5 +1,5 @@
-#ifndef __MPU6050__H
-#define __MPU6050__H
+#ifndef __MPU6050_H__
+#define __MPU6050_H__
 
 #include <pico/stdio.h>
 #include <pico/stdlib.h>
@@ -23,7 +23,6 @@
  * If false then use default parameter
 */
 #define MPU6050_CALIBRATE_GYRO true
-
 
 // #define MPU6050_CALIBRATION_ACC false
 
@@ -65,21 +64,21 @@ void MPU6050_fifoRun();
 int  MPU6050_fifoGetCount();
 int MPU6050_fifoRead(int16_t *data, int deep);
 
-void MPU6050_readRawAcc(axis_t *acc);
-void MPU6050_readRawGyro(axis_t *gyro);
+int MPU6050_readRawAcc(axis_t *acc);
+int MPU6050_readRawGyro(axis_t *gyro);
 
 /*
  * Read linear acceleration in `MPU6050_RANGE_MULTIPLY` * mm/s²
 */
-void MPU6050_readAcc(axis_ft_t *acc);
+int MPU6050_readAcc(axis_ft_t *acc);
 /*
  * Rotate acceleration in `MPU6050_RANGE_MULTIPLY` deg/s² ax int16
 */
-void MPU6050_readGyro(axis_ft_t *gyro);
+int MPU6050_readGyro(axis_ft_t *gyro);
 /*
  * Temperature in C as float with 0.1C precision
 */
-void MPU6050_readTemp(float *temp);
+int MPU6050_readTemp(float *temp);
 
 
 /*
@@ -87,10 +86,15 @@ void MPU6050_readTemp(float *temp);
  * Rotate acceleration in `MPU6050_RANGE_MULTIPLY` deg/s² ax int16
  * Temperature in C as float with 0.1C precision
 */
-void MPU6050_readData(axis_ft_t *acc, axis_ft_t *gyro);
-void MPU6050_readDataWithTemp(axis_ft_t *acc, axis_ft_t *gyro, float *temp);
+int MPU6050_readData(axis_ft_t *acc, axis_ft_t *gyro);
+int MPU6050_readDataWithTemp(axis_ft_t *acc, axis_ft_t *gyro, float *temp);
 
-axis_ft_t MPU6050_removeGravity(axis_ft_t accel);
+/*
+ * Remove gravity force from acceleration
+ * \param accel - acceleration with gravity force
+ * \return gravity force
+*/
+axis_ft_t MPU6050_removeGravity(axis_ft_t *accel);
 
 /*
  * Get delta rotation acceleration,
@@ -99,7 +103,7 @@ axis_ft_t MPU6050_removeGravity(axis_ft_t accel);
  * \param noGravityAccel - acceleration without gravity force
  * \param deltaT - time between next samples in `s`
 */
-void MPU6050_angleWithGyro(axis_ft_t *angles, axis_ft_t gyro, axis_ft_t noGravityAccel, float deltaT);
+void MPU6050_angleWithGyro(axis_ft_t *angles, axis_ft_t *gyro, axis_ft_t *noGravityAccel, float deltaT);
 
 #if MPU6050_CALIBRATE_GYRO == 1
 void MPU6050_gyro_calibration();
