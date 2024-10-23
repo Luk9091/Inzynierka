@@ -20,7 +20,7 @@
 
 #define UDP_SEVER_PORT 4445
 #define UDP_CLIENT_PORT 4444
-#define UDP_INTERVAL_MS 1
+#define UDP_INTERVAL_MS 10
 
 static struct udp_pcb* pcb;
 static ip_addr_t addr;
@@ -92,9 +92,13 @@ int UDP_init(){
     return 0;
 }
 
+void UDP_initQueue(){
+    queue_init(&send_queue, UDP_MSG_LEN_MAX * sizeof(char), UDP_SEND_QUEUE_SIZE);
+    queue_init(&recv_queue, UDP_MSG_LEN_MAX * sizeof(char), UDP_RECV_QUEUE_SIZE);
+}
+
 void UDP_main() {
-    queue_init(&send_queue, UDP_MSG_LEN_MAX, UDP_SEND_QUEUE_SIZE);
-    queue_init(&recv_queue, UDP_MSG_LEN_MAX, UDP_RECV_QUEUE_SIZE);
+    UDP_initQueue();
 
     if (UDP_init() != 0) {
         cyw43_arch_deinit();
@@ -102,17 +106,18 @@ void UDP_main() {
         return;
     }
 
-
+    int i = 0;
     while (true) {
-        if (!queue_is_empty(&send_queue)){
+        while(!queue_is_empty(&send_queue) && i < 10){
             char msg[UDP_MSG_LEN_MAX] = {0};
             queue_remove_blocking(&send_queue, msg);
             UDP_write(msg, UDP_CLIENT_PORT);
         #if UDP_SEND_TO_MIRROR == true
             UDP_write(msg, UDP_MIRROR_PORT);
         #endif
+            i++;
         }
-        // UDP_write("Hello World");
+        i = 0;
         // Note in practice for this simple UDP transmitter,
         // the end result for both background and poll is the same
 

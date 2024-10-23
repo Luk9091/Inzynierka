@@ -8,6 +8,7 @@
 #define UDP_SEND_QUEUE_SIZE 100
 #define UDP_RECV_QUEUE_SIZE 20
 
+void UDP_initQueue();
 void UDP_main();
 
 // Put message on queue
