@@ -83,8 +83,8 @@ uint8_t I2C_readReg(uint8_t dev, uint8_t reg){
 }
 
 int I2C_readNReg(uint8_t dev, uint8_t startReg, uint8_t *data, size_t size){
-    i2c_write_blocking(I2C_CHANNEL, dev, &startReg, 1, true);
-    return i2c_read_blocking(I2C_CHANNEL, dev, data, size, false);
+    i2c_write_timeout_us(I2C_CHANNEL, dev, &startReg, 1, true, I2C_TIMEOUT);
+    return i2c_read_timeout_per_char_us(I2C_CHANNEL, dev, data, size, false, I2C_TIMEOUT);
 }
 
 void I2C_changeReg(uint dev, uint reg, uint8_t data, uint8_t mask){
