@@ -4,10 +4,11 @@
 #include <pico/stdlib.h>
 #include <pico/stdio.h>
 #include "counter.h"
+#include "udp.h"
 
-// Motor frequency 50Hz, f_sys = 125MHz
-#define PRESCALER  100
-#define TOP        24999
+// Motor frequency 25kHz, f_sys = 125MHz
+#define PRESCALER  1
+#define TOP        4999
 
 
 static uint MOTOR_MASK = (1 << MOTOR_RIGHT_PIN_FORWARD) | (1 << MOTOR_RIGHT_PIN_BACKWARD) | (1 << MOTOR_LEFT_PIN_FORWARD) | (1 << MOTOR_LEFT_PIN_BACKWARD);
@@ -16,8 +17,14 @@ static uint MOTOR_MASK_BACKWARD = (1 << MOTOR_RIGHT_PIN_BACKWARD) | (1 << MOTOR_
 
 Encoder_t right, left;
 repeating_timer_t pid_timer;
+bool pid_running = false;
 PID_t pid;
 uint16_t Motor_speedLeft, Motor_speedRight;
+
+#if MOTOR_DIFFERENTIAL
+static float differential = 0;
+#endif
+
 
 
 
@@ -30,8 +37,13 @@ bool Motor_pid_distanceCorrection(repeating_timer_t *timer){
     int diff = countLeft - countRight;
     int ans = PID_update(&pid, diff, dt);
 
-    int speedLeft = Motor_getSpeed(MOTOR_LEFT_PWM) - ans;
+#if MOTOR_DIFFERENTIAL
+    int speedLeft  = Motor_getSpeed(MOTOR_LEFT_PWM)  - ans * (1 - differential);
+    int speedRight = Motor_getSpeed(MOTOR_RIGHT_PWM) + ans * (1 - differential);
+#else
+    int speedLeft  = Motor_getSpeed(MOTOR_LEFT_PWM)  - ans;
     int speedRight = Motor_getSpeed(MOTOR_RIGHT_PWM) + ans;
+#endif
 
     if (speedLeft > MOTOR_FULL_SPEED){
         speedLeft = MOTOR_FULL_SPEED;
@@ -52,14 +64,16 @@ bool Motor_pid_distanceCorrection(repeating_timer_t *timer){
 }
 
 void Motor_pid_run(){
+    add_repeating_timer_ms(MOTOR_PID_DT, Motor_pid_distanceCorrection, NULL, &pid_timer);
+    PID_reset(&pid);
+    pid_running = true;
     Counter_clear(MOTOR_ENCODER_RIGHT_UP);
     Counter_clear(MOTOR_ENCODER_LEFT_UP);
-    PID_reset(&pid);
-    add_repeating_timer_ms(MOTOR_PID_DT, Motor_pid_distanceCorrection, NULL, &pid_timer);
 }
 
 void Motor_pid_stop(){
     cancel_repeating_timer(&pid_timer);
+    pid_running = false;
 }
 
 
@@ -92,14 +106,14 @@ void Motor_init() {
 
 
 void Motor_forward(){
-    gpio_clr_mask(MOTOR_MASK_BACKWARD);
+    gpio_clr_mask(MOTOR_MASK);
     Counter_clear(MOTOR_ENCODER_RIGHT_UP);
     Counter_clear(MOTOR_ENCODER_LEFT_UP);
     gpio_set_mask(MOTOR_MASK_FORWARD);
 }
 
 void Motor_backward(){
-    gpio_clr_mask(MOTOR_MASK_FORWARD);
+    gpio_clr_mask(MOTOR_MASK);
     Counter_clear(MOTOR_ENCODER_RIGHT_UP);
     Counter_clear(MOTOR_ENCODER_LEFT_UP);
     gpio_set_mask(MOTOR_MASK_BACKWARD);
@@ -107,33 +121,35 @@ void Motor_backward(){
 
 void Motor_stopLeft(){
     gpio_clr_mask(1 << MOTOR_LEFT_PIN_BACKWARD | 1 << MOTOR_LEFT_PIN_FORWARD);
+    Motor_pid_stop();
 }
 
 void Motor_stopRight(){
     gpio_clr_mask(1 << MOTOR_RIGHT_PIN_BACKWARD | 1 << MOTOR_RIGHT_PIN_FORWARD);
+    Motor_pid_stop();
 }
 
 void Motor_stop(){
     gpio_clr_mask(MOTOR_MASK);
+    Motor_pid_stop();
 }
 
-
-void Motor_forwardDistance(float distance){
+void Motor_setDistance(float distance){
     uint pulse = distanceToPulse(distance);
     Counter_clear(MOTOR_ENCODER_RIGHT_UP);
     Counter_clear(MOTOR_ENCODER_LEFT_UP);
     Counter_setCountTo(MOTOR_ENCODER_RIGHT_UP, pulse);
     Counter_setCountTo(MOTOR_ENCODER_LEFT_UP,  pulse);
+}
+
+void Motor_forwardDistance(float distance){
+    Motor_setDistance(distance);
     Motor_forward();
 }
 
 
 void Motor_backwardDistance(float distance){
-    uint pulse = distanceToPulse(distance);
-    Counter_clear(MOTOR_ENCODER_RIGHT_UP);
-    Counter_clear(MOTOR_ENCODER_LEFT_UP);
-    Counter_setCountTo(MOTOR_ENCODER_RIGHT_UP, pulse);
-    Counter_setCountTo(MOTOR_ENCODER_LEFT_UP,  pulse);
+    Motor_setDistance(distance);
     Motor_backward();
 }
 
@@ -144,4 +160,14 @@ void Motor_set_leftDistance(float distance){
 
 void Motor_set_rightDistance(float distance){
     Counter_setCountTo(MOTOR_ENCODER_RIGHT_UP, (uint16_t)distanceToPulse(distance));
+}
+
+#if MOTOR_DIFFERENTIAL
+void Motor_setDifferential(int angle){
+    differential = (angle - 90)/300.f;
+}
+#endif
+
+const PID_t *Motor_getPID(){
+    return &pid;
 }

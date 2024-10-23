@@ -9,6 +9,9 @@
 #include "pid.h"
 #include "my_gpio.h"
 
+#define MOTOR_DIFFERENTIAL          false
+
+
 #define MOTOR_WHEEL_DIAMETER        66.45f
 #define MOTOR_ENCODER_RESOLUTION    1920
 #define MOTOR_PID_DT                20
@@ -55,6 +58,16 @@ void Motor_backward();
 void Motor_stop();
 void Motor_stopLeft();
 void Motor_stopRight();
+
+void Motor_setDifferential(int angle);
+
+
+
+/*
+ * Set distance in mm,
+ * with precision `0.11mm`
+*/
+void Motor_setDistance(float distance);
 
 /*
  * Set distance in mm,
@@ -125,5 +138,7 @@ static inline float Motor_get_leftDistance(){
 static inline float Motor_get_rightDistance(){
     return pulseToDistance(pwm_get_counter(pwm_gpio_to_slice_num(MOTOR_ENCODER_RIGHT_UP)));
 }
+
+const PID_t *Motor_getPID();
 
 #endif
