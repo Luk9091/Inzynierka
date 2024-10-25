@@ -16,6 +16,9 @@
 #define MOTOR_ENCODER_RESOLUTION    1920
 #define MOTOR_PID_DT                20
 
+#define MOTOR_RUN                   true
+#define MOTOR_STOP                  false
+
 #define MOTOR_FULL_SPEED            (65535)
 #define MOTOR_THREE_QUARTER_SPEED   (49151)
 #define MOTOR_HALF_SPEED            (32767)
@@ -37,9 +40,9 @@
 #define MOTOR_RIGHT_PWM             GPIO_MOTOR_RIGHT_PWM
 #define MOTOR_LEFT_PWM              GPIO_MOTOR_LEFT_PWM
 
-#define METER                       1000
-#define CM                          10
-#define MM                          1
+#define METER                       (1000)
+#define CM                          (10)
+#define MM                          (1)
 
 typedef struct {
     uint up;
@@ -141,4 +144,5 @@ static inline float Motor_get_rightDistance(){
 
 const PID_t *Motor_getPID();
 
+bool Motor_state();
 #endif

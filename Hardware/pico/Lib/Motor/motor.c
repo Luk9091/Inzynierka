@@ -16,10 +16,9 @@ static uint MOTOR_MASK_FORWARD = (1 << MOTOR_RIGHT_PIN_FORWARD) | (1 << MOTOR_LE
 static uint MOTOR_MASK_BACKWARD = (1 << MOTOR_RIGHT_PIN_BACKWARD) | (1 << MOTOR_LEFT_PIN_BACKWARD);
 
 Encoder_t right, left;
-repeating_timer_t pid_timer;
-bool pid_running = false;
+static repeating_timer_t pid_timer;
+static bool pid_running = false;
 PID_t pid;
-uint16_t Motor_speedLeft, Motor_speedRight;
 
 #if MOTOR_DIFFERENTIAL
 static float differential = 0;
@@ -170,4 +169,8 @@ void Motor_setDifferential(int angle){
 
 const PID_t *Motor_getPID(){
     return &pid;
+}
+
+bool Motor_state(){
+    return sio_hw->gpio_out & MOTOR_MASK;
 }
