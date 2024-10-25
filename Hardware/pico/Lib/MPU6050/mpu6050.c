@@ -103,7 +103,15 @@ void MPU6050_Init(){
 
     gpio_init(MPU6050_INT_GPIO);
     gpio_set_dir(MPU6050_INT_GPIO, GPIO_IN);
-    I2C_writeReg(I2C_MPU6050_ADDRESS, MPU6050_INT_PIN_CONFIG, 0b00110000);
+    // Set interrupt pin to:
+    /*
+     * Active high
+     * Push-pull
+     * Keep high until interrupt is cleared
+     * Clear on read operation
+    */
+    I2C_writeReg(I2C_MPU6050_ADDRESS, MPU6050_INT_PIN_CONFIG, 0b00110010);
+    // Interrupt when data is ready
     I2C_writeReg(I2C_MPU6050_ADDRESS, MPU6050_INT_EN, 0b00000001);
 
     I2C_writeReg(I2C_MPU6050_ADDRESS, MPU6050_POW_MANAGEMENT_1_REG, 0b00001011);
