@@ -1,0 +1,101 @@
+\documentclass[12pt]{article}
+\usepackage{anyfontsize}
+\usepackage[a4paper, margin=2cm]{geometry}
+\usepackage{polski}
+\usepackage{tabto}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{setspace}
+\input{verticalPages.tex}
+
+
+\usepackage{tabularx}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\newcolumntype{L}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{R}{>{\raggedright\arraybackslash}X}
+\newcommand{\centerY}[2]{\multirow{#1}{*}{#2}}
+
+\usepackage{wrapfig}
+
+\usepackage{chngcntr}
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+\numberwithin{equation}{section}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks = true,
+    urlcolor=blue,
+    linkcolor= black
+}
+
+\usepackage{graphicx}
+\graphicspath{{./Img/}}
+
+\usepackage{csvsimple}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\pgfplotsset{compat= newest}
+
+
+\usepackage{titlesec}
+\titlelabel{\thetitle.\quad}
+% \AddToHook{cmd/section/before}{\clearpage}
+
+\usepackage[european, american currents, americanvoltages, RPvoltages, cute inductor]{circuitikz}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric}
+\ctikzset{
+    logic ports=ieee,
+    logic ports/scale=0.7,
+}
+
+\title{
+    \includegraphics[width = 0.3\textwidth]{agh_logo.jpg}\\
+    \textbf{Akademia górniczo-hutnicza w Krakowie}\\
+    Wydział Informatyki, Elektroniki i  Telekomunikacji\\\vspace{2cm}
+    \textbf{Praca inżynierska}\\
+    Pojazd autonomiczny z możliwością oceny aktualnej sytuacji na drodze\\\vspace{1cm}
+    \small{Autonomous vehicle with ability to assess current road situation}
+}
+\author{
+    \begin{tabularx}{\textwidth}{l l}
+    Autorzy: &Łukasz Przystupa\\
+    Kierunek studiów: & Elektronika\\
+    Opiekun pracy: &dr inż. Agnieszka Dąbrowska-Boruch
+    \end{tabularx}
+}
+\date{\vspace{2cm}\today}
+
+\usepackage{titling}
+\renewcommand\maketitlehooka{\null\mbox{}\vfill}
+\renewcommand\maketitlehookd{\vfill\null}
+
+\begin{document}
+    \begin{titlepage}
+        \maketitle
+        \thispagestyle{empty}
+        \newpage
+        \ 
+        \thispagestyle{empty}
+    \end{titlepage}
+    
+    \pagenumbering{Roman}
+        \include{shorts.tex}
+        \tableofcontents
+        \newpage
+    \pagenumbering{arabic}
+    % \input{Chapters/Abstract.tex}
+    \input{Chapters/Introduction.tex}
+    \input{Schematic/block.tex}
+    \input{Chapters/Building.tex}
+    \input{Chapters/Issue.tex}
+
+    \vfill
+    \begin{flushright}
+        Łukasz Przystupa
+    \end{flushright}
+\end{document}

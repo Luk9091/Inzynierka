@@ -1,0 +1,47 @@
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}
+        \draw
+            (0, 0) node[draw, rectangle, rounded corners, fill = black, minimum width = 2cm, minimum height = 0.8cm, rotate = 30](frontL){}
+            (0, -3) node[draw, rectangle, rounded corners, fill = black, minimum width = 2cm, minimum height = 0.8cm, rotate = 30](frontR){} 
+            
+            (6, 0) node[draw, rectangle, rounded corners, fill = black, minimum width = 2cm, minimum height = 0.8cm](backL){}
+            (6, -3) node[draw, rectangle, rounded corners, fill = black, minimum width = 2cm, minimum height = 0.8cm](backR){}
+
+            (3, 0) node[above]{Prawa strona}
+            (3,-3) node[below]{Lewa strona}
+        ;
+
+        \draw[Stealth-Stealth]
+            (frontL) ++ (0, 1) --node[above]{$l$}++ (6, 0)
+        ;
+        \draw[dashed, gray]
+            (frontL) --++(0, 1)
+            (backL) --++(0, 1)
+        ;
+
+        \draw[color = red]
+            (backL) -- ++ (0, -10) -- ++ (0, -1) coordinate(meet) --++ (0, -1)
+            (frontL) -- (meet)
+            (frontR) -- (meet)
+        ;
+        \draw
+            (meet) ++ (0, 3) arc(90:127:3) node[above]{$\alpha$}
+            (meet) ++ (0, 2) arc(90:147:1) node[above]{$\beta$}
+        ;
+
+        \draw[dotted]
+            (backL) to[short, l=$\Delta r$] (backR)
+            (backR) ++ (0, -2.5) node[right]{$r$}
+        ;
+
+        \draw[dashed]
+            (frontL) ++ (0, 1) -- (0, -5)
+            (0, -4) arc(90:180:-1)
+            (0.5, -4.5) node[]{$\gamma$}
+            (1.2, -4.25) node[rotate = -50]{$90 - \gamma$}
+        ;
+    \end{tikzpicture}
+    \caption{Rysunek poglądowy do skręcenia}
+    \label{fig:turning_car}
+\end{figure}

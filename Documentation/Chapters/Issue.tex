@@ -1,0 +1,179 @@
+\section{Problemy konstrukcyjne}
+\label{sec:problemy_konstrukcyjne}
+    W poniższym rozdziale zostaną przedstawione problemy konstrukcyjne,
+    które pojawiły się podczas realizacji projektu.
+
+    \subsection{Jazda prosto}
+        Najprostszą czynnością każdego pojazdu, jest jazda prosto.
+        Operacja ta może wydawać się prosta, jednak wcale taka nie jest.
+        Przykładowo, kiedy usiądziemy za kierownicą, prawdziwego samochodu, kontroluje podświadomie wiele parametrów takich jak:
+        \begin{itemize}
+            \item nachylenie terenu,
+            \item aktualną pozycję kół,
+            \item linie poziome na drodze czy pobocze drogi.
+        \end{itemize}
+        Jako ludzie, wiele tych parametrów kontroluje ,,na wyczucie" jednak pojazdy autonomiczne, są poniekąd robotami, dla których istnieje tylko informacja \textit{tak} lub \textit{nie}.
+        Poniższy projekt podczas testów, wykazywał wiele mankamentów, które uniemożliwiały jazdę prostą.
+        Były to między innymi:
+        
+        \subsubsection{Różnica prędkości silników}
+            Zastosowanie dwóch silników, ma swoje wady i zalety.
+            Olbrzymią zaletą jest możliwość zwiększenia mocy pojazdu.
+            Jednak olbrzymią wadą okazało się sterowanie i nierównomierność pracy silników.
+            Na wykresie \ref{plot:distance_err_in_time_const_speed} poniżej przedstawiono 
+
+            \begin{figure}[!ht]
+                    % TODO: zebrać pomiary odległości przebytej przez układ od czasu bez PID
+                \centering
+                \begin{tikzpicture}
+                    \begin{axis}[
+                        width = 0.7\textwidth,
+                        grid = both,
+                        grid style = dashed,
+                        % axis lines = middle,
+                        xlabel = czas ${[s]}$,
+                        ylabel = różnica odległości ${[mm]}$,
+                        xmin = 0,
+                        xmax = 20,
+                    ]
+                        \addplot[blue] table[x = Time, y = Diff, col sep = comma]{Measure/distance_no_PID_speed_50.csv};
+                        \legend{Błąd odległości}
+                    \end{axis}
+                \end{tikzpicture}
+                \renewcommand{\figurename}{Wykres}
+                \caption{Różnica przebytej drogi między prawym a lewym silnikiem bez regulacji}
+                \label{plot:distance_err_in_time_const_speed}
+            \end{figure}
+
+            Aby rozwiązać powyższy problem należy zastosować regulator PID, pozwalający w trakcie pracy silników, na bieżąco korygować prędkość silników.
+            Natomiast na samym początku ruchu została zastosowana sztywna korekta prędkości silników, w celu zminimalizowania błędu.
+            \begin{figure}[!ht]
+                \centering
+                \begin{tikzpicture}
+                    \begin{axis}[
+                        width = 0.7\textwidth,
+                        grid = both,
+                        grid style = dashed,
+                        % axis lines = middle,
+                        xlabel = czas ${[s]}$,
+                        ylabel = różnica odległości ${[mm]}$,
+                        xmin = 0,
+                        xmax = 60,
+                    ]
+                        \addplot[blue] table[x = Time, y = Distance_err, col sep = comma]{Measure/PID_speed_10.csv};
+                        \legend{Błąd odległości}
+                    \end{axis}
+                \end{tikzpicture}
+                \renewcommand{\figurename}{Wykres}
+                \caption{Różnica przebytej drogi między prawym a lewym silnikiem z włączonym regulatorem PID. Prędkość pojazdu: $(17.60 \pm 0.10)\frac{mm}{s}$.}
+                \label{plot:PID_distance_err_in_time}
+            \end{figure}
+
+            Jak widać na wykresie \ref{plot:PID_distance_err_in_time} w początkowej fazie, silniki nadal nie pracują równomiernie, w dłuższej perspektywie praca silników osypuje w okół stałej wartości $(0 \pm 3)mm$.
+
+    \subsubsection{Nie idealność podwozia}
+        Kolejnym napotkanym problemem, okazuje się nie idealność podwozia, szczególnie elementu przedstawionego na rysunku \ref{fig:frontAxis_model} oraz nie równomierne rozłożenie masy względem środka.
+        Wszystkie wyżej wymienione niedokładności powodowały, że pojazd cały czas skręcał w jedną stronę.
+        Rozwiązaniem tego problemu jest zastosowanie układy pętli zwrotnej, opartej na czujniku $MPU6050$, który został użyty jak żyroskop, pozwalający na pomiar biedzącego kąta.
+        Dzięki czemu można korygować kierunek skręcania pojazdu.
+        
+        Jednak jego wykorzystanie nie było bezproblemowe i wymagało dodatkowych poprawek.
+        Na wykresie \ref{plot:gyro_magneto_measure} przedstawiono pomiar kąta dla obrotu pojazdu ze stałą prędkością w jednym kierunku.
+        Poniższy pomiar został wykonany w celu ustalenia liniowości pracy żyroskopu opartego na akcelerometrze. 
+        Układem referencyjnym był uprzednio skalibrowany magnetometr (układ $QMC5883L$).
+% 
+        \begin{figure}[!ht]
+            \centering
+                \begin{tikzpicture}
+                    \begin{axis}[
+                        width = 0.7\textwidth,
+                        grid = both,
+                        grid style = dashed,
+                        xlabel = czas ${[s]}$,
+                        ylabel = kąt zmierzony podczas obrotu ${[^\circ]}$,
+                        ymin = -5,
+                        ymax = 365,
+                        xmin = 0,
+                        xmax = 2.9,
+                        ytick = {0, 30, ..., 360},
+                        legend style={at={(0.2, 0.92)}, anchor=north},
+                    ]
+                        \addplot[orange] table[x = Time, y = Compass_azimuth, col sep = comma]{Measure/angles.csv};
+                        \addplot[blue] table[x = Time, y = Gyro_z, col sep = comma]{Measure/angles.csv};
+                        \legend{magnetometr,żyroskop}
+                    \end{axis}
+                \end{tikzpicture}
+                \renewcommand{\figurename}{Wykres}
+                \caption{pomiary azymutu za pomocą magnetometru, oraz zmiany kąta wykazanego przez żyroskop.}
+                \label{plot:gyro_magneto_measure}
+        \end{figure}
+        Podczas pomiaru, na oba układy został nałożony filtr dolnoprzepustowy, eliminujący szumy.
+
+        Wykres \ref{plot:delta_angle_with_gyro}, przedstawia narastanie katą, mierzonego przez żyroskop.
+        Widać bardzo dużą liniowość pracy żyroskopu, co pozwala zaufać temu czujnikowi na tyle, aby na jego podstawie określać czy pojazd jedzie prosto.
+
+        % \begin{wrapfig}[!ht]
+        \begin{figure}[!ht]
+            \centering
+                \begin{tikzpicture}
+                    \begin{axis}[
+                        width = 0.7\textwidth,
+                        grid = both,
+                        grid style = dashed,
+                        xlabel = czas ${[s]}$,
+                        ylabel = kąt zmierzony podczas obrotu ${[^\circ]}$,
+                        xmin = 0,
+                        xmax = 2.9,
+                    ]
+                        \addplot[blue] table[x = Time, y = Delta_angle, col sep = comma]{Measure/angles.csv};
+                    \end{axis}
+                \end{tikzpicture}
+                \renewcommand{\figurename}{Wykres}
+                \caption{narastania kąta, zmierzonego przez żyroskop}
+                \label{plot:delta_angle_with_gyro}
+        \end{figure}
+        % \end{wrapfig}
+
+
+    \newpage
+    Oba wyżej opisane rozwiązania pozwalają na w miarę stałą jazdę prostą.
+    A w sytuacjach, kiedy pojazd zaczyna znacząco skręcać, na przykład po impakcie z boku, sprzężenie zwrotne z żyroskopu pozwala na w miarę łagodny powrót do oczekiwanego kąta.
+
+    \subsection{Skręcanie}
+        Rozwiązanie problemów z jazdą prosto to tylko połowa sukcesu.
+        Kolejnym problemem okazało się skręcanie. 
+        Nie tylko w pierwotnej wersji nie było stałe, ustawienie stałego kąta kół oraz przejechanie tej samej drogi, nie zawsze dawało ten sam rezultat.
+        To pojazd cały czas miał tendencję do preferowania skrętu w jedną stronę.
+        
+        \subsubsection{Dyferencjiał}
+        Najprostszym do zauważenia problemem był brak dyferencjału. 
+        Tylna oś pojazdu posiadała dwa silniki, jednak w poprzednich testach, zostały one ,,software'owo połączona sztywną belką".
+        Wyznaczenie wartości dyferencjału jest prostym zadaniem. Poniżej przedstawiono schemat algorytmu, na którego podstawie wyznaczono procentową wartość dyferencjału.
+        Rysunek \ref{fig:turning_car}, przedstawia schematyczną sytuację skrętu pojazdu.-
+        \input{Schematic/turning.tex}
+
+        Jak widać na powyższym rysunku, skręt pojazdu można opisać jako ruch po kręgu, w którym poszczególne prędkości liniowe nie są sobie równe.
+        Jednak występuje zależność:
+        \begin{gather}
+            \omega_{\text{lewe koła}} = \omega_{\text{prawe koła}}\\
+            \frac{v_{\text{lewe koła}}}{r} = \frac{v_{\text{prawe koła}}}{r + \Delta r}\\
+            \frac{v_\text{lewe koła}}{v_{\text{prawe koła}}} = \frac{r}{r + \Delta r}
+        \end{gather}
+        Jedynymi wartościami jakie są znane to:
+        \begin{itemize}
+            \item $l = 135mm$ -- długość między osiami samochodu:,
+            \item $\Delta R = 155mm$ -- odległość między kołami w jednej osi,
+            \item $\gamma \in <-30^\circ \div 30^\circ>$ -- kąt skrętu kół, ustawiany przez algorytm pathfinding'u lub użytkownika.
+        \end{itemize}
+        Dla powyższych parametrów, można wyznaczyć następującą równania:
+        \begin{gather}
+            \tan \left(90 - \gamma\right) = \frac{l}{r}
+        \end{gather}
+        Na podstawie powyższego równania można wyznaczyć funkcję długości promienia skrętu od aktualnego kąta, oraz 
+        \begin{gather}
+            r(\gamma) = \frac{l}{\tan(90-\gamma)}
+        \end{gather}
+        A zatem procentowy stosunek prędkości w funkcji kąta można wyznaczyć jako:
+        \begin{gather}
+            \frac{v_{\text{prawe koła}}}{v_{\text{lewe koła}}} = 1 + \frac{\Delta r}{r} = 1 + \Delta r \cdot \frac{\tan(90 - \gamma)}{l}
+        \end{gather}

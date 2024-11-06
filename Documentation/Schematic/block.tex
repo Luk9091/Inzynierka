@@ -1,0 +1,56 @@
+    \useNormalLandscape
+\section{Schemat blokowy}
+    Na schemacie blokowym \ref{schema:block}, przedstawiono przepływ sygnałów sterujących, wraz z poszczególnymi blokami.
+\begin{figure}[!ht]
+\centering
+\vspace{1cm}
+\begin{circuitikz}[fill = white]
+    \draw[very thick]
+        (0, 0) node[draw, rectangle, fill, minimum width = 4cm, minimum height = 4cm, align = center] (MCU) {Mikrokontroler\\\scriptsize{Raspberry PI PICO W}}
+
+        (0, -5) node[draw, rectangle, fill, minimum width = 3cm, minimum height = 3cm, align = center] (HBridge){Mostek H}
+        (HBridge.south) ++(1, 0) --++(0, -1) to[Telmech=M, n = LMotor] ++ (2, 0) --++ (0, 2) --++ (-2, 0)
+        (HBridge.south) ++(-1, 0) --++(0, -1) to[Telmech=M,n = RMotor] ++ (-2, 0) --++ (0, 2) --++ (2, 0)
+
+        (-10, 4) node[draw, rectangle, fill, minimum width = 2cm, minimum height = 2cm, align = center] (ToF1) {$\text{ToF}_1$}
+        (-7, 4) node[draw, rectangle, fill, minimum width = 2cm, minimum height = 2cm, align = center] (ToF2) {$\text{ToF}_2$}
+        (-4, 4) node[draw, rectangle, fill, minimum width = 2cm, minimum height = 2cm, align = center] (ToF3) {$\text{ToF}_3$}
+
+        (-6, 0) node[draw, rectangle, fill, minimum width = 2cm, minimum height = 2cm, align = center] (MPU6050){MPU6050\\lub\\MPU6000}
+        (-6, -4) node[draw, rectangle, fill, minimum width = 2cm, minimum height = 2cm, align = center] (Magneto){Magnetometr}
+
+        (6, -4) node[draw, rectangle, fill, minimum width = 2cm, minimum height = 2cm, align = center] (LIR){Czujnik\\cofania}
+        (9, -4) node[draw, rectangle, fill, minimum width = 2cm, minimum height = 2cm, align = center] (RIR){Czujnik\\cofania}
+
+        (6, 4) node[elmech=M, scale = 1.5](servo){S}
+        (8, 0) node[draw, rectangle, fill, minimum width = 2cm, minimum height = 2cm, align = center] (memory) {Pamięć}
+    ;
+
+    \draw[]
+        (MCU.east) to[bmultiwire = 4, a = SPI] (memory.west)
+        (MCU.east) ++ (0, 1) to[short, i=PWM] ++ (4, 0) -| (servo.south)
+        (MCU.east) ++ (0,-1) to[bmultiwire = 2] ++ (2, 0) --++ (0, -1) to[short, i<= Detect, -*]++ (2, 0) coordinate(IR_node)
+            (IR_node)  to[multiwire=1] (LIR.north)
+            (IR_node)  to[multiwire=1] ++ (3, 0)-| (RIR.north)
+    
+        (MCU.south) to[tmultiwire=6, i=\ ] (HBridge.north)
+
+        (MCU.west) to[bmultiwire = 2, a = I2C, -*] ++ (-2, 0) coordinate(I2C) 
+        (I2C) -- (MPU6050.east)
+        (I2C) |- (Magneto)
+
+        (I2C) to[short, -*] ++ (0, 2) coordinate(I2C)
+        (I2C) -- (ToF3.south)
+        (I2C) to[short, -*]++ (-3, 0) coordinate(I2C) -- (ToF2.south)
+        (I2C) -| (ToF1)
+
+        (LMotor) to[crossing] ++ (0, 4) --++ (0, 0.5) to[bmultiwire, a = 2] ++ (-1, 0) --++ (0, 1)
+        (RMotor) to[crossing] ++ (0, 4) --++ (0, 0.5) to[bmultiwire = 2] ++ ( 1, 0) --++ (0, 1)
+    ;
+\end{circuitikz}
+\renewcommand{\figurename}{Schemat}
+\caption{Schemat blokowy, przedstawiający przepływ sygnałów w projekcie}
+\label{schema:block}
+\end{figure}
+    \useportrait
+% \footnote{Pamięć dodatkowa do przechowywania map terenu}
