@@ -105,7 +105,7 @@ void calculateAngle(){
         if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && set){
             udp_send("r %i", angle);
             int delta = oldAngle - angle;
-            CAR_changeAngle(delta);
+            CAR_changeAngle(-delta);
             set = false;
         }
     }
