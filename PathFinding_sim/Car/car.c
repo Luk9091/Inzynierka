@@ -2,13 +2,16 @@
 #include <time.h>
 
 static car_t car;
-static point_t path[MAP_SIZE_X * MAP_SIZE_Y * CELL_SIZE_X * CELL_SIZE_Y] = {0};
 
 static uint step;
-static int pathLen;
 static int beamDistance[3] = {0};
 const static float beam_mux = (float)(PIXEL_SIZE_X) / (float)(DISTANCE_PER_PIXEL);
 static double path_time = 0;
+static int deltaAngel = 0;
+
+
+static list_t path_list;
+static list_t instruction_list;
 
 void _CAR_moveTriangle(){
     Vector2 center = {
@@ -28,8 +31,34 @@ void _CAR_moveTriangle(){
 }
 
 void _CAR_drawPath(){
-    for (int i = step; i < pathLen; i += 1){
-        POINT_draw(path[i].x, path[i].y, 0.5f, 0.5f, PIXEL_SIZE_X/4, ORANGE);
+    for (int i = step; i < path_list.length; i++){
+        point_t point;
+        list_at(&path_list, &point, i);
+        POINT_draw(point.x, point.y, 0.5f, 0.5f, PIXEL_SIZE_X/4, ORANGE);
+    }
+}
+
+void _CAR_drawInstruction(){
+    for (int i = 0; i < instruction_list.length; i++){
+        instruction_t *instruction = list_item(&instruction_list, i);
+        Vector2 endPoint = {
+            .x = instruction->start.x + instruction->distance * cosf(instruction->angle * DEG2RAD),
+            .y = instruction->start.y + instruction->distance * sinf(instruction->angle * DEG2RAD)
+        };
+
+        Vector2 start = {
+            .x = instruction->start.x,
+            .y = instruction->start.y 
+        };
+
+
+        DrawLine(
+            start.x * PIXEL_SIZE_X + MAP_OFFSET_X,
+            start.y * PIXEL_SIZE_Y + MAP_OFFSET_Y,
+            endPoint.x * PIXEL_SIZE_X + MAP_OFFSET_X,
+            endPoint.y * PIXEL_SIZE_Y + MAP_OFFSET_Y,
+            RED
+        );
     }
 }
 
@@ -41,6 +70,9 @@ void CAR_init(float x, float y, float direction){
 
     CAR_setAngle(direction);
     CAR_setBeamDistance(0, 0, 0);
+
+    list_init(&path_list, sizeof(point_t));
+    list_init(&instruction_list, sizeof(instruction_t));
 }
 
 void CAR_setBeamDistance(int left, int center, int right){
@@ -69,6 +101,8 @@ Vector2 CAR_measureDistance(float angle){
 
 void CAR_draw(){
     _CAR_drawPath();
+    _CAR_drawInstruction();
+    // _CAR_drawTurnCircle();
 
 
     DrawTriangle(
@@ -82,7 +116,11 @@ void CAR_draw(){
     
     GUI_print(TextFormat("Car pos: %2.2f, %2.2f", car.position.x, car.position.y), -1);
     GUI_print(TextFormat("Angle: %2.2f", car.angle * RAD2DEG), -1);
-    GUI_print(TextFormat("Destination: %2i, %2i", path[pathLen-1].x, path[pathLen - 1].y), -1);
+    point_t *destination = list_item(&path_list, path_list.length - 1);
+    if (destination != NULL)
+        GUI_print(TextFormat("Destination: %2i, %2i", destination->x, destination->y), -1);
+    else
+        GUI_print(TextFormat("Destination: %2i, %2i", -1, -1), -1);
     GUI_print(TextFormat("Time: %.4f", path_time), -1);
     GUI_print(TextFormat("Distance %3i, %3i, %3i", beamDistance[0], beamDistance[1], beamDistance[2]), -1);
 }
@@ -161,7 +199,7 @@ bool CAR_move(){
     } 
 
     car.position = newPos;
-    CAR_changeAngle((getAngle() - 90));
+    CAR_changeAngle((getAngle() - 90)/3);
     _CAR_moveTriangle();
     return !collision;
 }
@@ -169,7 +207,7 @@ bool CAR_move(){
 bool CAR_moveBackward() {
     if (!calculateSpeed()) return false;
     bool collision = false;
-    float deltaAngle = (90 - getAngle()) * DEG2RAD;
+    float deltaAngle = (90 - getAngle())/3.f * DEG2RAD;
     
     Vector2 move = {
         .x = -cos(car.angle + deltaAngle),
@@ -200,7 +238,7 @@ bool CAR_moveBackward() {
     }
 
     car.position = newPos;
-    CAR_changeAngle(-(getAngle() - 90));
+    CAR_changeAngle(-(getAngle() - 90)/3);
     _CAR_moveTriangle();
     return !collision;
 }
@@ -208,9 +246,10 @@ bool CAR_moveBackward() {
 uint CAR_moveByPath(){
     const float maxAngle = 30 * DEG2RAD;
     static float oldDelta = 0;
-    if (step < pathLen){
-        int x = (int)(path[step].x) - (int)(car.position.x);
-        int y = (int)(path[step].y) - (int)(car.position.y);
+    if (step < path_list.length){
+        point_t *path = list_item(&path_list, step);
+        int x = (int)(path->x) - (int)(car.position.x);
+        int y = (int)(path->y) - (int)(car.position.y);
         float newAngle = rounds(atan2f(y, x), 2);
         
         float delta = car.angle - newAngle;
@@ -227,6 +266,7 @@ uint CAR_moveByPath(){
 
         CAR_move();
         step++;
+
         return true;
     }
     return false;
@@ -238,29 +278,41 @@ int CAR_findPath(uint x, uint y){
     point_t prefer = {.x = ceilf(cosf(car.angle)), y = ceilf(sinf(car.angle))};
 
     clock_t t_start = clock();
-    pathLen = PATHFINDING_dijkstra(start, end, prefer, path);
+    list_free(&path_list);
+    list_free(&instruction_list);
+    PATHFINDING_dijkstra(start, end, prefer, &path_list);
+    PATHFINDING_fromPathToLinear(&path_list, &instruction_list);
+
     clock_t t_end = clock();
     path_time = (double)(t_end - t_start) / CLOCKS_PER_SEC;
 
     step = 1;
-    return pathLen;
+    return path_list.length;
 }
 
 int CAR_addPath(uint x, uint y){
-    point_t start = path[pathLen-1];
+    point_t start; list_pop(&path_list, &start);
     point_t end = {x, y};
+    point_t *toPrefer = list_item(&path_list, path_list.length - 2);
     point_t prefer = {
-        .x = path[pathLen - 1].x - path[pathLen - 2].x,
-        .y = path[pathLen - 1].y - path[pathLen - 2].y,
+        .x = start.x - toPrefer->x,
+        .y = start.y - toPrefer->y,
     };
 
     clock_t t_start = clock();
-    int steps = PATHFINDING_dijkstra(start, end, prefer, path + pathLen - 1);
+    list_free(&instruction_list);
+    
+    int steps = PATHFINDING_dijkstra(start, end, prefer, &path_list);
+    PATHFINDING_fromPathToLinear(&path_list, &instruction_list);
     clock_t t_end = clock();
-    if (steps > 0){
-        pathLen += steps - 1;
-    }
     path_time = (double)(t_end - t_start) / CLOCKS_PER_SEC;
 
     return steps;
+}
+
+
+
+void CAR_free(){
+    list_free(&path_list);
+    list_free(&instruction_list);
 }

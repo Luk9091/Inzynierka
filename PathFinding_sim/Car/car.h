@@ -17,7 +17,7 @@
 #define CAR_SEE_RANGE 6
 
 // Odległość przedniej osi od tylnej w mm
-static const float CAR_PHYSICAL_LEN = 135 / PIXEL_SIZE_X;
+static const float CAR_PHYSICAL_LEN = 135;
 
 
 
@@ -33,6 +33,7 @@ typedef struct{
 
 
 void CAR_init(float x, float y, float direction);
+void CAR_free();
 void CAR_draw();
 
 void CAR_drawBeam(float angle, float radius);
