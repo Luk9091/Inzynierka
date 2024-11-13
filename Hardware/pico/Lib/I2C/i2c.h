@@ -6,6 +6,7 @@
 
 #include <hardware/gpio.h>
 #include <hardware/i2c.h>
+#include <hardware/irq.h>
 
 #include "my_gpio.h"
 
@@ -57,5 +58,8 @@ uint8_t I2C_readReg(uint8_t dev, uint8_t reg);
 int I2C_readNReg(uint8_t dev, uint8_t startReg, uint8_t *data, size_t size);
 
 void I2C_changeReg(uint dev, uint reg, uint8_t data, uint8_t mask);
+
+
+void I2C_resetBus();
 
 #endif
