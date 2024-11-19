@@ -10,6 +10,9 @@
 #define PRESCALER  1
 #define TOP        4999
 
+#define FORWARD    1
+#define BACKWARD   0
+
 
 static uint MOTOR_MASK = (1 << MOTOR_RIGHT_PIN_FORWARD) | (1 << MOTOR_RIGHT_PIN_BACKWARD) | (1 << MOTOR_LEFT_PIN_FORWARD) | (1 << MOTOR_LEFT_PIN_BACKWARD);
 static uint MOTOR_MASK_FORWARD = (1 << MOTOR_RIGHT_PIN_FORWARD) | (1 << MOTOR_LEFT_PIN_FORWARD);
@@ -19,6 +22,7 @@ Encoder_t right, left;
 static repeating_timer_t pid_timer;
 static bool pid_running = false;
 PID_t pid;
+static bool direction = FORWARD;
 
 #if MOTOR_DIFFERENTIAL
 static float differential = 0;
@@ -33,16 +37,15 @@ bool Motor_pid_distanceCorrection(repeating_timer_t *timer){
     
     int countLeft = Counter_getCount(MOTOR_ENCODER_LEFT_UP);
     int countRight= Counter_getCount(MOTOR_ENCODER_RIGHT_UP);
+#if MOTOR_DIFFERENTIAL
+    int diff = countLeft * (1 + differential) - countRight * (1 - differential);
+#else
     int diff = countLeft - countRight;
+#endif
     int ans = PID_update(&pid, diff, dt);
 
-#if MOTOR_DIFFERENTIAL
-    int speedLeft  = Motor_getSpeed(MOTOR_LEFT_PWM)  - ans * (1 - differential);
-    int speedRight = Motor_getSpeed(MOTOR_RIGHT_PWM) + ans * (1 - differential);
-#else
     int speedLeft  = Motor_getSpeed(MOTOR_LEFT_PWM)  - ans;
     int speedRight = Motor_getSpeed(MOTOR_RIGHT_PWM) + ans;
-#endif
 
     if (speedLeft > MOTOR_FULL_SPEED){
         speedLeft = MOTOR_FULL_SPEED;
@@ -78,7 +81,7 @@ void Motor_pid_stop(){
 
 void Motor_init() {
     gpio_init_mask(MOTOR_MASK);
-    gpio_init_mask(1 << MOTOR_ENCODER_LEFT_UP | 1 << MOTOR_ENCODER_LEFT_DOWN | 1 << MOTOR_ENCODER_RIGHT_UP | 1 << MOTOR_ENCODER_RIGHT_DOWN);
+    gpio_init_mask(1 << MOTOR_ENCODER_LEFT_UP  | 1 << MOTOR_ENCODER_RIGHT_UP);
 
     gpio_set_dir_out_masked(MOTOR_MASK);
 
@@ -99,12 +102,18 @@ void Motor_init() {
     pwm_init(slice_left, &config, true);
     pwm_init(slice_right, &config, true);
 
-    Motor_setSpeed(0);
-    PID_init(&pid, 1.75f, 0.35f, 3.00f);
+    // Motor_setSpeed(0);
+    PID_init(&pid, 1.75f, 0.5f, -3.00f);
 }
 
 
 void Motor_forward(){
+#if MOTOR_DIFFERENTIAL
+    if (direction != FORWARD){
+        differential = -differential;
+    }
+#endif
+    direction = FORWARD;
     gpio_clr_mask(MOTOR_MASK);
     Counter_clear(MOTOR_ENCODER_RIGHT_UP);
     Counter_clear(MOTOR_ENCODER_LEFT_UP);
@@ -112,11 +121,39 @@ void Motor_forward(){
 }
 
 void Motor_backward(){
+#if MOTOR_DIFFERENTIAL
+    if (direction != BACKWARD){
+        differential = -differential;
+    }
+#endif
+    direction = BACKWARD;
     gpio_clr_mask(MOTOR_MASK);
     Counter_clear(MOTOR_ENCODER_RIGHT_UP);
     Counter_clear(MOTOR_ENCODER_LEFT_UP);
     gpio_set_mask(MOTOR_MASK_BACKWARD);
 }
+
+
+void Motor_forwardLeft(){
+    gpio_clr_mask(1 << MOTOR_LEFT_PIN_BACKWARD);
+    gpio_set_mask(1 << MOTOR_LEFT_PIN_FORWARD);
+}
+
+void Motor_forwardRight(){
+    gpio_clr_mask(1 << MOTOR_RIGHT_PIN_BACKWARD);
+    gpio_set_mask(1 << MOTOR_RIGHT_PIN_FORWARD);
+}
+
+void Motor_backwardLeft(){
+    gpio_clr_mask(1 << MOTOR_LEFT_PIN_FORWARD);
+    gpio_set_mask(1 << MOTOR_LEFT_PIN_BACKWARD);
+}
+
+void Motor_backwardRight(){
+    gpio_clr_mask(1 << MOTOR_RIGHT_PIN_FORWARD);
+    gpio_set_mask(1 << MOTOR_RIGHT_PIN_BACKWARD);
+}
+
 
 void Motor_stopLeft(){
     gpio_clr_mask(1 << MOTOR_LEFT_PIN_BACKWARD | 1 << MOTOR_LEFT_PIN_FORWARD);
@@ -161,9 +198,20 @@ void Motor_set_rightDistance(float distance){
     Counter_setCountTo(MOTOR_ENCODER_RIGHT_UP, (uint16_t)distanceToPulse(distance));
 }
 
+void Motor_setSpeed(uint16_t speed){
+#if MOTOR_DIFFERENTIAL
+    pwm_set_gpio_level(MOTOR_LEFT_PWM,  speed * (1.f + MOTOR_SPEED_DIFFERENCE) * (1 - differential));
+    pwm_set_gpio_level(MOTOR_RIGHT_PWM, speed * (1.f - MOTOR_SPEED_DIFFERENCE) * (1 + differential));
+#else
+    pwm_set_gpio_level(MOTOR_LEFT_PWM,  speed * (1.f + MOTOR_SPEED_DIFFERENCE));
+    pwm_set_gpio_level(MOTOR_RIGHT_PWM, speed * (1.f - MOTOR_SPEED_DIFFERENCE));
+#endif
+}
+
 #if MOTOR_DIFFERENTIAL
 void Motor_setDifferential(int angle){
-    differential = (angle - 90)/300.f;
+    direction = FORWARD;
+    differential = tanf(angle) * (CAR_WIDTH / (2*CAR_LENGTH));
 }
 #endif
 

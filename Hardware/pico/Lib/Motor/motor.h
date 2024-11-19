@@ -1,24 +1,26 @@
-#ifndef __MOTOR__H
-#define __MOTOR__H
+#ifndef __MOTOR__H__
+#define __MOTOR__H__
 
 #include <pico/stdlib.h>
 #include <hardware/gpio.h>
 #include <hardware/pwm.h>
 #include <hardware/timer.h>
+#include <math.h>
 
 #include "pid.h"
 #include "my_gpio.h"
 
-#define MOTOR_DIFFERENTIAL          false
+#define MOTOR_DIFFERENTIAL          true
 
 
-#define MOTOR_WHEEL_DIAMETER        66.45f
+#define MOTOR_WHEEL_DIAMETER        50.f
 #define MOTOR_ENCODER_RESOLUTION    1920
 #define MOTOR_PID_DT                20
 
 #define MOTOR_RUN                   true
 #define MOTOR_STOP                  false
 
+#define MOTOR_SPEED_DIFFERENCE      (0.3f)
 #define MOTOR_FULL_SPEED            (65535)
 #define MOTOR_THREE_QUARTER_SPEED   (49151)
 #define MOTOR_HALF_SPEED            (32767)
@@ -58,6 +60,13 @@ void Motor_pid_stop();
 
 void Motor_forward();
 void Motor_backward();
+
+void Motor_forwardLeft();
+void Motor_forwardRight();
+void Motor_backwardLeft();
+void Motor_backwardRight();
+
+
 void Motor_stop();
 void Motor_stopLeft();
 void Motor_stopRight();
@@ -83,10 +92,7 @@ void Motor_forwardDistance(float distance);
 */
 void Motor_backwardDistance(float distance);
 
-static inline void Motor_setSpeed(uint16_t speed){
-    pwm_set_gpio_level(MOTOR_LEFT_PWM,  speed * 1.3f);
-    pwm_set_gpio_level(MOTOR_RIGHT_PWM, speed * 0.7);
-}
+void Motor_setSpeed(uint16_t speed);
 
 static inline void Motor_setSpeedRight(uint16_t speed){
     pwm_set_gpio_level(MOTOR_RIGHT_PWM, speed);
@@ -108,18 +114,18 @@ static inline uint16_t Motor_getSpeed(uint pin){
 
 /*
  * \return distance in `mm`
- * with precision `0.11mm`
+ * with precision `0.1mm`
 */
 inline float pulseToDistance(uint pulse){
-    return pulse * (MOTOR_WHEEL_DIAMETER * 3.1415f / MOTOR_ENCODER_RESOLUTION);
+    return pulse * (MOTOR_WHEEL_DIAMETER * 2 * 3.1415f / MOTOR_ENCODER_RESOLUTION);
 }
 
 /*
  * Set distance in mm
- * with precision `0.11mm`
+ * with precision `0.1mm`
 */
 inline uint16_t distanceToPulse(float distance){
-    return distance * (MOTOR_ENCODER_RESOLUTION / (MOTOR_WHEEL_DIAMETER * 3.1415f));
+    return distance * (MOTOR_ENCODER_RESOLUTION / (MOTOR_WHEEL_DIAMETER * 2 * 3.1415f));
 }
 
 /*
@@ -145,4 +151,4 @@ static inline float Motor_get_rightDistance(){
 const PID_t *Motor_getPID();
 
 bool Motor_state();
-#endif
+#endif // __MOTOR__H__
