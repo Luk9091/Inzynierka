@@ -8,11 +8,7 @@
 #include <hardware/pwm.h>
 #include <hardware/adc.h>
 
-
-#define SERVO_ARM_PIN       21
-#define SERVO_BASE_PIN      20
-#define SERVO_ROTOR_PIN     19
-#define SERVO_HAND_PIN      18
+#define SERVO_READ_ADC false
 
 /*
  * Servo config struct
@@ -24,15 +20,17 @@
 */
 typedef struct SERVO {
     bool run;
-    uint GPIO;
+    uint8_t GPIO;
+#if SERVO_READ_ADC
     uint ADC_PIN;
     bool flipRead;
-    int angle;
-    int current_angle;
+#endif
+    int8_t angle;
+    int8_t current_angle;
     uint step;
-    int backUp;
-    int min;
-    int max;
+    int8_t min;
+    int8_t max;
+    int8_t offset;
 } Servo_t;
 
 // Servo initialization function, enable PWM
@@ -43,7 +41,9 @@ void Servo_stop(Servo_t *servo);
 
 
 void Servo_setAngle(Servo_t *servo, uint angle);
+#if SERVO_READ_ADC
 int Servo_readAngle(Servo_t *servo);
+#endif
 
 void Servo_reachAngle(Servo_t *servo);
 void Servo_goto(Servo_t *servo);
