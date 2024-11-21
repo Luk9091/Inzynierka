@@ -103,8 +103,7 @@ void MPU6050_Init(){
 
     gpio_init(MPU6050_INT_GPIO);
     gpio_set_dir(MPU6050_INT_GPIO, GPIO_IN);
-    // Set interrupt pin to:
-    /*
+    /* Set interrupt pin to:
      * Active high
      * Push-pull
      * Keep high until interrupt is cleared
@@ -122,9 +121,9 @@ void MPU6050_Init(){
     I2C_writeReg(I2C_MPU6050_ADDRESS, MPU6050_CONFIG, 4 << 3 | 6 << 0);
     
     #if MPU6050_CALIBRATE_GYRO == true
-    MPU6050_gyro_calibration();
+        MPU6050_gyro_calibration();
     #else
-    mpu6050_calibrationData.gyro.offset    = MPU6050_CALIBRATION_DATA_GYRO_OFFSET;
+        mpu6050_calibrationData.gyro.offset    = MPU6050_CALIBRATION_DATA_GYRO_OFFSET;
     #endif
 
     // MPU6050_fifoInit();
@@ -144,9 +143,7 @@ void MPU6050_intPinConfiguration(){
     gpio_init(MPU6050_INT_GPIO);
     gpio_set_dir(MPU6050_INT_GPIO, GPIO_IN);
 
-    printf("IQR pin cfg: 0x%X\n", I2C_readReg(I2C_MPU6050_ADDRESS, MPU6050_INT_PIN_CONFIG));
     I2C_writeReg(I2C_MPU6050_ADDRESS, MPU6050_INT_PIN_CONFIG, (1 << LATCH_INT_EN_BIT));
-    printf("IQR pin cfg: 0x%X\n", I2C_readReg(I2C_MPU6050_ADDRESS, MPU6050_INT_PIN_CONFIG));
 
     gpio_set_irq_enabled_with_callback(MPU6050_INT_GPIO, GPIO_IRQ_EDGE_RISE, true, FIFO_OVERFLOW_STOP);
 }
@@ -161,10 +158,6 @@ void MPU6050_fifoInit(){
         sleep_ms(1);
     }
 
-    MPU6050_intPinConfiguration();
-
-
-
     MPU6050_fifoRun();
     printf("FIFO set up: 0x%X\n", I2C_readReg(I2C_MPU6050_ADDRESS, MPU6050_FIFO_EN));
     I2C_writeReg(I2C_MPU6050_ADDRESS, MPU6050_INT_EN, 1<<FIFO_OV_EN_INT_BIT);
@@ -172,8 +165,6 @@ void MPU6050_fifoInit(){
 }
 
 void MPU6050_fifoRun(){
-    MPU6050_getIrqStatus();
-    // I2C_writeReg(I2C_MPU6050_ADDRESS, MPU6050_FIFO_EN, (1 << GZ_FIFO_EN_BIT) | (1 << GY_FIFO_EN_BIT) | (1 << GZ_FIFO_EN_BIT) | (1 << ACCEL_FIFO_EN_BIT));
     I2C_writeReg(I2C_MPU6050_ADDRESS, MPU6050_FIFO_EN, (1 << GZ_FIFO_EN_BIT) | (1 << ACCEL_FIFO_EN_BIT));
 }
 
@@ -198,11 +189,7 @@ int MPU6050_fifoRead(int16_t *data, int deep){
     uint8_t buffer[1024];
     int status;
 
-    // if (deep > 0){
-        status = I2C_readNReg(I2C_MPU6050_ADDRESS, MPU6050_FIFO_RW, buffer, deep*2);
-    // } else {
-    //     return 0;
-    // }
+    status = I2C_readNReg(I2C_MPU6050_ADDRESS, MPU6050_FIFO_RW, buffer, deep*2);
 
     for(uint i = 0; i < 2*deep; i+= 2){
         data[i/2] = (int16_t)(buffer[i] << 8) | buffer[i+1];
@@ -264,7 +251,6 @@ int MPU6050_readGyro(axis_ft_t *gyro){
 }
 
 int MPU6050_readGyroWithLPF(axis_ft_t *gyro){
-    axis_t raw;
     static axis_ft_t old = {0, 0, 0};
     int status = MPU6050_readGyro(gyro);
 
@@ -272,7 +258,7 @@ int MPU6050_readGyroWithLPF(axis_ft_t *gyro){
         return status;
     }
 
-    old = LPF_af(0.1f, old, *gyro);
+    old = LPF_af(0.75f, old, *gyro);
 
     gyro->x = old.x;
     gyro->y = old.y;
@@ -297,14 +283,18 @@ int MPU6050_readRawTemp(float *temp){
 
 
 int MPU6050_readData(axis_ft_t *acc, axis_ft_t *gyro){
-    if (!gpio_get(MPU6050_INT_GPIO)) return 1;
+    if (!gpio_get(MPU6050_INT_GPIO)) return PICO_ERROR_CONNECT_FAILED;
     int status = MPU6050_readAcc(acc);
-    if (status >= 0){
-        MPU6050_readGyroWithLPF(gyro);
-        return 0;
+
+    if (status < 0){
+        return status;
     }
 
-    return status;
+#if MPU6050_USE_ADDITIONAL_LPF_GYRO
+    return MPU6050_readGyroWithLPF(gyro);
+#else
+    return MPU6050_readGyro(gyro);
+#endif
 }
 
 int MPU6050_readDataWithTemp(axis_ft_t *acc, axis_ft_t *gyro, float *temp){
@@ -336,11 +326,6 @@ axis_ft_t MPU6050_removeGravity(axis_ft_t *accel){
     accel->x -= gravity.x;
     accel->y -= gravity.y;
     accel->z -= gravity.z;
-    // axis_ft_t noGravity = {
-    //     .x = accel->x - gravity.x,
-    //     .y = accel->y - gravity.y,
-    //     .z = accel->z - gravity.z,
-    // };
     
 
     return gravity;
@@ -357,7 +342,6 @@ void MPU6050_angleWithGyro(axis_ft_t *angles, axis_ft_t *gyro, axis_ft_t *noGrav
 }
 
 void MPU6050_gyro_calibration(){
-    const uint calibrationTime = GYRO_CALIBRATION_TIME;
     axis_t measure;
     int64_t sumX = 0, sumY = 0, sumZ = 0;
     uint16_t sigmaX = 0, sigmaY = 0, sigmaZ = 0;
@@ -369,10 +353,8 @@ void MPU6050_gyro_calibration(){
         sleep_ms(1000);
     }
 
-    uint end = 0;
-    uint start = time_us_32();
-    uint time = 0;
-    while(time < calibrationTime){
+    const uint calibrationTime = make_timeout_time_us(GYRO_CALIBRATION_TIME);
+    while(calibrationTime > time_us_32()){
         MPU6050_readRawGyro(&measure);
 
         sumX += measure.x;
@@ -380,12 +362,11 @@ void MPU6050_gyro_calibration(){
         sumZ += measure.z;
 
         sample++;
-        end = time_us_32();
-        time = end - start;
         sleep_ms(10);
     }
 
-    printf("Measure time: %uus\n", time);
+    printf("Measure time: %uus\n", calibrationTime - time_us_32() + GYRO_CALIBRATION_TIME);
+    printf("Sample: %u\n", sample);
 
     mpu6050_calibrationData.gyro.offset.x = round(sumX/(float)sample);
     mpu6050_calibrationData.gyro.offset.y = round(sumY/(float)sample);

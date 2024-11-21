@@ -23,12 +23,10 @@
  * If false then use default parameter
 */
 #define MPU6050_CALIBRATE_GYRO true
-
 // #define MPU6050_CALIBRATION_ACC false
 
-// #define MPU6050_CALIBRATION_DATA_ACC_OFFSET_X  1000
-// #define MPU6050_CALIBRATION_DATA_ACC_OFFSET_Y  -400
-// #define MPU6050_CALIBRATION_DATA_ACC_OFFSET_Z  -880
+#define MPU6050_USE_ADDITIONAL_LPF_GYRO false
+
 
 typedef enum{
     RANGE_2G = 1,
@@ -45,10 +43,6 @@ typedef enum{
     RANGE_2000DPS = 3,
 } MPU6050_GYRO_RANGE_t;
 
-
-typedef enum {
-    MPU6050_OK  = 0,
-} MPU6050_ERROR_t;
 
 
 void MPU6050_Init();
