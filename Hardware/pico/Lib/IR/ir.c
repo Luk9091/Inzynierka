@@ -6,12 +6,15 @@ static const uint mask = 1 << (IR_LEFT) | 1 << (IR_RIGHT);
 
 
 void _IR_check(uint gpio, uint event){
+    UDP_send("IR: %d\n", gpio);
     IR_disable();
     Motor_stop();
 }
 
 void IR_init(){
     gpio_init_mask(mask);
+    gpio_pull_up(IR_LEFT);
+    gpio_pull_up(IR_RIGHT);
     gpio_set_dir_in_masked(mask);
 }
 

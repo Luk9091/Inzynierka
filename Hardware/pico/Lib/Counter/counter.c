@@ -7,10 +7,6 @@
 #define COUNTER_FINISH_MEASURE_ANGLE 250
 
 // bool stop = false;
-int64_t SendAnglePostStop(alarm_id_t id, void *user_data){
-    UDP_send("C: %.2f", angleError);
-    return 0;
-}
 
 void Counter_irq(){
     uint status = pwm_get_irq_status_mask();
@@ -28,7 +24,7 @@ void Counter_irq(){
         Motor_stopLeft();
     }
     Motor_stop();
-    add_alarm_in_ms(COUNTER_FINISH_MEASURE_ANGLE, SendAnglePostStop, NULL, true);
+    Servo_stop(&servo);
 
     pwm_hw->intr |= status;
 }

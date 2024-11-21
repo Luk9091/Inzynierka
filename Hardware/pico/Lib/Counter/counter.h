@@ -3,9 +3,10 @@
 
 #include <hardware/gpio.h>
 #include <hardware/pwm.h>
+#include "servo.h"
 
 // extern bool stop;
-extern float angleError;
+extern Servo_t servo;
 
 /*!
  * \brief Use PWM as counter,

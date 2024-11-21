@@ -26,7 +26,9 @@ add_executable(${PROJECT_NAME}
     Lib/Counter/counter.c
     Lib/UDP/udp.c
     Lib/PID/pid.c
-    Lib/24C04/24c04.c
+    Lib/IR/ir.c
+    Lib/Eeprom/eeprom.c
+    Lib/SPIFlash/flash.c
 )
 
 # pico_generate_pio_header(${PROJECT_NAME} ${CMAKE_CURRENT_LIST_DIR}/StepperMotor/counter.pio)
@@ -44,7 +46,9 @@ include_directories(
     Lib/Counter
     Lib/UDP
     Lib/PID
-    Lib/24C04
+    Lib/IR
+    Lib/Eeprom
+    Lib/SPIFlash
 )
 
 add_subdirectory(Lib/VL53L0X/Api)
@@ -59,6 +63,7 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
     pico_cyw43_arch_lwip_poll
     hardware_gpio
     hardware_i2c
+    hardware_spi
     hardware_pwm
     hardware_adc
     # hardware_pio
@@ -70,3 +75,8 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
 
 pico_enable_stdio_usb(${PROJECT_NAME} 1)
 pico_enable_stdio_uart(${PROJECT_NAME} 1)
+
+add_custom_target(flash_project
+    COMMAND openocd -f interface/cmsis-dap.cfg -c "adapter speed 5000" -f target/rp2040.cfg -c "program ${CMAKE_BINARY_DIR}/main.elf verify reset exit"
+    COMMENT "Flashing ${CMAKE_BINARY_DIR}/main.elf to Raspberry Pi Pico via Picoprobe"
+)

@@ -15,7 +15,7 @@
 
 #define STEP 8
 
-int main(){
+int COMPASS_TEST__main(){
     stdio_init_all();
     // if(cyw43_arch_init()){
     //     printf("WiFi init failed\n");
@@ -76,5 +76,4 @@ int main(){
 
     gpio_put_masked(motor1.maskedPin, motor1.moving[motor1.substep] << motor1.pins[0]);
     return 0;
-
 }

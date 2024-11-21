@@ -3,7 +3,13 @@
 
 #include <pico/stdlib.h>
 
-#define π 3.1415926F
+#define π (3.1415926f)
+#define RAD2DEG (180/π)
+#define DEG2RAD (π/180)
+
+#define µs      (1e0)
+#define ms      (1e3)
+#define s       (1e6)
 
 typedef struct{
     int16_t x;
@@ -35,6 +41,7 @@ inline axis_ft_t LPF_af(float alpha, axis_ft_t old, axis_ft_t new){
     return axis;
 }
 
+float findFloat(char *str, int size);
 axis_t LPF_ai(float alpha, axis_t old, axis_t new);
 
 

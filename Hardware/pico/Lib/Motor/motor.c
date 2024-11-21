@@ -211,7 +211,7 @@ void Motor_setSpeed(uint16_t speed){
 #if MOTOR_DIFFERENTIAL
 void Motor_setDifferential(int angle){
     direction = FORWARD;
-    differential = tanf(angle) * (CAR_WIDTH / (2*CAR_LENGTH));
+    differential = tanf((angle - 90) * DEG2RAD) * (CAR_WIDTH / (2.f*CAR_LENGTH));
 }
 #endif
 

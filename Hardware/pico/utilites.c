@@ -1,6 +1,8 @@
 #include "utilites.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <pico/stdio.h>
+#include <pico/stdlib.h>
 
 
 
@@ -28,4 +30,19 @@ axis_t LPF_ai(float alpha, axis_t old, axis_t new){
     };
 
     return axis;
+}
+
+
+
+float findFloat(char *str, int size){
+    int index = 0;
+    for (index = 0; index < size; index++){
+        if (str[index] >= '0' && str[index] <= '9'){
+            if (index > 0 && str[index - 1] == '-'){
+                index--;
+            }
+            return atoff(str + index);
+        }
+    }
+    return 0;
 }

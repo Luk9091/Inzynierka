@@ -10,6 +10,8 @@
 #include "pid.h"
 #include "my_gpio.h"
 
+#include "utilites.h"
+
 #define MOTOR_DIFFERENTIAL          true
 
 
@@ -77,18 +79,18 @@ void Motor_setDifferential(int angle);
 
 /*
  * Set distance in mm,
- * with precision `0.11mm`
+ * with precision `0.1mm`
 */
 void Motor_setDistance(float distance);
 
 /*
  * Set distance in mm,
- * with precision `0.11mm`
+ * with precision `0.1mm`
 */
 void Motor_forwardDistance(float distance);
 /*
  * Set distance in mm
- * with precision `0.11mm`
+ * with precision `0.1mm`
 */
 void Motor_backwardDistance(float distance);
 
@@ -130,13 +132,13 @@ inline uint16_t distanceToPulse(float distance){
 
 /*
  * Set distance in mm
- * with precision `0.11mm`
+ * with precision `0.1mm`
 */
 void Motor_set_leftDistance(float distance);
 
 /*
  * Set distance in mm
- * with precision `0.11mm`
+ * with precision `0.1mm`
 */
 void Motor_set_rightDistance(float distance);
 
