@@ -9,8 +9,8 @@ void GUI_draw(){
 
 Vector2 GUI_getMousePosition(){
     Vector2 mouse = GetMousePosition();
-    mouse.x = (mouse.x - MAP_OFFSET_X) / PIXEL_SIZE_X;
-    mouse.y = (mouse.y - MAP_OFFSET_Y) / PIXEL_SIZE_Y;
+    mouse.x = (mouse.x - MAP_OFFSET_X) / PIXEL_SIZE;
+    mouse.y = (mouse.y - MAP_OFFSET_Y) / PIXEL_SIZE;
 
     return mouse;
 }

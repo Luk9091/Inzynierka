@@ -56,3 +56,12 @@ inline int sleep_ms(uint miliseconds){
 float mapValue(float value, float fromMin, float fromMax, float toMin, float toMax){
     return (value - fromMin) * (toMax - toMin) / (fromMax - fromMin) + toMin;
 }
+
+
+int sign(int value){
+    return value > 0 ? 1 : value < 0 ? -1 : 0;
+}
+
+int signf(float value){
+    return value > 0 ? 1 : value < 0 ? -1 : 0;
+}

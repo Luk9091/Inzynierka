@@ -5,7 +5,7 @@ static car_t car;
 
 static uint step;
 static int beamDistance[3] = {0};
-const static float beam_mux = (float)(PIXEL_SIZE_X) / (float)(DISTANCE_PER_PIXEL);
+const static float beam_mux = (float)(PIXEL_SIZE) / (float)(DISTANCE_PER_PIXEL);
 static double path_time = 0;
 static int deltaAngel = 0;
 
@@ -15,8 +15,8 @@ static list_t instruction_list;
 
 void _CAR_moveTriangle(){
     Vector2 center = {
-        .x  = car.position.x * PIXEL_SIZE_X - cosf(car.angle) * CELL_SIZE_X + MAP_OFFSET_X,
-        .y  = car.position.y * PIXEL_SIZE_Y - sinf(car.angle) * CELL_SIZE_Y + MAP_OFFSET_Y
+        .x  = car.position.x * PIXEL_SIZE - cosf(car.angle) * CELL_SIZE_X + MAP_OFFSET_X,
+        .y  = car.position.y * PIXEL_SIZE - sinf(car.angle) * CELL_SIZE_Y + MAP_OFFSET_Y
     };
 
     car.top.x = center.x + cosf(car.angle) * CAR_SIZE_X;
@@ -34,31 +34,32 @@ void _CAR_drawPath(){
     for (int i = step; i < path_list.length; i++){
         point_t point;
         list_at(&path_list, &point, i);
-        POINT_draw(point.x, point.y, 0.5f, 0.5f, PIXEL_SIZE_X/4, ORANGE);
+        POINT_draw(point.x, point.y, 0.5f, 0.5f, PIXEL_SIZE/4, ORANGE);
     }
 }
 
 void _CAR_drawInstruction(){
     for (int i = 0; i < instruction_list.length; i++){
         instruction_t *instruction = list_item(&instruction_list, i);
-        Vector2 endPoint = {
-            .x = instruction->start.x + instruction->distance * cosf(instruction->angle * DEG2RAD),
-            .y = instruction->start.y + instruction->distance * sinf(instruction->angle * DEG2RAD)
-        };
-
-        Vector2 start = {
-            .x = instruction->start.x,
-            .y = instruction->start.y 
-        };
-
-
-        DrawLine(
-            start.x * PIXEL_SIZE_X + MAP_OFFSET_X,
-            start.y * PIXEL_SIZE_Y + MAP_OFFSET_Y,
-            endPoint.x * PIXEL_SIZE_X + MAP_OFFSET_X,
-            endPoint.y * PIXEL_SIZE_Y + MAP_OFFSET_Y,
-            RED
-        );
+        if (instruction->isArc){
+            DrawCircleSectorLines(
+                (Vector2){
+                    (instruction->center.x + 0.5f) * PIXEL_SIZE + MAP_OFFSET_X,
+                    (instruction->center.y + 0.5f) * PIXEL_SIZE + MAP_OFFSET_Y
+                },
+                instruction->radius * PIXEL_SIZE,
+                instruction->arcAngle, instruction->arcAngle * 2, 100,
+                RED
+            );
+        } else {
+            DrawLine(
+                (instruction->start.x + 0.5f) * PIXEL_SIZE + MAP_OFFSET_X,
+                (instruction->start.y + 0.5f) * PIXEL_SIZE + MAP_OFFSET_Y,
+                (instruction->end.x + 0.5f) * PIXEL_SIZE + MAP_OFFSET_X,
+                (instruction->end.y + 0.5f) * PIXEL_SIZE + MAP_OFFSET_Y,
+                RED
+            );
+        }
     }
 }
 
@@ -282,7 +283,8 @@ int CAR_findPath(uint x, uint y){
     list_free(&instruction_list);
     PATHFINDING_dijkstra(start, end, prefer, &path_list);
     PATHFINDING_fromPathToLinear(&path_list, &instruction_list);
-
+    PATHFINDING_connectInstructionWithArc(&instruction_list);
+    // printInstructionList(&instruction_list);
     clock_t t_end = clock();
     path_time = (double)(t_end - t_start) / CLOCKS_PER_SEC;
 
@@ -304,6 +306,7 @@ int CAR_addPath(uint x, uint y){
     
     int steps = PATHFINDING_dijkstra(start, end, prefer, &path_list);
     PATHFINDING_fromPathToLinear(&path_list, &instruction_list);
+    PATHFINDING_connectInstructionWithArc(&instruction_list);
     clock_t t_end = clock();
     path_time = (double)(t_end - t_start) / CLOCKS_PER_SEC;
 
