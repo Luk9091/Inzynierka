@@ -9,10 +9,13 @@ typedef struct {
 
 typedef struct {
     point_t start;
+    point_t end;
     int distance;
     int angle;
     bool isArc;
     point_t center;
+    int radius;
+    int arcAngle;
 } instruction_t;
 
 #endif

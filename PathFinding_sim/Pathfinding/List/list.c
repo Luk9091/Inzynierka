@@ -1,4 +1,5 @@
 #include "list.h"
+#include "printf_color.h"
 
 
 int list_init(list_t *list, size_t element_size){
@@ -194,6 +195,12 @@ void printInstructionList(list_t *list){
         printf("\tstart: x: %3i, y: %3i\n", point.x, point.y);
         printf("\tdistance: %i\n", instruction->distance);
         printf("\tangle:    %i\n", instruction->angle);
+        if (instruction->isArc){
+            printf(T_GREEN"Arc:\n"T_RESET);
+            printf("\tCenter: %i, %i\n", instruction->center.x, instruction->center.y);
+            printf("\tRadius: %i\n", instruction->radius);
+            printf("\tBend: %i\n", instruction->arcAngle);
+        }
     }
 
     printf("##############################\n");

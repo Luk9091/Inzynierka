@@ -13,7 +13,7 @@
 #include "list.h"
 
 #define INF INT16_MAX
-#define MIN_RADIUS (500) //mm
+#define MIN_RADIUS (300) //mm
 
 
 typedef struct {
@@ -27,7 +27,8 @@ typedef struct {
 
 int PATHFINDING_dijkstra(point_t start_map, point_t destination, point_t preferredDirection, list_t *pathList);
 int PATHFINDING_fromPathToLinear(list_t *pathList, list_t *instructionList);
-int PATHFINDING_fromPathToInstruction(list_t *pathList, list_t *instructionList);
+void PATHFINDING_connectInstructionWithArc(list_t *instructionList);
 
 
+// int PATHFINDING_fromPathToInstruction(list_t *pathList, list_t *instructionList);
 #endif
