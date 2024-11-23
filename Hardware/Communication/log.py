@@ -1,6 +1,8 @@
 import default
 
 def save(string: str) -> None:
+    if default.OUT_FILE_PATH is None:
+        return
     if string.endswith("\r"):
         string = string[:-1]
     if string.endswith("\n"):

@@ -11,10 +11,10 @@ UDP_CLIENT_PORT: int = 4445
 
 ROUTER_IP: int  = "10.42.0"
 PC_IP: int      = f"{ROUTER_IP}.1"
-PICO_IP: int    = f"{ROUTER_IP}.22"
+PICO_IP: int    = f"{ROUTER_IP}.210"
 
-PC_ADDRESS:   tuple[str, int] | None = None
-PICO_ADDRESS: tuple[str, int] | None = None
+PC_ADDRESS:   tuple[str, int]
+PICO_ADDRESS: tuple[str, int]
 
 END_LINE: str = "\n"
 STORE_DATA: bool = False

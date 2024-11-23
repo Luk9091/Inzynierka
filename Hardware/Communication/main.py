@@ -32,10 +32,6 @@ def receive(udp_socket: socket.socket):
         if (default.STORE_DATA):
             log.save(data)
 
-def send(string: str, udp_socket: socket.socket) -> None:
-    string = string.encode()
-    data = bytearray([*string, *b'\x00'])
-    udp_socket.sendto(data, default.PICO_ADDRESS)
 
 
 def read(udp_socket: socket.socket) -> bool:
@@ -46,11 +42,7 @@ def read(udp_socket: socket.socket) -> bool:
         print(Fore.RED + f"Error: File '{default.READ_FILE_PATH.stem}' not found" + Style.RESET_ALL)
         return False
 
-    lines = interpreter.interpretation(lines)
-    for line in lines:
-        print(line)
-        send(line, udp_socket)
-        sleep(default.READ_FILE_DELAY)
+    interpreter.interpretation(lines, udp_socket)
     
     return True
 
@@ -109,7 +101,7 @@ def main():
                     print()
                 print(Fore.RED + "Stop reading file" + Style.RESET_ALL)
         else:
-            send(string, udp_socket)
+            interpreter.send(string, udp_socket)
 
 
     try:
