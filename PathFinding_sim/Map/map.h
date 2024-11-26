@@ -56,7 +56,7 @@ void MAP_drawIndex();
 */
 void MAP_setType(uint x, uint y, cellType_t type);
 
-void POINT_draw(uint x, uint y, float sub_x, float sub_y, uint pixel_size, Color color);
+void drawPoint(uint x, uint y, float sub_x, float sub_y, uint pixel_size, Color color);
 
 // bool MAP_collisionDetect(uint map_x, uint map_y, uint cell_x, uint cell_y);
 bool MAP_collisionDetect(uint x, uint y);

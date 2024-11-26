@@ -204,7 +204,7 @@ void MAP_drawIndex(){
 
 
 
-void POINT_draw(uint x, uint y, float sub_x, float sub_y, uint pixel_size, Color color){
+void drawPoint(uint x, uint y, float sub_x, float sub_y, uint pixel_size, Color color){
     x = x * PIXEL_SIZE + MAP_OFFSET_X + sub_x * (PIXEL_SIZE - pixel_size);
     y = y * PIXEL_SIZE + MAP_OFFSET_Y + sub_y * (PIXEL_SIZE - pixel_size);
     DrawRectangle(x, y, pixel_size, pixel_size, color);
