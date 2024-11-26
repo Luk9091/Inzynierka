@@ -2,13 +2,13 @@
 
 static point_t direction[] = {
     {0, -1}, // North
-    {1, -1}, // North East
+    // {1, -1}, // North East
     {1, 0},  // East
-    {1, 1},  // South East
+    // {1, 1},  // South East
     {0, 1},  // South
-    {-1, 1}, // South West
+    // {-1, 1}, // South West
     {-1, 0}, // West
-    {-1, -1} // North West
+    // {-1, -1} // North West
 };
 
 static float calculateDistance(point_t a, point_t b){
@@ -16,7 +16,11 @@ static float calculateDistance(point_t a, point_t b){
 }
 
 static int calculateAngle(point_t a, point_t b){
-    return atan2f(b.y - a.y, b.x - a.x) * RAD2DEG;
+    int angle = atan2f(b.y - a.y, b.x - a.x) * RAD2DEG;
+    // if (angle < 0){
+    //     angle += 360;
+    // }
+    return angle;
 }
 
 static int calculateAngle3(point_t a, point_t b, point_t c){
@@ -172,6 +176,9 @@ int PATHFINDING_dijkstra(point_t start, point_t destination, point_t preferredDi
 
 int PATHFINDING_fromPathToLinear(list_t *pathList, list_t *instructionList){
     int index = 0;
+    if (pathList->length == 1){
+        return 0;
+    }
 
     instruction_t newInstruction;
     list_at(pathList, &(newInstruction.start), 0);
@@ -200,6 +207,7 @@ int PATHFINDING_fromPathToLinear(list_t *pathList, list_t *instructionList){
     }
 
     // Final segment
+    instruction = list_item(instructionList, index);
     instruction->angle = calculateAngle(newInstruction.start, next);
     if(instruction->angle < 0){
         instruction->distance = floorf(calculateDistance(newInstruction.start, next));
@@ -215,46 +223,80 @@ int PATHFINDING_fromPathToLinear(list_t *pathList, list_t *instructionList){
 
 point_t findCenter(instruction_t *prev, instruction_t *next, instruction_t *new){
     point_t center;
-    int deltaAngle = next->angle - prev->angle;
-    printf("Delta angle: %i\n", deltaAngle);
+    int deltaAngle = next->angle + prev->angle + 90;
+    new->arcAngle = deltaAngle - 90;
 
+    point_t move = {
+        ((float)new->radius * cosf((deltaAngle/2) * DEG2RAD)),
+        ((float)new->radius * sinf((deltaAngle/2) * DEG2RAD)) 
+    };
     
-    if(deltaAngle > 0 && deltaAngle < 90){
-        center.x = prev->end.x - new->radius * sinf(deltaAngle * DEG2RAD) + 2;
-    } else if (deltaAngle >= 90 && deltaAngle < 180){
-        center.x = prev->end.x - new->radius * sinf(deltaAngle * DEG2RAD) + 2;
-    } else if (deltaAngle < 0 && deltaAngle > -90){
-        center.x = prev->end.x + new->radius * sinf(deltaAngle * DEG2RAD) + 4;
-    } else {
-        center.x = prev->end.x + new->radius * sinf(deltaAngle * DEG2RAD) + 2;
-    }
 
-    if (deltaAngle > 0 && deltaAngle < 90){
-        center.y = prev->end.y + new->radius * cosf(deltaAngle * DEG2RAD) + 1;
-    } else if (deltaAngle >= 90 && deltaAngle < 180){
-        center.y = prev->end.y - new->radius * cosf(deltaAngle * DEG2RAD);
-    } else if (deltaAngle < 0 && deltaAngle > -90){
-        center.y = prev->end.y - new->radius * cosf(deltaAngle * DEG2RAD);
-    } else {
-        center.y = prev->end.y - new->radius * cosf(deltaAngle * DEG2RAD);
-    }
+    center.x = prev->end.x - move.x;
+    center.y = prev->end.y - move.y;
 
-    new->arcAngle = -deltaAngle;
 
     return center;
 }
 
 bool createCircle(instruction_t *prev, instruction_t *next, instruction_t *new){
-    new->isArc = true;
-    new->radius = MIN_RADIUS / DISTANCE_PER_PIXEL;
-    new->center = findCenter(prev, next, new);
+    line_t linePrev = GEOMETRY_lineEquation(prev->angle, prev->end);
+    line_t lineNext = GEOMETRY_lineEquation(next->angle, next->start);
+    float bisectorAngle = GEOMETRY_bisectorAngle(prev->angle, next->angle);
+    float minRadius = MIN_RADIUS / DISTANCE_PER_PIXEL;
+    float delta = -0.1f;
+
+
+    if (prev->end.y != prev->start.y){
+        if (next->end.x - next->start.x > 0){
+            delta = -delta;
+        } 
+        // if (linePrev.A > 0) {
+        //     bisectorAngle += 45;
+        // } else {
+        //     // bisectorAngle -= 45;
+        // }
+        bisectorAngle += 90;
+    } else {
+        if (prev->end.x - prev->start.x < 0){
+            delta = -delta;
+        }
+    }
+
+
+
+
+    float x = next->start.x;
+    for (int i = 0; i < 100; i++){
+        x += delta;
+        point_t center = GEOMETRY_pointOnLine(bisectorAngle, prev->end, x);
+
+        int distancePrev = round(GEOMETRY_distancePointToLine(linePrev, center));
+        int distanceNext = round(GEOMETRY_distancePointToLine(lineNext, center));
+
+        if(distancePrev >= minRadius && distanceNext >= minRadius){
+            new->isArc = true;
+            new->radius = distancePrev;
+            new->center = center;
+
+            new->start = GEOMETRY_tangentPoint(center, new->radius, linePrev);
+            new->end   = GEOMETRY_tangentPoint(center, new->radius, lineNext);
+
+            return true;
+        }
+    }
     
-    return true;
+    return false;
 }
 
 
 
 void PATHFINDING_connectInstructionWithArc(list_t *instructionList){
+    if (instructionList->length < 2){
+        return;
+    }
+
+
     instruction_t *instruction;
     instruction_t *nextInstruction;
     instruction_t newInstruction;
@@ -265,6 +307,13 @@ void PATHFINDING_connectInstructionWithArc(list_t *instructionList){
 
         if (createCircle(instruction, nextInstruction, &newInstruction)){
             list_insert(instructionList, &newInstruction, i+1);
+
+            instruction->distance -= newInstruction.radius / 2;
+            instruction->end = newInstruction.start;
+
+            nextInstruction->distance -= newInstruction.radius / 2;
+            nextInstruction->start = newInstruction.end;
+
             i++;
         }
     }

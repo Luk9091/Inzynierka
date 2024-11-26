@@ -10,10 +10,11 @@
 #include <stdio.h>
 #include "point.h"
 
-#define LIST_ERROR_OK 0
+#define LIST_ERROR_OK    0
 #define LIST_ERROR_EMPTY 1
 #define LIST_ALLOC_ERROR 2
 #define LIST_INDEX_ERROR 3
+#define LIST_EOL_ERROR   4 // End of list error
 
 
 typedef struct _list_node{
@@ -25,6 +26,7 @@ typedef struct _list_node{
 typedef struct _list{
     _list_node_t *first;
     _list_node_t *last;
+    _list_node_t *current;
     size_t length;
     size_t element_size;
 } list_t;
@@ -40,7 +42,7 @@ int list_removeAt(list_t *list, size_t index);
 int list_popAt(list_t *list, void *data, size_t index);
 int list_insert(list_t *list, void *data, size_t index);
 
-
+int list_next(list_t *list, void *data);
 
 void printPointList(list_t *list);
 void printInstructionList(list_t *list);

@@ -13,8 +13,8 @@
 #include "car.h"
 #include "udp.h"
 
-#define CAR_START_POS_X 2.5
-#define CAR_START_POS_Y 8.5
+#define CAR_START_POS_X 11.5
+#define CAR_START_POS_Y 11.5
 #define CAR_START_ANGLE 0
 static float changeAngle  = 0.f;
 
@@ -70,6 +70,32 @@ int main(){
 // */
 
 
+void moveByPath(){
+    CAR_moveByPath();
+    udp_send("r %i", getAngle());
+    udp_send("d %i", DISTANCE_PER_PIXEL);
+    udp_send("f");
+    udp_send("s %.2f", mapValue(calculateSpeed(), 0.1f, 1.f, 0.1f, 0.5f));
+    udp_send("\n");
+    changeAngle = 0.f;
+}
+
+
+void moveByInstruction(){
+    instruction_t instruction = CAR_moveByInstruction();
+
+    printf("Instruction: %i, %i, %i, %i\n", instruction.start.x, instruction.start.y, instruction.end.x, instruction.end.y);
+
+    if (instruction.isArc){
+        printf("Arc\n");
+
+    } else {
+        printf("Line\n");
+    }
+
+}
+
+
 
 
 void keyRead(){
@@ -116,13 +142,8 @@ void keyRead(){
     }
 
     if (IsKeyPressed(KEY_SPACE) ^ IsKeyPressedRepeat(KEY_SPACE)){
-        CAR_moveByPath();
-        udp_send("r %i", getAngle());
-        udp_send("d %i", DISTANCE_PER_PIXEL);
-        udp_send("f");
-        udp_send("s %.2f", mapValue(calculateSpeed(), 0.1f, 1.f, 0.1f, 0.5f));
-        udp_send("\n");
-        changeAngle = 0.f;
+        // moveByPath();
+        moveByInstruction();
     }
 
     if (IsKeyPressed(KEY_M)){

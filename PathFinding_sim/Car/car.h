@@ -52,7 +52,8 @@ Vector2 CAR_getPosition();
 
 bool CAR_move();
 bool CAR_moveBackward();
-uint CAR_moveByPath();
+bool CAR_moveByPath();
+instruction_t CAR_moveByInstruction();
 
 int CAR_findPath(uint x, uint y);
 int CAR_addPath(uint x, uint y);

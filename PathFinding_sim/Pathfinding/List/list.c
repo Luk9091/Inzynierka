@@ -5,6 +5,7 @@
 int list_init(list_t *list, size_t element_size){
     list->first = NULL;
     list->last = NULL;
+    list->current = NULL;
     list->length = 0;
     list->element_size = element_size;
     return LIST_ERROR_OK;
@@ -21,6 +22,7 @@ int list_free(list_t *list){
     }
     list->first = NULL;
     list->last = NULL;
+    list->current = NULL;
 
     return LIST_ERROR_OK;
 }
@@ -170,6 +172,22 @@ int list_insert(list_t *list, void *data, size_t index){
 }
 
 
+int list_next(list_t * list, void *data){
+    if (list->current == NULL){
+        if (list->length == 0){
+            return LIST_ERROR_EMPTY;
+        }
+
+        list->current = list->first;
+    } else {
+        list->current = (_list_node_t*)list->current->next;
+    }
+
+    memcpy(data, list->current->data, list->element_size);
+    return LIST_ERROR_OK;
+}
+
+
 
 
 void printPointList(list_t *list){
@@ -190,9 +208,9 @@ void printInstructionList(list_t *list){
     printf("List length: %li\n", list->length);
     for (uint i = 0; i < list->length; i++){
         instruction_t *instruction = list_item(list, i);
-        point_t point = instruction->start;
         printf("%3i :\n", i);
-        printf("\tstart: x: %3i, y: %3i\n", point.x, point.y);
+        printf("\tstart: x: %3i, y: %3i\n", instruction->start.x, instruction->start.y);
+        printf("\tend:   x: %3i, y: %3i\n", instruction->end.x, instruction->end.y);
         printf("\tdistance: %i\n", instruction->distance);
         printf("\tangle:    %i\n", instruction->angle);
         if (instruction->isArc){

@@ -4,6 +4,7 @@
 static car_t car;
 
 static uint step;
+static uint instructionCounter;
 static int beamDistance[3] = {0};
 const static float beam_mux = (float)(PIXEL_SIZE) / (float)(DISTANCE_PER_PIXEL);
 static double path_time = 0;
@@ -34,7 +35,7 @@ void _CAR_drawPath(){
     for (int i = step; i < path_list.length; i++){
         point_t point;
         list_at(&path_list, &point, i);
-        POINT_draw(point.x, point.y, 0.5f, 0.5f, PIXEL_SIZE/4, ORANGE);
+        drawPoint(point.x, point.y, 0.5f, 0.5f, PIXEL_SIZE/4, ORANGE);
     }
 }
 
@@ -48,9 +49,13 @@ void _CAR_drawInstruction(){
                     (instruction->center.y + 0.5f) * PIXEL_SIZE + MAP_OFFSET_Y
                 },
                 instruction->radius * PIXEL_SIZE,
-                instruction->arcAngle, instruction->arcAngle * 2, 100,
+                0, 360, 100,
                 RED
             );
+
+            drawPoint(instruction->start.x, instruction->start.y, 0.5f, 0.5f, PIXEL_SIZE/4, PURPLE);
+            drawPoint(instruction->end.x,   instruction->end.y, 0.5f, 0.5f, PIXEL_SIZE/4, MAGENTA);
+
         } else {
             DrawLine(
                 (instruction->start.x + 0.5f) * PIXEL_SIZE + MAP_OFFSET_X,
@@ -244,7 +249,7 @@ bool CAR_moveBackward() {
     return !collision;
 }
 
-uint CAR_moveByPath(){
+bool CAR_moveByPath(){
     const float maxAngle = 30 * DEG2RAD;
     static float oldDelta = 0;
     if (step < path_list.length){
@@ -273,9 +278,27 @@ uint CAR_moveByPath(){
     return false;
 }
 
+instruction_t CAR_moveByInstruction(){
+    instruction_t instruction;
+    int status = list_next(&instruction_list, &instruction);
+    if (status != LIST_ERROR_OK){
+        return (instruction_t){0};
+    }
+
+    car.angle += instruction.angle * DEG2RAD;
+    car.position.x = instruction.end.x;
+    car.position.y = instruction.end.y;
+
+    return instruction;
+}
+
+
 int CAR_findPath(uint x, uint y){
     point_t start = {.x = car.position.x, .y = car.position.y};
     point_t end = {.x = x, .y = y};
+    if (start.x == end.x && start.y == end.y){
+        return 0;
+    }
     point_t prefer = {.x = ceilf(cosf(car.angle)), y = ceilf(sinf(car.angle))};
 
     clock_t t_start = clock();
@@ -284,8 +307,9 @@ int CAR_findPath(uint x, uint y){
     PATHFINDING_dijkstra(start, end, prefer, &path_list);
     PATHFINDING_fromPathToLinear(&path_list, &instruction_list);
     PATHFINDING_connectInstructionWithArc(&instruction_list);
-    // printInstructionList(&instruction_list);
+    instructionCounter = 0;
     clock_t t_end = clock();
+    printInstructionList(&instruction_list);
     path_time = (double)(t_end - t_start) / CLOCKS_PER_SEC;
 
     step = 1;
@@ -293,21 +317,34 @@ int CAR_findPath(uint x, uint y){
 }
 
 int CAR_addPath(uint x, uint y){
+    // Fix bug when path_list is empty
+    if (path_list.length == 0){
+        return CAR_findPath(x, y);
+    }
+
     point_t start; list_pop(&path_list, &start);
     point_t end = {x, y};
     point_t *toPrefer = list_item(&path_list, path_list.length - 2);
-    point_t prefer = {
-        .x = start.x - toPrefer->x,
-        .y = start.y - toPrefer->y,
-    };
+    point_t prefer = {0, 0};
+    if (toPrefer != NULL){
+        prefer = (point_t){
+            .x = start.x - toPrefer->x,
+            .y = start.y - toPrefer->y,
+        };
+    }
 
     clock_t t_start = clock();
     list_free(&instruction_list);
     
     int steps = PATHFINDING_dijkstra(start, end, prefer, &path_list);
     PATHFINDING_fromPathToLinear(&path_list, &instruction_list);
+    printInstructionList(&instruction_list);
     PATHFINDING_connectInstructionWithArc(&instruction_list);
+    instructionCounter = 0;
     clock_t t_end = clock();
+
+    printInstructionList(&instruction_list);
+
     path_time = (double)(t_end - t_start) / CLOCKS_PER_SEC;
 
     return steps;

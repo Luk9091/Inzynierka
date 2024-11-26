@@ -11,6 +11,7 @@ add_executable(${PROJECT_NAME}
     Map/test/test_map.c
     Pathfinding/pathfinding.c
     Pathfinding/List/list.c
+    Pathfinding/geometry.c
     Car/car.c
     UDP/udp.c
     Queue/queue.c
