@@ -88,9 +88,9 @@ void moveByInstruction(){
 
     if (instruction.isArc){
         printf("Arc\n");
-
     } else {
         printf("Line\n");
+        // udp_send("r %i", getAngle());
     }
 
 }

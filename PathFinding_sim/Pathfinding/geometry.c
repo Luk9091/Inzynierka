@@ -98,6 +98,35 @@ point_t GEOMETRY_tangentPoint(point_t center, int radius, line_t line){
 }
 
 
-instruction_t GEOMETRY_createArc(point_t p0, point_t p1, point_t center){
+point_t GEOMETRY_vectorFromPoint(point_t a, point_t b){
+    return (point_t){
+        .x = b.x - a.x,
+        .y = b.y - a.y,
+    };
+}
 
+float GEOMETRY_dotProduct(point_t v1, point_t v2){
+    return v1.x * v2.x + v1.y * v2.y;
+}
+
+float GEOMETRY_magnitude(point_t vector){
+    return sqrtf(vector.x * vector.x + vector.y * vector.y);
+}
+
+int GEOMETRY_normalVector(point_t v1, point_t v2){
+    return v1.x * v2.y - v1.y * v2.x;
+}
+
+float GEOMETRY_angleBetweenPoints(point_t a, point_t b, point_t c){
+    point_t ab = GEOMETRY_vectorFromPoint(a, b);
+    point_t bc = GEOMETRY_vectorFromPoint(b, c);
+
+    float dot = GEOMETRY_dotProduct(ab, bc);
+    float mag = GEOMETRY_magnitude(ab) * GEOMETRY_magnitude(bc);
+    float angle = acosf(dot / mag);
+    int normal = GEOMETRY_normalVector(ab, bc);
+
+    angle = sign(normal) * angle;
+
+    return angle;
 }

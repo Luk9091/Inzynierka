@@ -43,13 +43,6 @@ static bool isRightAngleTurn(point_t oldDir, point_t newDir){
 }
 
 
-inline static int max(int a, int b){
-    return a > b ? a : b;
-}
-inline static int min(int a, int b){
-    return a < b ? a : b;
-}
-
 static bool isOppositeDirection(point_t oldDir, point_t newDir){
     point_t direction = {
         .x = oldDir.x + newDir.x,
@@ -243,7 +236,7 @@ bool createCircle(instruction_t *prev, instruction_t *next, instruction_t *new){
     line_t linePrev = GEOMETRY_lineEquation(prev->angle, prev->end);
     line_t lineNext = GEOMETRY_lineEquation(next->angle, next->start);
     float bisectorAngle = GEOMETRY_bisectorAngle(prev->angle, next->angle);
-    float minRadius = MIN_RADIUS / DISTANCE_PER_PIXEL;
+    float minRadius = (MIN_RADIUS / (float)DISTANCE_PER_PIXEL);
     float delta = -0.1f;
 
 
@@ -262,10 +255,6 @@ bool createCircle(instruction_t *prev, instruction_t *next, instruction_t *new){
             delta = -delta;
         }
     }
-
-
-
-
     float x = next->start.x;
     for (int i = 0; i < 100; i++){
         x += delta;
@@ -306,17 +295,39 @@ void PATHFINDING_connectInstructionWithArc(list_t *instructionList){
         nextInstruction = list_item(instructionList, i + 1);
 
         if (createCircle(instruction, nextInstruction, &newInstruction)){
+            newInstruction.angle = calculateAngle(newInstruction.start, newInstruction.end);
+            newInstruction.arcAngle = GEOMETRY_angleBetweenPoints(newInstruction.start, newInstruction.center, newInstruction.end) * RAD2DEG;
+            newInstruction.distance = 2*π * (newInstruction.radius) * (abs(newInstruction.arcAngle)/360.f);
+            newInstruction.angle = instruction->angle;
             list_insert(instructionList, &newInstruction, i+1);
 
-            instruction->distance -= newInstruction.radius / 2;
             instruction->end = newInstruction.start;
-
-            nextInstruction->distance -= newInstruction.radius / 2;
             nextInstruction->start = newInstruction.end;
+
+            instruction->distance = calculateDistance(instruction->start, instruction->end);
+            nextInstruction->distance = calculateDistance(nextInstruction->start, nextInstruction->end);
 
             i++;
         }
     }
+
+    PATHFINDING_removeEmptyInstructions(instructionList);
+}
+
+
+
+void PATHFINDING_removeEmptyInstructions(list_t *instructionList){
+    uint listSize = instructionList->length;
+    
+    printInstructionList(instructionList);
+    instruction_t *instruction;
+    for (int i = listSize - 1; i >= 0; i--){
+        instruction = list_item(instructionList, i);
+        if (instruction->distance == 0){
+            list_removeAt(instructionList, i);
+        }
+    }
+    printInstructionList(instructionList);
 }
 
 

@@ -49,7 +49,7 @@ void _CAR_drawInstruction(){
                     (instruction->center.y + 0.5f) * PIXEL_SIZE + MAP_OFFSET_Y
                 },
                 instruction->radius * PIXEL_SIZE,
-                0, 360, 100,
+                instruction->angle, instruction->arcAngle + instruction->angle, 100,
                 RED
             );
 
@@ -171,6 +171,13 @@ Vector2 CAR_getPosition(){
     return car.position;
 }
 
+
+bool CAR_update(){
+    CAR_changeAngle((getAngle() - 90)/3);
+    _CAR_moveTriangle();
+    return true;
+}
+
 bool CAR_move(){
     if (!calculateSpeed()) return false;
     bool collision = false;
@@ -285,10 +292,17 @@ instruction_t CAR_moveByInstruction(){
         return (instruction_t){0};
     }
 
-    car.angle += instruction.angle * DEG2RAD;
-    car.position.x = instruction.end.x;
-    car.position.y = instruction.end.y;
+    if (instruction.isArc){
+        car.angle -= instruction.arcAngle * DEG2RAD;
+        car.position.x = instruction.end.x + 0.5f;
+        car.position.y = instruction.end.y + 0.5f;
+    } else {
+        car.angle = instruction.angle * DEG2RAD;
+        car.position.x = instruction.end.x + (car.position.x - instruction.start.x);
+        car.position.y = instruction.end.y + (car.position.y - instruction.start.y);
+    }
 
+    CAR_update();
     return instruction;
 }
 
@@ -348,6 +362,11 @@ int CAR_addPath(uint x, uint y){
     path_time = (double)(t_end - t_start) / CLOCKS_PER_SEC;
 
     return steps;
+}
+
+
+int CAR_reverseRadiusToWheelAngle(instruction_t *instuction){
+
 }
 
 

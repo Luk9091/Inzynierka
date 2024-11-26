@@ -10,11 +10,11 @@
 #include <stdio.h>
 #include "point.h"
 
-#define LIST_ERROR_OK    0
-#define LIST_ERROR_EMPTY 1
-#define LIST_ALLOC_ERROR 2
-#define LIST_INDEX_ERROR 3
-#define LIST_EOL_ERROR   4 // End of list error
+#define LIST_ERROR_OK     0
+#define LIST_ERROR_EMPTY -1
+#define LIST_ALLOC_ERROR -2
+#define LIST_INDEX_ERROR -3
+#define LIST_EOL_ERROR   -4 // End of list error
 
 
 typedef struct _list_node{
