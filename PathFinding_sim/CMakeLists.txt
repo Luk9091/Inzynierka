@@ -11,7 +11,7 @@ add_executable(${PROJECT_NAME}
     Map/test/test_map.c
     Pathfinding/pathfinding.c
     Pathfinding/List/list.c
-    Pathfinding/geometry.c
+    Geometry/geometry.c
     Car/car.c
     UDP/udp.c
     Queue/queue.c
@@ -26,6 +26,7 @@ include_directories(${PROJECT_NAME}
     Map/test
     Pathfinding
     Pathfinding/List
+    Geometry
     Car
     UDP
     Queue
