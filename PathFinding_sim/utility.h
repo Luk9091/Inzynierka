@@ -29,8 +29,15 @@ typedef unsigned int uint;
 #define MAP_OFFSET_X 2
 #define MAP_OFFSET_Y 0
 
+// Minimal turn radius in mm
+#define MIN_RADIUS (350) 
+
 // Distance in mm
 #define DISTANCE_PER_PIXEL (100)
+
+// Odległość przedniej osi od tylnej w mm
+static const float CAR_PHYSICAL_LEN = 150;
+static const float CAR_PHYSICAL_WIDTH = 125;
 
 #define DEVICE "PC"
 
@@ -44,4 +51,10 @@ float mapValue(float value, float fromMin, float fromMax, float toMin, float toM
 int sign(int value);
 int signf(float value);
 
+inline static int max(int a, int b){
+    return a > b ? a : b;
+}
+inline static int min(int a, int b){
+    return a < b ? a : b;
+}
 #endif // __UTILITY_H__

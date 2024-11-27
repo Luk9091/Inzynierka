@@ -22,8 +22,8 @@ void keyRead();
 void readRecv();
 
 int main(){
-    // pthread_t UDP_thread;
-    // pthread_create(&UDP_thread, NULL, udp_run, NULL);
+    pthread_t UDP_thread;
+    pthread_create(&UDP_thread, NULL, udp_run, NULL);
 
     // TEST_MAP_crossMap();
     TEST_MAP_empty();
@@ -39,7 +39,7 @@ int main(){
 
     while (!WindowShouldClose()){
         keyRead();
-        // readRecv();
+        readRecv();
 
         BeginDrawing();
         ClearBackground(DARKGRAY);
@@ -59,7 +59,7 @@ int main(){
         GUI_resetLine();
     }
 
-    // pthread_detach(UDP_thread);
+    pthread_detach(UDP_thread);
     udp_server_stop();
     CloseWindow();
 
@@ -86,13 +86,13 @@ void moveByInstruction(){
 
     printf("Instruction: %i, %i, %i, %i\n", instruction.start.x, instruction.start.y, instruction.end.x, instruction.end.y);
 
-    if (instruction.isArc){
-        printf("Arc\n");
-    } else {
-        printf("Line\n");
-        // udp_send("r %i", getAngle());
-    }
+    
 
+    udp_send("s %.2f", mapValue(calculateSpeed(), 0.1f, 1.f, 0.1f, 0.5f));
+    udp_send("r %i", getAngle());
+    udp_send("f %i", instruction.distance);
+    udp_send("\n");
+    changeAngle = 0.f;
 }
 
 

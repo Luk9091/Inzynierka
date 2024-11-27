@@ -119,8 +119,17 @@ int list_removeAt(list_t *list, size_t index){
         current = (_list_node_t*)current->next;
     }
 
-    ((_list_node_t*)current->prev)->next = current->next;
-    ((_list_node_t*)current->next)->prev = current->prev;
+    if (current->next != NULL){
+        ((_list_node_t*)current->next)->prev = current->prev;
+    } else {
+        list->last = (_list_node_t*)current->prev;
+    }
+    
+    if (current->prev != NULL){
+        ((_list_node_t*)current->prev)->next = current->next;
+    } else {
+        list->first = (_list_node_t*)current->next;
+    }
 
     free(current->data);
     free(current);
@@ -180,6 +189,10 @@ int list_next(list_t * list, void *data){
 
         list->current = list->first;
     } else {
+        if (list->current->next == NULL){
+            return LIST_EOL_ERROR;
+        }
+
         list->current = (_list_node_t*)list->current->next;
     }
 

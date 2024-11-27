@@ -173,7 +173,6 @@ Vector2 CAR_getPosition(){
 
 
 bool CAR_update(){
-    CAR_changeAngle((getAngle() - 90)/3);
     _CAR_moveTriangle();
     return true;
 }
@@ -301,7 +300,12 @@ instruction_t CAR_moveByInstruction(){
         car.position.x = instruction.end.x + (car.position.x - instruction.start.x);
         car.position.y = instruction.end.y + (car.position.y - instruction.start.y);
     }
+    int angle = 90;
+    if (instruction.isArc){
+        angle = -sign(instruction.arcAngle) * CAR_reverseRadiusToWheelAngle(&instruction) + 90;
+    }
 
+    setAngle(angle);
     CAR_update();
     return instruction;
 }
@@ -365,8 +369,9 @@ int CAR_addPath(uint x, uint y){
 }
 
 
-int CAR_reverseRadiusToWheelAngle(instruction_t *instuction){
-
+int CAR_reverseRadiusToWheelAngle(instruction_t *instruction){
+    float angle = roundf(atan(CAR_PHYSICAL_LEN/(instruction->radius * DISTANCE_PER_PIXEL - CAR_PHYSICAL_WIDTH)) * RAD2DEG);
+    return angle;
 }
 
 

@@ -16,8 +16,6 @@
 #define CAR_SIZE_Y (16/2)
 #define CAR_SEE_RANGE 6
 
-// Odległość przedniej osi od tylnej w mm
-static const float CAR_PHYSICAL_LEN = 135;
 
 
 
@@ -57,5 +55,7 @@ instruction_t CAR_moveByInstruction();
 
 int CAR_findPath(uint x, uint y);
 int CAR_addPath(uint x, uint y);
+
+int CAR_reverseRadiusToWheelAngle(instruction_t *instruction);
 
 #endif

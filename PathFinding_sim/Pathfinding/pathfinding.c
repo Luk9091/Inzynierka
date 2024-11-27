@@ -188,7 +188,7 @@ int PATHFINDING_fromPathToLinear(list_t *pathList, list_t *instructionList){
         list_at(pathList, &middle, i - 1);
         list_at(pathList, &next, i);
         if (!isColinear(instruction->start, middle, next)){
-            instruction->distance = calculateDistance(instruction->start, middle);
+            instruction->distance = calculateDistance(instruction->start, middle) * DISTANCE_PER_PIXEL;
             instruction->angle = calculateAngle(instruction->start, middle);
             instruction->end = middle;
             index++;
@@ -203,9 +203,9 @@ int PATHFINDING_fromPathToLinear(list_t *pathList, list_t *instructionList){
     instruction = list_item(instructionList, index);
     instruction->angle = calculateAngle(newInstruction.start, next);
     if(instruction->angle < 0){
-        instruction->distance = floorf(calculateDistance(newInstruction.start, next));
+        instruction->distance = floorf(calculateDistance(newInstruction.start, next) * DISTANCE_PER_PIXEL);
     } else {
-        instruction->distance = ceilf(calculateDistance(newInstruction.start, next));
+        instruction->distance = ceilf(calculateDistance(newInstruction.start, next) * DISTANCE_PER_PIXEL);
     }
     instruction->end = next;
 
@@ -297,15 +297,15 @@ void PATHFINDING_connectInstructionWithArc(list_t *instructionList){
         if (createCircle(instruction, nextInstruction, &newInstruction)){
             newInstruction.angle = calculateAngle(newInstruction.start, newInstruction.end);
             newInstruction.arcAngle = GEOMETRY_angleBetweenPoints(newInstruction.start, newInstruction.center, newInstruction.end) * RAD2DEG;
-            newInstruction.distance = 2*π * (newInstruction.radius) * (abs(newInstruction.arcAngle)/360.f);
+            newInstruction.distance = 2*π * (newInstruction.radius * DISTANCE_PER_PIXEL + CAR_PHYSICAL_WIDTH) * (abs(newInstruction.arcAngle)/360.f);
             newInstruction.angle = instruction->angle;
             list_insert(instructionList, &newInstruction, i+1);
 
             instruction->end = newInstruction.start;
             nextInstruction->start = newInstruction.end;
 
-            instruction->distance = calculateDistance(instruction->start, instruction->end);
-            nextInstruction->distance = calculateDistance(nextInstruction->start, nextInstruction->end);
+            instruction->distance = calculateDistance(instruction->start, instruction->end) * DISTANCE_PER_PIXEL;
+            nextInstruction->distance = calculateDistance(nextInstruction->start, nextInstruction->end) * DISTANCE_PER_PIXEL;
 
             i++;
         }
@@ -319,15 +319,12 @@ void PATHFINDING_connectInstructionWithArc(list_t *instructionList){
 void PATHFINDING_removeEmptyInstructions(list_t *instructionList){
     uint listSize = instructionList->length;
     
-    printInstructionList(instructionList);
-    instruction_t *instruction;
-    for (int i = listSize - 1; i >= 0; i--){
-        instruction = list_item(instructionList, i);
+    for (int i = listSize - 1; i > 0; i--){
+        instruction_t *instruction = list_item(instructionList, i);
         if (instruction->distance == 0){
             list_removeAt(instructionList, i);
         }
     }
-    printInstructionList(instructionList);
 }
 
 
