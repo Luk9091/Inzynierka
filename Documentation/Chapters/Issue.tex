@@ -1,9 +1,10 @@
-\section{Problemy konstrukcyjne}
+\lsection{Problemy konstrukcyjne}
 \label{sec:problemy_konstrukcyjne}
     W poniższym rozdziale zostaną przedstawione problemy konstrukcyjne,
     które pojawiły się podczas realizacji projektu.
 
     \subsection{Jazda prosto}
+    \label{section:jazda_prosto}
         Najprostszą czynnością każdego pojazdu, jest jazda prosto.
         Operacja ta może wydawać się prosta, jednak wcale taka nie jest.
         Przykładowo, kiedy usiądziemy za kierownicą, prawdziwego samochodu, kontroluje podświadomie wiele parametrów takich jak:
@@ -14,16 +15,16 @@
         \end{itemize}
         Jako ludzie, wiele tych parametrów kontroluje ,,na wyczucie" jednak pojazdy autonomiczne, są poniekąd robotami, dla których istnieje tylko informacja \textit{tak} lub \textit{nie}.
         Poniższy projekt podczas testów, wykazywał wiele mankamentów, które uniemożliwiały jazdę prostą.
-        Były to między innymi:
+        W poniższym rozdziale pokrótce zostaną one opisane wraz z proponowanymi przez autorów metodami radzenia sobie z nie idealnością konstrukcji.
+        % Były to między innymi:
         
         \subsubsection{Różnica prędkości silników}
             Zastosowanie dwóch silników, ma swoje wady i zalety.
-            Olbrzymią zaletą jest możliwość zwiększenia mocy pojazdu.
+            Niewątpliwą zaletą jest podwojenie mocy pojazdu.
             Jednak olbrzymią wadą okazało się sterowanie i nierównomierność pracy silników.
-            Na wykresie \ref{plot:distance_err_in_time_const_speed} poniżej przedstawiono 
+            Na wykresie \ref{plot:distance_err_in_time_const_speed} poniżej przedstawiono różnicę drogi pokonanej przez każdy silnik dla jednakowego sygnału sterującego.
 
             \begin{figure}[!ht]
-                    % TODO: zebrać pomiary odległości przebytej przez układ od czasu bez PID
                 \centering
                 \begin{tikzpicture}
                     \begin{axis}[
@@ -71,8 +72,9 @@
 
             Jak widać na wykresie \ref{plot:PID_distance_err_in_time} w początkowej fazie, silniki nadal nie pracują równomiernie, w dłuższej perspektywie praca silników osypuje w okół stałej wartości $(0 \pm 3)mm$.
 
-    \subsubsection{Nie idealność podwozia}
-        Kolejnym napotkanym problemem, okazuje się nie idealność podwozia, szczególnie elementu przedstawionego na rysunku \ref{fig:frontAxis_model} oraz nie równomierne rozłożenie masy względem środka.
+    \subsubsection{Nieidealność podwozia}
+        Kolejnym napotkanym problemem, okazuje się nie idealność podwozia.
+        Szczególnie elementu przedstawionego na rysunku \ref{fig:frontAxis_model} oraz nie równomierne rozłożenie masy względem środka.
         Wszystkie wyżej wymienione niedokładności powodowały, że pojazd cały czas skręcał w jedną stronę.
         Rozwiązaniem tego problemu jest zastosowanie układy pętli zwrotnej, opartej na czujniku $MPU6050$, który został użyty jak żyroskop, pozwalający na pomiar biedzącego kąta.
         Dzięki czemu można korygować kierunek skręcania pojazdu.
@@ -86,7 +88,7 @@
             \centering
                 \begin{tikzpicture}
                     \begin{axis}[
-                        width = 0.7\textwidth,
+                        width = 0.65\textwidth,
                         grid = both,
                         grid style = dashed,
                         xlabel = czas ${[s]}$,
@@ -145,7 +147,8 @@
         Nie tylko w pierwotnej wersji nie było stałe, ustawienie stałego kąta kół oraz przejechanie tej samej drogi, nie zawsze dawało ten sam rezultat.
         To pojazd cały czas miał tendencję do preferowania skrętu w jedną stronę.
         
-        \subsubsection{Dyferencjiał}
+        \subsubsection{Dyferencjał}
+        \label{subsubsec:dyferencjal}
         Najprostszym do zauważenia problemem był brak dyferencjału. 
         Tylna oś pojazdu posiadała dwa silniki, jednak w poprzednich testach, zostały one ,,software'owo połączona sztywną belką".
         Wyznaczenie wartości dyferencjału jest prostym zadaniem. Poniżej przedstawiono schemat algorytmu, na którego podstawie wyznaczono procentową wartość dyferencjału.
@@ -161,9 +164,9 @@
         \end{gather}
         Jedynymi wartościami jakie są znane to:
         \begin{itemize}
-            \item $l = 135mm$ -- długość między osiami samochodu:,
-            \item $\Delta R = 155mm$ -- odległość między kołami w jednej osi,
-            \item $\gamma \in <-30^\circ \div 30^\circ>$ -- kąt skrętu kół, ustawiany przez algorytm pathfinding'u lub użytkownika.
+            \item $l = 155$ -- długość między osiami samochodu:,
+            \item $\Delta r = 125$ -- odległość między kołami w jednej osi,
+            \item $\gamma \in <60^\circ \div 120^\circ>$ -- kąt skrętu kół, ustawiany przez algorytm nawigacji lub użytkownika.
         \end{itemize}
         Dla powyższych parametrów, można wyznaczyć następującą równania:
         \begin{gather}
@@ -172,6 +175,7 @@
         Na podstawie powyższego równania można wyznaczyć funkcję długości promienia skrętu od aktualnego kąta, oraz 
         \begin{gather}
             r(\gamma) = \frac{l}{\tan(90-\gamma)}
+            \label{eq:turning_radius}
         \end{gather}
         A zatem procentowy stosunek prędkości w funkcji kąta można wyznaczyć jako:
         \begin{gather}

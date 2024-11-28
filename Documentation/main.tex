@@ -9,7 +9,10 @@
 \usepackage{multirow}
 \usepackage{multicol}
 \usepackage{setspace}
+\usepackage{listings}
 \input{verticalPages.tex}
+
+\setlength{\emergencystretch}{10pt}
 
 
 \usepackage{tabularx}
@@ -29,7 +32,8 @@
 \hypersetup{
     colorlinks = true,
     urlcolor=blue,
-    linkcolor= black
+    linkcolor= black,
+    citecolor= blue
 }
 
 \usepackage{graphicx}
@@ -53,6 +57,26 @@
     logic ports/scale=0.7,
 }
 
+
+\usepackage[polish]{babel}
+\usepackage{csquotes}
+\usepackage[sorting=none]{biblatex}
+\bibliography{bibliography.bib}
+
+\lstdefinestyle{asm}{
+    belowcaptionskip=1\baselineskip,
+    frame=L,
+    xleftmargin=\parindent,
+    showstringspaces=false,
+    numbers=left,
+    firstnumber=1,
+    basicstyle=\footnotesize,
+    basicstyle=\ttfamily,
+    tabsize=4,
+}
+
+
+
 \title{
     \includegraphics[width = 0.3\textwidth]{agh_logo.jpg}\\
     \textbf{Akademia górniczo-hutnicza w Krakowie}\\
@@ -73,6 +97,9 @@
 \usepackage{titling}
 \renewcommand\maketitlehooka{\null\mbox{}\vfill}
 \renewcommand\maketitlehookd{\vfill\null}
+\newcommand{\lsection}[1]{\section{{#1}\texorpdfstring{\hfill}{}\small{Łukasz Przystupa}}}
+\newcommand{\figurePlotName}{\renewcommand{\figurename}{Wykres}}
+
 
 \begin{document}
     \begin{titlepage}
@@ -91,11 +118,19 @@
     % \input{Chapters/Abstract.tex}
     \input{Chapters/Introduction.tex}
     \input{Schematic/block.tex}
+    \input{Chapters/Testing.tex}
     \input{Chapters/Building.tex}
     \input{Chapters/Issue.tex}
+    \input{Chapters/Map.tex}
 
     \vfill
     \begin{flushright}
         Łukasz Przystupa
     \end{flushright}
+
+    \newpage
+    \pagenumbering{gobble}
+    \nocite{*}
+    \printbibliography
+
 \end{document}

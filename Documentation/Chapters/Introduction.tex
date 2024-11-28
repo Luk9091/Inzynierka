@@ -1,4 +1,4 @@
-\section{Wstęp}
+\lsection{Wstęp}
     Celem poniższej pracy jest zbudowanie autonomicznego pojazdu, 
     którego zadaniem będzie zbudowanie wirtualnej mapy terenu.
     Użytkownik powinien mieć możliwość za pomocą dedykowanej aplikacji komputerowej zobaczyć mapę zbudowaną przez poszczególne urządzenia.
@@ -18,7 +18,7 @@
                 Jednak ze względu na swoją popularność, jest bardzo drogi i mało dostępny. 
                 A zaleta jaką jest system operacyjny jest też wadą gdy chcemy aby nasz projekt działał w czasie rzeczywistym.
                 \item Arduino -- najpopularniejszy mikrokontroler, którego największą zaletą jest prostota framework'a Arduino oraz mnogość bibliotek do każdego układu.
-                Niestety, płytki te operate są o 8-bitowe mikrokontrolery z rodziny AVR, co sprawia, że są bardzo wolne (max 20MHz). 
+                Niestety, płytki te oparte są o 8-bitowe mikrokontrolery z rodziny AVR, co sprawia, że są bardzo wolne (max 20MHz). 
                 Sam framework wykorzystywany jest na wielu różnych praformach, przez co jego szybkość jest dyskusyjna.
                 \item STM32 -- układu projektowane przez firmę STMicroelectronics, które są znacznie szybsze od Arduino, a także mają znacznie więcej pamięci.
                 Jednak środowisko programistyczne \textit{STM Cube IDE}, czy biblioteka HAL sprawiają, że programowanie jest znacznie trudniejsze w porównaniu do innych układów.
@@ -73,7 +73,7 @@
                 \item Czujnik ultradźwiękowy -- najtańsze układy do pomiaru odległości, bardzo prymitywne. O bardzo niestabilnym pomiarze.
                 \item Czujniki Time of Flight (ToF) -- złożone wyspecjalizowane moduły pozwalające na dużą dokładność pomiarową oraz bardzo daleki zasięg.
                 Zazwyczaj wymagają specjalnych bibliotek dostarczonych przez producenta
-                \item Układy obiciowe IR -- proste dwu diodowe układy emitera i pomiaru natężenie światła podczerwonego. Układy o małej dokładności pomiarowej, dużej strefie martwej (old $2cm$ do $20cm$), małej stabilności pomiarowej. Pomiar zależy od koloru obiektu.
+                \item Układy obiciowe IR -- proste dwu diodowe układy emitera i pomiaru natężenie światła podczerwonego. Układy o małej dokładności pomiarowej, dużej strefie martwej, niewielkim zakresie pomiarowym (od $2cm$ do $20cm$), małej stabilności pomiarowej -- pomiar zależy od koloru obiektu.
                 \item Lidar -- drogie wyspecjalizowane układy, pozwalające na bardzo precyzyjny pomiar w pełnym zakresie $360^\circ$ w okół pojazdu.
                 \item Radar -- bardzo drogie i bardzo dokładne układy pomiarowe, pozwalające na niezwykła precyzję. Niestety, praktycznie nie dostępne w względnie małych rozmiarach na rynku konsumenckim. Dodatkowo wymają specjalnych procesorów sygnałowych pozwalających w miarę na bieżąco przetwarzać dane z radarów.
             \end{enumerate}
@@ -98,6 +98,21 @@
         Projekt został, zbudowany w środowisku VS Code, ze względu na największą elastyczność oraz możliwość dostosowania go do własnych potrzeb.
 
 
-
     \subsection{Środowisko CAD}
+        Zbudowanie pojazdu autonomicznego wymaga wymodelowania odpowiednich części.
+        % Dodatkowo, praca wymagała zaprojektowania kilku dodatkowych elementów mechanicznych.
+        W tym celu, zostało wykorzystane środowisko CAD, które pozwala na zbudowanie modelu 3D.
+        Poniżej przedstawiono listę kilku najpopularniejszych programów do projektowania.
+        \begin{enumerate}
+            \item SolidWorks -- program stworzony przez firmę Dassault Systemes, który jest bardzo popularny w przemyśle. Jest też niezwykle precyzyjny i każda operacja wymaga zastanowienia się dokładnie co chce się osiągnąć - przez co próg wejścia jest bardzo wysoki.
+            \item Fusion 360 -- program stworzony przez firmę Autodesk, przeznaczony specjalnie do modelowania 3D. Posiada olbrzymie wsparcie dla drukarek 3D, a także dla obrabiarek CNC. 
+                                Jednak przez bardzo długi czas dostępny był jedynie w wersji płatnej.
+                                A wersja darmowa o ile istnieje to jest niesamowicie okroja z podstawowych funkcji takich jak: możliwość pracy nad wieloma projektami. 
+                                Maksymalnie tylko 10 może być edytowalnych oraz wymusza pracę w chmurze.
+            \item FreeCAD -- darmowy program do projektowania modeli 3D, bardzo prosty w obsłudze, a nauczenie się tego programu wymaga naprawdę niewielkiego wkładu pracy.
+                             Program jest stale rozwijany, a społeczność wokół niego ma możliwość rozbudowywania go o nowe funkcje. Niewątpliwą zaletą w porównaniu do innych programów jest możliwość uruchomienia go na każdym systemie operacyjnym. 
+        \end{enumerate}
+
+        W projekcie został wykorzystany program FreeCAD, ze względu na swoją prostotę oraz możliwość uruchomienia na systemie Linux.
+
         
