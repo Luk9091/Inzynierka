@@ -1,11 +1,11 @@
-\lsection{Budowa pojazdu - założenia i testy}
+\section{Budowa pojazdu - założenia i testy}
     Inspiracją do stworzenia poniższego projektu, były samochody autonomiczne, które najczęściej są pojazdami dwuosiowymi, o jednej osi skrętnej i jednej osi napędzającej.
     Obie osie, nie będą połączone ze sobą, co pozwoli na niezależne sterowanie nimi.
     W projekcie zostaną użyte dwa silniki prądu stałego wybrane w rozdziale \ref{sec:engines}.
     Silniki zostały podłączone bezpośredni do kół w osi tylnej.
     \subsection{Przednia oś}
         Przednia oś, została połączona układem kierowniczym, opartym na serwomechanizmie.
-        Na rysunku \ref{fig:frontAxis_model} przedstawiono model układu kierowniczego zaprojektowanego przez autorów.
+        Na rysunku \ref{fig:frontAxis_model} przedstawiono model tego układu zaprojektowanego przez autora.
 
         \begin{figure}[!ht]
             \centering
@@ -13,9 +13,9 @@
             \caption{Przykładowy układ kierowniczy zaprojektowany w narzędziu FreeCAD}
             \label{fig:frontAxis_model}
         \end{figure}
-        Układ został skręcania, został zaprojektowany w taki sposób aby ramiona skrótów oraz ramie serwomechanizmu były takiej samej długości.
+        Oś ta została zaprojektowana w taki sposób, aby środek kół znajdował się w linii z środkiem serwomechanizmu.
         Dzięki temu, kąt ustawienia serwomechanizmu, odpowiada kątowi skrętu kół.
-        Natomiast dużą wadą takiego układu, jest brak możliwości odczynia aktualnej pozycji kół, które po osiągnięciu swojego limitu mogą zniszczyć układ serwa.
+        Natomiast dużą wadą takiego układu, jest brak możliwości odczynia aktualnej pozycji kół, które po osiągnięciu swojego limitu mogą zniszczyć serwo.
 
     \subsection{Rama pojazdu}
     Na czas beta testów, został wykorzystana gotowa rama przedstawiona na zdjęciu \ref{fig:test_chassis}.
@@ -23,6 +23,7 @@
         \centering
         \includegraphics[width=0.7\textwidth]{chassis-waveshare-24419.png}
         \caption{Rama testowa Waveshare 24419}
+        Źródło: \citetitle{chassis_waveshare} \cite{chassis_waveshare}
         \label{fig:test_chassis}
     \end{figure}
 
@@ -36,7 +37,7 @@
         Pomiar odległości jest podstawową funkcjonalności, współczesne pojazdy autonomiczne wykorzystują układy LIDAR, które pozwalają mierzyć pełne $360^\circ$.
         Jednak w wielu sytuacjach taki pomiar mija się z celem, gdyż znaczna większość próbek zostaje odrzucona.
         Same lidary, zaś są bardzo drogimi urządzeniami, często z niestandardowym sposobem komunikacji (np. za pomocą UART). 
-        Dlatego, też autorzy, zdecydowali się na zastosowanie tańszych czujników ToF.
+        Dlatego, też autor, zdecydował się na zastosowanie tańszych czujników ToF.
         Trzy takie czujniki zostały zamocowane z przodu pojazdu, z rozstawieniem co $30^\circ$.
         Na rysunku \ref{fig:ToF_holder}, przedstawiono wyżej opisany sposób montażu.
 % \newpage

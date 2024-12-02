@@ -1,4 +1,4 @@
-\lsection{Problemy konstrukcyjne}
+\section{Problemy konstrukcyjne}
 \label{sec:problemy_konstrukcyjne}
     W poniższym rozdziale zostaną przedstawione problemy konstrukcyjne,
     które pojawiły się podczas realizacji projektu.
@@ -13,9 +13,9 @@
             \item aktualną pozycję kół,
             \item linie poziome na drodze czy pobocze drogi.
         \end{itemize}
-        Jako ludzie, wiele tych parametrów kontroluje ,,na wyczucie" jednak pojazdy autonomiczne, są poniekąd robotami, dla których istnieje tylko informacja \textit{tak} lub \textit{nie}.
+        Jako ludzie, wiele tych parametrów kontroluje ,,na wyczucie''`' jednak pojazdy autonomiczne, są poniekąd robotami, dla których istnieje tylko informacja \textit{tak} lub \textit{nie}.
         Poniższy projekt podczas testów, wykazywał wiele mankamentów, które uniemożliwiały jazdę prostą.
-        W poniższym rozdziale pokrótce zostaną one opisane wraz z proponowanymi przez autorów metodami radzenia sobie z nie idealnością konstrukcji.
+        W poniższym rozdziale pokrótce zostaną one opisane wraz z proponowanymi metodami radzenia sobie z nie idealnością konstrukcji.
         % Były to między innymi:
         
         \subsubsection{Różnica prędkości silników}
@@ -46,8 +46,8 @@
                 \label{plot:distance_err_in_time_const_speed}
             \end{figure}
 
-            Aby rozwiązać powyższy problem należy zastosować regulator PID, pozwalający w trakcie pracy silników, na bieżąco korygować prędkość silników.
-            Natomiast na samym początku ruchu została zastosowana sztywna korekta prędkości silników, w celu zminimalizowania błędu.
+            Aby rozwiązać powyższy problem należy zastosować regulator PID, pozwalający w trakcie pracy, korygować prędkość silników.
+            Natomiast podczas startu silników została zastosowana sztywna korekta prędkości, w celu zminimalizowania błędu.
             \begin{figure}[!ht]
                 \centering
                 \begin{tikzpicture}
@@ -55,7 +55,6 @@
                         width = 0.7\textwidth,
                         grid = both,
                         grid style = dashed,
-                        % axis lines = middle,
                         xlabel = czas ${[s]}$,
                         ylabel = różnica odległości ${[mm]}$,
                         xmin = 0,
@@ -76,11 +75,11 @@
         Kolejnym napotkanym problemem, okazuje się nie idealność podwozia.
         Szczególnie elementu przedstawionego na rysunku \ref{fig:frontAxis_model} oraz nie równomierne rozłożenie masy względem środka.
         Wszystkie wyżej wymienione niedokładności powodowały, że pojazd cały czas skręcał w jedną stronę.
-        Rozwiązaniem tego problemu jest zastosowanie układy pętli zwrotnej, opartej na czujniku $MPU6050$, który został użyty jak żyroskop, pozwalający na pomiar biedzącego kąta.
+        Rozwiązaniem tego problemu jest zastosowanie pętli sprzężenia zwrotnego, opartej na czujniku $MPU6050$, który został użyty jak żyroskop, pozwalający na pomiar biedzącego kąta.
         Dzięki czemu można korygować kierunek skręcania pojazdu.
         
         Jednak jego wykorzystanie nie było bezproblemowe i wymagało dodatkowych poprawek.
-        Na wykresie \ref{plot:gyro_magneto_measure} przedstawiono pomiar kąta dla obrotu pojazdu ze stałą prędkością w jednym kierunku.
+        Na wykresie \ref{plot:gyro_magneto_measure} przedstawiono pomiar kąta dla obrotu pojazdu ze stałą prędkością w jednym kierunku po kalibracji czujnika.
         Poniższy pomiar został wykonany w celu ustalenia liniowości pracy żyroskopu opartego na akcelerometrze. 
         Układem referencyjnym był uprzednio skalibrowany magnetometr (układ $QMC5883L$).
 % 
@@ -138,8 +137,9 @@
 
 
     \newpage
-    Oba wyżej opisane rozwiązania pozwalają na w miarę stałą jazdę prostą.
-    A w sytuacjach, kiedy pojazd zaczyna znacząco skręcać, na przykład po impakcie z boku, sprzężenie zwrotne z żyroskopu pozwala na w miarę łagodny powrót do oczekiwanego kąta.
+    Oba wyżej opisane rozwiązania pozwalają na w miarę stałą jazdę prostą ($\pm 2^\circ$).
+    A w sytuacjach, kiedy pojazd zaczyna znacząco skręcać, na przykład po impakcie z boku, sprzężenie zwrotne z żyroskopu pozwala wykryć znaczącą zmianę kąta ruchu.
+    Kolejny regulator PID, odczytuje wartość kąta i koryguje kąt serwomechanizmu, tak aby pojazd wrócił na prostą.
 
     \subsection{Skręcanie}
         Rozwiązanie problemów z jazdą prosto to tylko połowa sukcesu.
@@ -150,34 +150,41 @@
         \subsubsection{Dyferencjał}
         \label{subsubsec:dyferencjal}
         Najprostszym do zauważenia problemem był brak dyferencjału. 
-        Tylna oś pojazdu posiadała dwa silniki, jednak w poprzednich testach, zostały one ,,software'owo połączona sztywną belką".
-        Wyznaczenie wartości dyferencjału jest prostym zadaniem. Poniżej przedstawiono schemat algorytmu, na którego podstawie wyznaczono procentową wartość dyferencjału.
-        Rysunek \ref{fig:turning_car}, przedstawia schematyczną sytuację skrętu pojazdu.-
+        Tylna oś pojazdu posiada dwa silniki, jednak w poprzednich testach, zostały one ,,software'owo połączona sztywną belką".
+        Powodowało to poślizg pojazdu podczas skręcania a w konsekwencji uniemożliwiało powtarzalność manewru.
+
+        Rozwiązaniem tego problemu jest zmiana prędkości pracy silników w zależności od promienia skrętu.
+        Poniżej przedstawiono schemat algorytmu, na którego podstawie wyznaczono procentową wartość dyferencjału.
+        Rysunek \ref{fig:turning_car}, przedstawia schematyczną sytuację skręcania.
         \input{Schematic/turning.tex}
 
         Jak widać na powyższym rysunku, skręt pojazdu można opisać jako ruch po kręgu, w którym poszczególne prędkości liniowe nie są sobie równe.
         Jednak występuje zależność:
         \begin{gather}
-            \omega_{\text{lewe koła}} = \omega_{\text{prawe koła}}\\
-            \frac{v_{\text{lewe koła}}}{r} = \frac{v_{\text{prawe koła}}}{r + \Delta r}\\
-            \frac{v_\text{lewe koła}}{v_{\text{prawe koła}}} = \frac{r}{r + \Delta r}
+            \omega_{\text{wewnęrznego koła}} = \omega_{\text{zewnętrznego koła}}\\
+            \frac{v_{\text{wewnęrznego koła}}}{r} = \frac{v_{\text{zewnętrznego koła}}}{r + \Delta r}\\
+            \frac{v_\text{wewnęrznego koła}}{v_{\text{zewnętrznego koła}}} = \frac{r}{r + \Delta r}
         \end{gather}
-        Jedynymi wartościami jakie są znane to:
+        Znanymi wartościami są:
         \begin{itemize}
             \item $l = 155$ -- długość między osiami samochodu:,
             \item $\Delta r = 125$ -- odległość między kołami w jednej osi,
             \item $\gamma \in <60^\circ \div 120^\circ>$ -- kąt skrętu kół, ustawiany przez algorytm nawigacji lub użytkownika.
         \end{itemize}
-        Dla powyższych parametrów, można wyznaczyć następującą równania:
+        Dla powyższych parametrów, można wyznaczyć następujące równanie:
         \begin{gather}
             \tan \left(90 - \gamma\right) = \frac{l}{r}
         \end{gather}
-        Na podstawie powyższego równania można wyznaczyć funkcję długości promienia skrętu od aktualnego kąta, oraz 
+        Na jego podstawie wyznaczono funkcję długości promienia skrętu od aktualnego kąta:
         \begin{gather}
             r(\gamma) = \frac{l}{\tan(90-\gamma)}
             \label{eq:turning_radius}
         \end{gather}
-        A zatem procentowy stosunek prędkości w funkcji kąta można wyznaczyć jako:
+        A zatem procentowy stosunek prędkości w funkcji kąta można wyrazić jako:
         \begin{gather}
             \frac{v_{\text{prawe koła}}}{v_{\text{lewe koła}}} = 1 + \frac{\Delta r}{r} = 1 + \Delta r \cdot \frac{\tan(90 - \gamma)}{l}
         \end{gather}
+    
+
+    Dzięki wszystkim wyżej wymiennym zabiegom, udało się uzyskać powtarzalne wyniki zarówno podczas jazdy prosto, cofania się oraz skręcania.
+    Powyższe działania są niezbędne, jeśli budowany robot ma być sterowany autonomicznie.

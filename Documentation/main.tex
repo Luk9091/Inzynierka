@@ -76,14 +76,37 @@
 }
 
 
+\usepackage{listings}
+\lstset{
+literate=%
+    {ą}{{\k{a}}}1
+    {Ą}{{\k{A}}}1
+    {ć}{{\'c}}1
+    {Ć}{{\'{C}}}1
+    {ę}{{\k{e}}}1
+    {Ę}{{\k{E}}}1
+    {ł}{{\l{}}}1
+    {Ł}{{\L{}}}1
+    {ń}{{\'n}}1
+    {Ń}{{\'N}}1
+    {ó}{{\'o}}1
+    {Ó}{{\'O}}1
+    {ś}{{\'s}}1
+    {Ś}{{\'S}}1
+    {ż}{{\.z}}1
+    {Ż}{{\.Z}}1
+    {ź}{{\'z}}1
+    {Ź}{{\'Z}}1
+}
+
 
 \title{
     \includegraphics[width = 0.3\textwidth]{agh_logo.jpg}\\
     \textbf{Akademia górniczo-hutnicza w Krakowie}\\
     Wydział Informatyki, Elektroniki i  Telekomunikacji\\\vspace{2cm}
     \textbf{Praca inżynierska}\\
-    Pojazd autonomiczny z możliwością oceny aktualnej sytuacji na drodze\\\vspace{1cm}
-    \small{Autonomous vehicle with ability to assess current road situation}
+    Pojazd autonomiczny służący do pokonywania trasy z~przeszkodami\\\vspace{1cm}
+    \small{An autonomous vehicle designed to navigate an obstacle course}
 }
 \author{
     \begin{tabularx}{\textwidth}{l l}
@@ -97,7 +120,6 @@
 \usepackage{titling}
 \renewcommand\maketitlehooka{\null\mbox{}\vfill}
 \renewcommand\maketitlehookd{\vfill\null}
-\newcommand{\lsection}[1]{\section{{#1}\texorpdfstring{\hfill}{}\small{Łukasz Przystupa}}}
 \newcommand{\figurePlotName}{\renewcommand{\figurename}{Wykres}}
 
 

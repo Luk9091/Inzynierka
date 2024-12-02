@@ -1,0 +1,19 @@
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}
+        \draw[]
+            (0,  0) node[draw, circle, minimum width = 2cm, align = center](start){Nowa\\ścieżki}
+            (-3, -2.5) node[draw, circle, minimum width = 2cm, align = center](instruction){Ścieżka na\\instrukcje}
+            (0, -6) node[draw, diamond, minimum width = 2cm, align = center](check){Czy występuje\\kolizja}
+            (6, -6) node[minimum width = 2cm, align = center](noCollision){Powtarzaj dla wszystkich\\instrukcji i wektorów}
+        ;
+
+        \draw[-Stealth] (start) to[bend left] (instruction);
+        \draw[-Stealth] (instruction) to[bend right] (check);
+        \draw[-Stealth] (check) to[bend right] node[right]{Tak} (start);
+        \draw (check) to[bend right] node[below]{Nie} (noCollision);
+        \draw[-Stealth] (noCollision) to[bend right] (check);
+    \end{tikzpicture}
+    \caption{Uproszczony algorytm do wyznaczania ścieżek na mapie wektorowej}
+    \label{schematic:vectorMapPathfinding}
+\end{figure}

@@ -1,4 +1,4 @@
-jump main
+jump main           # Rozpocznij od funkcji main
 speed = 0.1
 distance = 100
 baseAngle = 90
@@ -7,34 +7,34 @@ deltaAngel = 30
 
 main:
     print "Check I2C"
-    [
-    mr
-    m
-    c
+    [               # Wyświetl listę urządzeń I2C
+    mr              # Zresetuj ToF
+    m               # Zmierz odległość
+    c               # Zmierz dane z akcelerometru
     sleep 5
 
     print "Check servo"
-    r $baseAngle
-    rs
+    r $baseAngle    # Ustaw kąt serwa na 90 stopni
+    rs              # Uruchom serwo
+    sleep 5
+    rs              # Zatrzymaj serwo
+    sleep 2
+    rs $baseAngle + $deltaAngel # Ustaw kąt serwa na 120deg
     sleep 5
     rs
     sleep 2
-    rs $baseAngle + $deltaAngel
-    sleep 5
-    rs
-    sleep 2
-    rs $baseAngle - $deltaAngel
+    rs $baseAngle - $deltaAngel # Ustaw kąt serwa na 60deg
     sleep 5
     rs
 
     print "Check motor"
-    s $speed
-    f $distance
-    sleep 5
+    s $speed        # Ustaw prędkość na 0.1 mocy maksymalnej
+    f $distance     # Przejedź dystans 100mm
+    sleep 15
 
-    sleep 10
     print "Please check back sensor"
-    b $distance
+    # Jeśli czujniki IR wykryją przeszkodę, robot zatrzyma się
+    b $distance    # Przejechaj 100mm do tyłu
     sleep 10
-    end
+    end            # Zakończ program lub funkcję
 
