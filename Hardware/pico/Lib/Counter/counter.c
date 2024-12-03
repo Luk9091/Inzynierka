@@ -15,16 +15,17 @@ void Counter_irq(){
     if (status & (1u << 2)){
         UDP_send("Right encoder up\n");
         // Motor_setSpeedRight(0);
-        Motor_stopRight();
+        // Motor_stopRight();
     }
     
     if (status & (1u << 1)){
         UDP_send("Left encoder up\n");
         // Motor_setSpeedLeft(0);
-        Motor_stopLeft();
+        // Motor_stopLeft();
     }
     Motor_stop();
     Servo_stop(&servo);
+    Motor_pid_stop();
 
     pwm_hw->intr |= status;
 }

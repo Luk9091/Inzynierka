@@ -11,6 +11,8 @@ else:
 print('Reading data from the device')
 print('Press Ctrl+C to stop the program')
 
+device.write(b'1')
+
 try:
     while True:
         line: str = device.readline().decode('utf-8')

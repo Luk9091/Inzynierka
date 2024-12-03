@@ -29,6 +29,10 @@ add_executable(${PROJECT_NAME}
     Lib/IR/ir.c
     Lib/Eeprom/eeprom.c
     Lib/SPIFlash/flash.c
+
+
+    Test/CompassTest.c
+    Test/MeasureSpeedTest.c
 )
 
 # pico_generate_pio_header(${PROJECT_NAME} ${CMAKE_CURRENT_LIST_DIR}/StepperMotor/counter.pio)
@@ -49,6 +53,8 @@ include_directories(
     Lib/IR
     Lib/Eeprom
     Lib/SPIFlash
+
+    Test
 )
 
 add_subdirectory(Lib/VL53L0X/Api)

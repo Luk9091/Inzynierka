@@ -1,1 +1,1 @@
-../Comunication/main.py
+../Communication/main.py

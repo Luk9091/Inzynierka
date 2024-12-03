@@ -38,10 +38,16 @@ bool Motor_pid_distanceCorrection(repeating_timer_t *timer){
     int countLeft = Counter_getCount(MOTOR_ENCODER_LEFT_UP);
     int countRight= Counter_getCount(MOTOR_ENCODER_RIGHT_UP);
 #if MOTOR_DIFFERENTIAL
-    int diff = countLeft * (1 + differential) - countRight * (1 - differential);
+    int diff = countLeft * (1 - differential) - countRight * (1 + differential);
 #else
     int diff = countLeft - countRight;
 #endif
+//     int diff = countLeft - countRight;
+// #if MOTOR_DIFFERENTIAL
+//     int targetDiff = (countLeft + countRight) * differential;
+//     diff -= targetDiff;
+// #endif
+
     int ans = PID_update(&pid, diff, dt);
 
     int speedLeft  = Motor_getSpeed(MOTOR_LEFT_PWM)  - ans;
@@ -49,28 +55,27 @@ bool Motor_pid_distanceCorrection(repeating_timer_t *timer){
 
     if (speedLeft > MOTOR_FULL_SPEED){
         speedLeft = MOTOR_FULL_SPEED;
-    } else if (speedLeft < 0){
-        speedLeft = 0;
+    } else if (speedLeft < MOTOR_MINIMUM_SPEED){
+        speedLeft = MOTOR_MINIMUM_SPEED;
     }
 
     if (speedRight > MOTOR_FULL_SPEED){
         speedRight = MOTOR_FULL_SPEED;
-    } else if (speedRight < 0){
-        speedRight = 0;
+    } else if (speedRight < MOTOR_MINIMUM_SPEED){
+        speedRight = MOTOR_MINIMUM_SPEED;
     }
 
     // printf("Impulse: %6u, %6u, speed: %6u, %6u\n", countLeft, countRight, speedLeft, speedRight);
     Motor_setSpeedLeft(speedLeft);
     Motor_setSpeedRight(speedRight);
-    return true;
+    return pid_running;
 }
 
 void Motor_pid_run(){
-    add_repeating_timer_ms(MOTOR_PID_DT, Motor_pid_distanceCorrection, NULL, &pid_timer);
     PID_reset(&pid);
-    pid_running = true;
     Counter_clear(MOTOR_ENCODER_RIGHT_UP);
     Counter_clear(MOTOR_ENCODER_LEFT_UP);
+    pid_running = add_repeating_timer_ms(MOTOR_PID_DT, Motor_pid_distanceCorrection, NULL, &pid_timer);
 }
 
 void Motor_pid_stop(){
@@ -103,30 +108,25 @@ void Motor_init() {
     pwm_init(slice_right, &config, true);
 
     // Motor_setSpeed(0);
-    PID_init(&pid, 1.75f, 0.5f, -3.00f);
+    PID_init(&pid, 1.75f, 0.5f, 3.00f);
 }
 
 
 void Motor_forward(){
-#if MOTOR_DIFFERENTIAL
-    if (direction != FORWARD){
-        differential = -differential;
-    }
-#endif
+// #if MOTOR_DIFFERENTIAL
+//     if (direction != FORWARD){
+//         differential = -differential;
+//     }
+// #endif
     direction = FORWARD;
     gpio_clr_mask(MOTOR_MASK);
-    Counter_clear(MOTOR_ENCODER_RIGHT_UP);
-    Counter_clear(MOTOR_ENCODER_LEFT_UP);
+    Motor_pid_run();
     gpio_set_mask(MOTOR_MASK_FORWARD);
 }
 
 void Motor_backward(){
-#if MOTOR_DIFFERENTIAL
-    if (direction != BACKWARD){
-        differential = -differential;
-    }
-#endif
     direction = BACKWARD;
+    Motor_pid_run();
     gpio_clr_mask(MOTOR_MASK);
     Counter_clear(MOTOR_ENCODER_RIGHT_UP);
     Counter_clear(MOTOR_ENCODER_LEFT_UP);
@@ -171,9 +171,9 @@ void Motor_stop(){
 }
 
 void Motor_setDistance(float distance){
-    uint pulse = distanceToPulse(distance);
     Counter_clear(MOTOR_ENCODER_RIGHT_UP);
     Counter_clear(MOTOR_ENCODER_LEFT_UP);
+    uint pulse = distanceToPulse(distance);
     Counter_setCountTo(MOTOR_ENCODER_RIGHT_UP, pulse);
     Counter_setCountTo(MOTOR_ENCODER_LEFT_UP,  pulse);
 }
@@ -220,5 +220,5 @@ const PID_t *Motor_getPID(){
 }
 
 bool Motor_state(){
-    return sio_hw->gpio_out & MOTOR_MASK;
+    return (bool)(sio_hw->gpio_out & MOTOR_MASK);
 }

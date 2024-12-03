@@ -85,9 +85,12 @@ void Front_servo_Init(Servo_t * servo){
 
 void Init_motion(){
     servo.angle = 90;
+
+#if MOTOR_DIFFERENTIAL
+    Motor_setDifferential(servo.angle);
+#endif
     Servo_start(&servo);
-    Motor_setDistance(1);
-    Motor_forward();
+    Motor_forwardDistance(1);
 
     Motor_setSpeed(MOTOR_HALF_SPEED);
 }
@@ -97,6 +100,7 @@ void myReadLine(){
     char line[128] = {0};
     char c = 0;
     uint index = 0;
+    static float speed = 0.5;
 
 
     while (true){
@@ -111,7 +115,6 @@ void myReadLine(){
         
         switch (line[0]){
             case 's':{
-                static float speed;
                 if (strlen(line) != 1){
                     speed = read;
                     uint16_t data = read * MOTOR_FULL_SPEED;
@@ -130,36 +133,50 @@ void myReadLine(){
             } break;
 
             case 'f': {
+                angleError = 0;
+                direction = FORWARD_DIRECTION;
+                IR_disable();
                 if (strlen(line) > 1){
                     Motor_setDistance(read);
                     UDP_send("Distance set to: %6.2fmm\n", read);
                 }   
                 Servo_start(&servo);
                 sleep_ms(250);
-                IR_disable();
-                angleError = 0;
                 if (line[1] == 'l') {
+                    Motor_setSpeedLeft(MOTOR_FULL_SPEED * speed);
+                    Motor_setSpeedRight(0);
                     Motor_forwardLeft();
                 } else if (line[1] == 'r') {
+                    Motor_setSpeedRight(MOTOR_FULL_SPEED * speed);
+                    Motor_setSpeedLeft(0);
                     Motor_forwardRight();
                 } else {
+                    Motor_setSpeed(MOTOR_FULL_SPEED * speed);
                     Motor_forward();
                 }
-                direction = FORWARD_DIRECTION;
                 UDP_send("Motor forward\n");
             } break;
 
             case 'b': {
+                angleError = 0;
+                direction = BACKWARD_DIRECTION;
+                IR_enabled();
                 if (strlen(line) > 1){
                     Motor_setDistance(read);
                     UDP_send("Distance set to: %6.2fmm\n", read);
                 }   
                 Servo_start(&servo);
                 sleep_ms(250);
-                IR_enabled();
-                angleError = 0;
-                Motor_backward();
-                direction = BACKWARD_DIRECTION;
+                if (line[1] == 'l') {
+                    Motor_backwardLeft();
+                } else if (line[1] == 'r') {
+                    Motor_setSpeedRight(MOTOR_FULL_SPEED * speed);
+                    Motor_setSpeedLeft(0);
+                    Motor_backwardRight();
+                } else {
+                    Motor_setSpeed(MOTOR_FULL_SPEED * speed);
+                    Motor_backward();
+                }
                 UDP_send("Motor backward\n");
             } break;
 
@@ -264,6 +281,7 @@ void sendStatistic(){
     uint16_t PWM_left, PWM_right;
     uint time = time_us_32();
     uint endTime = 0;
+    const PID_t *motorPID = Motor_getPID();
 
     while (time > endTime){
         count_left = Counter_getCount(MOTOR_ENCODER_LEFT_UP);
@@ -275,8 +293,8 @@ void sendStatistic(){
 
         time = time_us_32();
         UDP_send(
-            "Time: %10uus, Count: %6u, %6u, distance: %6.2f, %6.2f, Angle: %6.2f, PWM: %6hu, %6hu\n",
-            time, count_left, count_right, distance_left, distance_right, angleError, PWM_left, PWM_right
+            "Time: %10uus, Count: %6u, %6u, distance: %6.2f, %6.2f, Angle: %6.2f, PWM: %6hu, %6hu, PID: %6.2f\n",
+            time, count_left, count_right, distance_left, distance_right, angleError, PWM_left, PWM_right, motorPID->P + motorPID->I + motorPID->D
         );
         sleep_ms(100);
         
@@ -306,18 +324,14 @@ int main(){
     // Counter_disabledIRQ(MOTOR_ENCODER_RIGHT_UP);
 
 
-    float speed = 0.f;
+    float speed = 0.5f;
     float _time;
-#if MOTOR_DIFFERENTIAL
-    Motor_setDifferential(90);
-#endif
     add_repeating_timer_ms(ANGLE_DT, angle_update, NULL, &angle_timer);
     sleep_ms(ANGLE_DT * 3);
     angleError = 0;
 
     Init_motion();
     Servo_stop(&servo);
-    Motor_pid_run();
 
     while(1){
         myReadLine();
