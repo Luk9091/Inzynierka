@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "motor.h"
 #include "udp.h"
+#include "tof.h"
 
 #define COUNTER_FINISH_MEASURE_ANGLE 250
 
@@ -26,6 +27,7 @@ void Counter_irq(){
     Motor_stop();
     Servo_stop(&servo);
     Motor_pid_stop();
+    ToF_stopRepeatMeasuring();
 
     pwm_hw->intr |= status;
 }

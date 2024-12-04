@@ -5,6 +5,7 @@
 #include <pico/stdio.h>
 #include "counter.h"
 #include "udp.h"
+#include "tof.h"
 
 // Motor frequency 25kHz, f_sys = 125MHz
 #define PRESCALER  1
@@ -121,6 +122,7 @@ void Motor_forward(){
     direction = FORWARD;
     gpio_clr_mask(MOTOR_MASK);
     Motor_pid_run();
+    ToF_startRepeatMeasuring();
     gpio_set_mask(MOTOR_MASK_FORWARD);
 }
 
