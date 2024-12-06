@@ -23,38 +23,37 @@
                 \item STM32 -- układy projektowane przez firmę STMicroelectronics. Są znacznie szybsze i posiadają więcej pamięci od Arduino.
                 Jednak ze względu na potrzebę wykorzystania biblioteki HAL, programowanie jest znacznie trudniejsze w porównaniu do innych układów.
                 \item ESP32 -- 32-bitowy dwurdzeniowy procesor z wbudowanym modułem WiFi i Bluetooth.
-                Jeden z najszybszych mikrokontrolerów na rynku, który jest bardzo popularny w projektach IoT.
-                Natywnie pracuje pod kontrolą systemu czasu rzeczywistego FreeRTOS, co sprawia, że może być idealnym kandydatem do tego projektu.
-                Jednak bardzo słaba dokumentacja, dyskredytują go w oczach wielu programistów.
-                \item Raspberry Pi Pico -- mikrokontroler od firmy Raspberry Pi, który jest znacznie szybszy od Arduino $f_{cpu} = 125MHz$.
-                Ma znacznie więcej pamięci $2MB$ w porównaniu z Arduino~$32KB$.
-                Producent udostępnił wyjątkowo estetyczne SDK w języku C, do którego przygotował masę przykładów.
-                Sama dokumentacja jest stale rozwijana i wprowadzane są nowe poprawki.\\
-                W roku 2022, pojawiła się druga iteracji tej płytki rozwojowej z dopiskiem ,,W" (Pico~W), która posiada wbudowany moduł WiFi.
+                Jeden z najszybszych mikrokontrolerów dostępnych na rynku. Jest bardzo popularny w projektach IoT (wytłumaczyć).
+                Natywnie pracuje w systemie czasu rzeczywistego - FreeRTOS. Dzięki temu ma potencjał na bycie idealnym kandydatem do tego projektu.
+                Jednak znikoma dokumentacja produktu sprawia, że praca z nim jest uciążliwa, przez co opracowanie optymalnego kodu jest znacząco utrudnione.
+                \item Raspberry Pi Pico -- mikrokontroler od firmy Raspberry Pi, oparty na rdzeniach Cortex - tak samo jak STM32.
+                Producent udostępnił wyjątkowo przystępny zestaw narzędzi programistycznych, oraz przykładów użycia.
+                Kolejną z zalet jest dobra dokumentacja tego procesora, która jest stale rozwijana.
+                W 2022 roku, pojawiła się druga iteracja tej płytki, Raspberry Pi Pico~W, ze zintegrowanym modułem WiFi.
             \end{enumerate}
-            Wszystkie wymienione platformy są w stanie zrealizować projekt, jednak ze względu na swoją prostotę, Raspberry Pi Pico wydaje się być najlepszym wyborem.
+            Projekt jest możliwy do zrealizowania na wszystkich wymienionych powyżej platformach. Jednak ze względu na swoją prostotę, Raspberry Pi Pico jest najbardziej optymalnym wyborem.
 
         \subsubsection{Sterowanie}
         \label{sec:engines}
-            Podstawowym zadaniem każdego samochodu jest możliwość jazdy.
+            Podstawowym zadaniem pojazdów mechanicznych jest poruszanie się.
             Dlatego niezwykle istotne jest wybranie odpowiedniego silnika napędowego.
-            Na rynku konsumenckim dostępnych jest wiele różnych wariantów.
-            Poniżej opisano możliwe opcje oraz omówiono po krotce ich wady i zalety:
+            Na rynku konsumenckim dostępnych jest wiele ich wariantów.
+            Poniżej opisano możliwe rozwiązania oraz skrótowo omówiono ich wady i zalety:
             \begin{enumerate}
-                \item Silniki krokowe -- kiedyś bardzo duże i drogie silniki, które potrzebowały dodatkowych układów sterowania.
-                Dziś jednak istnieją małe $5V$ rozwiązania, które moga być sterowanie bezpośrednio przez mikroprocesor.
-                Jednak złożone sterowanie, oraz mała prędkość maksymalna $v_{max} \approx 1 \frac{\text{obr.}}{s}$ eliminują ten rodzaj silników.
-                \item Serwomechanizmy $360^\circ$ -- serwomechanizmy to układ silnika wraz z kontrolerem prędkości oraz przekładniami, sterowanie takimi silnikiem pozwala na ustawienie bardzo dokładnej wartości prędkości dla każdego silnika.
-                Jednak nie istnieje żadna możliwość, sprawdzenia czy serwo A oraz drugie serwo B, pracują z tą samą prędkością. Co może prowadzić do wielu nie przewidzianych zachowań, na przykład znoszenie pojazdu w jedną stronę.
-                \item Serwomechanizmy $180^\circ$ -- odmiana serwomechanizmów pozwalająca na dosyć precyzyjne ustawienie żądanego kąta.
-                Układy nie nadają się do napędzania pojazdów, jednak świetnie odnajdują w sytuacjach gdy trzeba ustawić zadany kąt, na przykład podczas skręcania.
-                \item Silniki BLDC -- najmocniejsze silniki, pozwalające osiągnąć nieporównywalne prędkości.
-                Niestety same silniki nie należą do tanich, a dodatkowo każdy silnik wymaga specjalistycznego układu sterującego.
-                \item Silniki DC -- proste, tanie silniczki prądu stałego, pozwalające na regulację prędkości za pomocą PWM.
-                Dodatkowo w sprzedaży dostępne są układy wyposazone w enkodery, pozwalające obliczyć średnią szybkość silnika,
-                a także wyznaczyć różnicę w prędkościach pracy silników.
+                \item Silniki krokowe -- niegdyś bardzo duże i drogie silniki, które wymagały dodatkowych układów sterowania.
+                Dziś jednak istnieją mniejsze, $5V$ rozwiązania, które moga być sterowanie bezpośrednio przez mikroprocesor.
+                Jednak złożone sterowanie oraz niska prędkość maksymalna $v_{max} \approx 1 \frac{\text{obr.}}{s}$ sprawiają, że wykożystanie ich w tym projekcie byłoby nieoptymalne.
+                \item Serwomechanizmy $360^\circ$ -- układy silników wraz z kontrolerem oraz przekładniami. Wbudowany moduł pozwala na regulację prędkości silnika z wysoką dokładnością.
+                Nie ma jednak możliwości sprawdzenia, czy dwa silniki pracują z tą samą prędkością. Może to prowadzić do wielu niepożądanych zachowań, jak na przykład trudności poruszaniem się w linii prostej.
+                \item Serwomechanizmy $180^\circ$ -- ta odmiana pozwala na precyzyjne ustawienie pożądanego kąta.
+                Układy te nie nadają się do napędzania pojazdów, gdyż ich zakres ruchu jest ograniczony do 180(stopni). Jednak, świetnie odnajdują się w sytuacjach, w których precyzja jest kluczowa.
+                \item Silniki BLDC -- pozwalają osiągnąć bardzo wysokie prędkości.
+                Niestety łączy się to z niemałą ceną. Dodatkowo każdy silnik wymaga specjalistycznego układu sterującego.
+                \item Silniki DC -- to silniki elektryczne zasilane prądem stałym. Pozwalają na regulację prędkości za pomocą PWM.
+                Dodatkowo w sprzedaży dostępne są układy wyposazone w enkodery, pozwalające obliczyć średnią prędkość silnika,
+                a także wyznaczyć różnicę w pracy silników.
             \end{enumerate}
-            Z powyższych rodzajów silników do napędu, najlepszymi wydają się silniki DC z zamontowanym enkoderem.
+            Układ napędowy został oparty na silnikach DC z zamontowanym enkoderem.
             Natomiast do układu kierowniczego, najlepiej nada się serwomechanizmy $180^\circ$. Oba wybrane układy przedstawiono na zdjęci \ref{fig:engines} poniżej.
             \begin{figure}[!ht]
                 \centering
