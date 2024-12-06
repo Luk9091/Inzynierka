@@ -1,22 +1,22 @@
 \section{Wstęp}
     Celem poniższej pracy jest skonstruowanie autonomicznego pojazdu,
-    którego zadaniem będzie zbudowanie wirtualnej mapy terenu oraz poruszanie się po nieznanym obszarze w sposób antonimiczny.
+    którego zadaniem będzie zbudowanie wirtualnej mapy terenu oraz samodzielne poruszanie się po nieznanym obszarze.
     Jednym z założeń projektu jest umożliwienie użytkownikowi kontroli nad pojazdem za pomocą dedykowanej aplikacji komputerowej.
-    Dodatkowo, powyższa aplikacja będzie wyświetlać budowaną mapę.
-    Po wskazaniu punktu docelowego, powinna zostać zaproponowana optymalna trasa, po której pojazd będzie się poruszał.
+    Dodatkowo, powyższa aplikacja będzie wyświetlać budowaną mapę w czasie rzeczywistym.
+    Po wskazaniu punktu docelowego, zostanie zaproponowana optymalna trasa, po której pojazd będzie się poruszał.
 
 
     \subsection{Środowisko sprzętowe}
-        Współczesne pojazdy autonomiczne wyposażone są w olbrzymie jednostki obliczeniowe, bardziej swoją konstrukcją przypominające pełnoprawne komputery z systemem operacyjnym.
-        Ten projekt ma być tylko modelem, pozwalajacym przedstawić zachowanie pojazdu autonomicznego, dlatego wykorzystanie pełnoprawnego komputera wydaje się być zbędne.
+        Współczesne pojazdy autonomiczne wyposażone są w jednostki obliczeniowe, które swoją konstrukcją przypominają pełnoprawne komputery z systemem operacyjnym.
+        Ten projekt ma być modelem, który przedstawia działanie pojazdu autonomicznego, dlatego wykorzystanie pełnoprawnego komputera jest zbędne.
 
         \subsubsection{Mikrokontroler}
-            Poniżej przedstawiono kilka najbardziej popularnym platform sprzętowych, które mogą stanowić bazę dla samochodu.
+            Poniżej przedstawiono kilka najbardziej popularnym platform sprzętowych, które mogą stanowić bazę dla pojazdu.
             \begin{enumerate}
-                \item Raspberry Pi -- pełnoprawny komputer z systemem operacyjnym Linux, umożliwiający bezpośredni dostęp do modułów zewnętrznych z pomocą GPIO.
-                Jest to najbardziej popularna platforma dla projektów DIY. System wraz z peryferiami komputerowymi pozwala na niesamowitą elastyczność w pracy, między innymi na połączenie się do układu za pośrednictwem SSH oraz pracę w języku Python.
+                \item Raspberry Pi -- komputer z systemem operacyjnym Linux, umożliwiający bezpośredni dostęp do modułów zewnętrznych z pomocą GPIO.
+                Jest to najbardziej popularna platforma dla projektów DIY (dodaj przypis do DIY z tłumaczeniem). Układ pozwala na niesamowitą elastyczność w pracy, między innymi na podłączenie się do układu za pośrednictwem SSH (przypis z wyjaśnieniem) oraz pracę w języku Python.
                 Jednak ze względu na swoją popularność, jest bardzo drogi i mało dostępny.
-                A zaleta jaką jest system operacyjny jest też wadą gdy chcemy aby nasz projekt działał w czasie rzeczywistym.
+                Natomiast, jednym z założeń projektu jest działanie w czasie rzeczywistym, co przy wykorzystaniu systemu operacyjnego jest niemożliwe.
                 \item Arduino -- najpopularniejszy mikrokontroler, którego największą zaletą jest prostota framework'a Arduino oraz mnogość bibliotek do każdego układu.
                 Niestety, płytki te oparte są o 8-bitowe mikrokontrolery z rodziny AVR, co sprawia, że są bardzo wolne (max 20MHz).
                 Sam framework wykorzystywany jest na wielu różnych praformach, przez co jego szybkość jest dyskusyjna.
