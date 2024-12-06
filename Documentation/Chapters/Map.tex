@@ -64,7 +64,7 @@
             Dzięki czemu wydaje się najlepszym rozwiązaniem dla zastosowań w układach embedded.
 
 
-\newpage
+% \newpage
             \subsection{Wygładzanie ścieżek}
             \label{subsec:wygładzanie_ścieżek}
             Na rysunku \ref{fig:pathfinding_dikstra} przedstawiono przykładową ścieżkę wyznaczoną przez algorytm Dijkstry.
@@ -79,7 +79,7 @@
                 \label{fig:pathfinding_dikstra}
             \end{figure}
 
-\newpage
+% \newpage
             Budowany pojazd ma tylko jedną oś skrętną, więc nie jest w stanie skręcić w miejscu.
             Dlatego koniecznym jest zastosowanie algorytmu wygładzania trasy.
             W artykule \citetitle{Simple_PathSmoothing} \cite{Simple_PathSmoothing}, przedstawiona jest najprostsza możliwa metoda wygładzania.
@@ -120,6 +120,7 @@
 
             Ostatecznie, z wszystkich wymienionych w artykułach algorytmów został wybrany algorytm krzywych Dublina - zw względu na łatwą implementację oraz możliwość łatwego dostosowywania promienia skrętu.
 
+% \newpage
             \subsubsection{Opis algorytmu krzywych Dublina}
                 Mechanizm wygładzania ścieżek za pomocą krzywych Dublina jest algorytmem przeznaczonym specjalnie dla pojazdów o ograniczonej sterowności.
                 Przykładowo dla pojazdów z tylko jedną osią skrętną.
@@ -327,117 +328,41 @@
             Złożoność mapy ma niewielki wpływ na czas wyznaczenia ścieżek, dla pustej mapy czas ten oscylował w okół $95ms$.
             Pozycja pojazdu oraz odległość do celu, także mają nieznaczący wpływ na czas wyznaczenie trasy.
             
+    \subsection{Nanoszenie punktów pomiarowych}
+        Jednym z podstawowych założeń, była możliwość budowania mapy przez pojazd.
+        W tym celu, samochód, musi mierzyć odległość w trakcie ruchu.
+        Czujniki ToF, zamontowane na przedzie pojazdu zostały ustawione w tryb ciągłego pomiaru odległości z okresem pomiarowym $T ms$.
+        Takie ustawienie pozwala na regularne odczytywanie odległości, bez konieczności zajmowani procesora procedurą pomiarową.
 
+        \subsection{Czas pomiarowy}
+            Czas odebrania pomiaru od pojedynczego czujnika wynosi około $3ms$.
+            Dlatego okres pomiarowy, powinien być na tyle długi aby pozwolić na odczytanie wszystkich czujników.
+            Wartość $T$ powinna być większa od $9ms$.
+            Okres pomiarowy został ustawiony na $T = 100ms$. 
+            Dzięki czemu pojazd jest w stanie w miarę na bieżąco reagować na zdarzenia.
 
+        \subsection{Przykładowa mapa}
+            Regularny pomiar oraz znajomość przebytej drogi między każdym z odcinków, pozwala na dokładne określenie w którym miejscu zostały wykonane poszczególne pomiary.
+            Poniżej przedstawiono zrzut ekranu (zdjęcie \ref{fig:buildMap}) z aplikacji z początkiem budowanej mapy.
 
+            \begin{figure}[!ht]
+                \centering
+                \includegraphics[width=0.7\textwidth]{PathFinding/buildMap.png}
+                \caption{Zbudowana mapa}
+                \label{fig:buildMap}
+            \end{figure}
 
-    
-\section{Sterowanie pojazdem}
-    Sterowanie pojazdem powinno odbywać się w sposób płynny i precyzyjny.
-    W poniższym rozdziale zostaną omówione algorytmy, odpowiedzialne za najbardziej podstawowe funkcje poruszania się takie jak: jazda prosto, skręt oraz cofanie.
+            Załączone zdjęcie przedstawia obraz mapy, zbudowanej na kratkach o rozmiarze $100mm \times 100mm$.
+            A cała mapa ma wymiary $ 2.4m \times 2.4m$.
+            Oraz przedstawiają rzut powierzchni przedstawionej na schematycznym rysunku \ref{schematic:room}.
+            
+            \input{Schematic/room.tex}
 
-    \subsection{Jazda przez pewien odcinek}
-    \label{subsec:sterowanie_odległość}
-        W rozdziale \ref{section:jazda_prosto}, zostały opisane problemy jakie wystąpiły podczas budowy pojazdu. %oraz problemy jakie musiały zostać rozwiązane aby samochód był w stanie jechać prosto.
-        Dzięki rozwiązaniu wyżej wymienionych problemów, pojazd był w stanie jechać prosto.
-        Jednak dla precyzyjnego sterowania, informacja o tym, że pojazd porusza po linii prostej, jest niewystarczająca.
-        Obowiązkowym jest poznanie odległości jaką pokonuje pojazd.
+            Na czerwono, zostały zaznaczone przybliżone miejsca zatrzymania się pojazdu, a linią przerywaną, pokonaną trasę.
+            Jak widać odzwierciedlenie mapy, stworzonej przez drona, jest dość dokładne względem rzeczywistego terenu.
 
-        Wartość odległości jaką pokonuje pojazd od momentu startu, możemy dość dokładnie obliczyć, korzystając ze wzoru \eqref{eq:pulseToDistance}.
-        \begin{gather}
-            s = \frac{\text{pulse} \cdot 2\pi R}{N}
-            \label{eq:pulseToDistance}
-        \end{gather}
-        gdzie:
-        \begin{itemize}
-            \item $s$ -- odległość jaką pokonał pojazd,
-            \item $\text{pulse}$ -- liczba impulsów z enkodera,
-            \item $R$ -- promień koła,
-            \item $N$ -- liczba impulsów na obrót koła.
-        \end{itemize}
+            Widać pewne zniekształcenia, wynikające prawdopodobnie z niskiej rodzielczości mapy, oraz nie idealność algorytmu rysującego.
+            Pomimo tego przedstawioną próbę można uznać za udaną.
+            
 
-        Wzór ten, można także przekształcić w drugą stronę, aby obliczyć ile impulsów enkodera musi zostać zliczonych, przez procesor aby pojazd pokonał zadaną odległość.
-        \begin{gather}
-            \text{pulse} = \frac{s \cdot N}{2\pi R}
-            \label{eq:distanceToPulse}
-        \end{gather}
-
-        Dla zbudowanego modelu, promień koła wynosi $R = 50cm$, a liczba impulsów zgodnie z dokumentacją wynosi $N = 1920$.
-        A więc dokładność pomiaru odległości wynosi około:
-        \begin{gather}
-            \Delta s \approx \pm2.0mm
-        \end{gather}
-
-
-    \subsection{Wyznaczanie zakrętów}
-        Wyznaczenie idealnie prostej trasy dla pojazdów nie zawsze jest możliwe.
-        W trakcie jazdy, pojazd będzie skręcał wielotonie, w każdym możliwym kierunku.
-        Dlatego niezwykle ważne jest, aby zachować maksymalną precyzję podczas skręcania.
-
-        Aby wyznaczyć w jaki sposób nasz samochód powinien skręcić, musi wyznaczyć kilka podstawowych parametrów.
-        A są to:
-        \begin{itemize}
-            \item długość łuku,
-            \item promień skrętu,
-            \item kąt skrętu kół.
-        \end{itemize}
-        Na tej podstawie, możemy stworzyć zależność, która pozwoli na napisanie instrukcji dla samochodu, w jaki sposób ma się poruszać.
-        \begin{gather}
-            s = 2\pi (r(\gamma) + \Delta r) \cdot \frac{\alpha}{360}
-            \label{eq:turning_arc}
-            \\
-            \alpha = \frac{2\pi (r(\gamma + \Delta r))}{s \cdot 360}
-        \end{gather}
-        gdzie:
-        \begin{itemize}
-            \item $s$ -- długość łuku,
-            \item $r(\gamma)$ -- promień skrętu wyznaczany zgodnie z równaniem \eqref{eq:turning_radius},
-            \item $\Delta r$ -- odległość między kołami,
-            \item $\alpha$ -- oczekiwany kąt skrętu.
-        \end{itemize}
-
-        Dzięki rozważaniom z rozdziału \ref{subsec:sterowanie_odległość}, oraz równaniu \eqref{eq:turning_arc} i \eqref{eq:turning_radius}.
-        Możemy stworzyć prostą logikę odpowiedzialną za skręcanie pojazdu.
-
-
-        \subsubsection{Minimalny promień skrętu}
-        \label{subsubsec:minamalny_promien}
-            Wyznaczenie promienia skrętu jest 
-            \begin{gather}
-                2\pi (r + \Delta r) \cdot \frac{\Delta \alpha}{360^\circ} = s\\
-                r + \Delta r = \frac{s}{2\pi \cdot \frac{\Delta \alpha}{360^\circ}}
-            \end{gather}
-            gdzie:
-            \begin{itemize}
-                \item $r + \Delta r$ -- promień skrętu zewnętrznego koła,
-                \item $\Delta \alpha$ -- zakreślony kąt,
-                \item $s$ -- długość łuku.
-            \end{itemize}
-
-            Zbudowany pojazd, ma możliwość jazdy przez zadaną odległość. 
-            Odległość pokonana przez samochód jest dość precyzyjne mierzona przez enkodery,
-            a pomiary odległości za pomocą czujników ToF pozwalają na zaufanie dla wartości zadanej.
-
-            Dzięki rozważaniom z rozdziału \ref{subsubsec:dyferencjal} udało się uzyskać powtarzalności pomiarów zakreślonego kąta.
-            I tak przykładowo, dla ustawionego maksymalnego kąta skrętu kół $\gamma = 90 \pm 30^\circ$ oraz długości łuku $s = 500mm$, wartość zakreślony kąt wynosił około $\Delta \alpha = \left(60.0 \pm 3.0\right)^\circ$.
-            Wartość promienia skrętu wynosiła około:
-            \begin{gather}
-                r = \frac{500mm}{2\pi \cdot \frac{60 \pm 3.0}{360}} - 125mm \approx (340 \pm 20)mm
-            \end{gather}
-
-            Przedstawiony minimalny promień skrętu, możemy oczywiści porównać zgodnie z równaniem \eqref{eq:turning_radius}.
-            Po podstawieniu wyżej wymienionych wartości, otrzymujemy:
-            \begin{gather}
-                r(\gamma = 90 \pm 30^\circ) = \left|\frac{155}{\tan(\pm 30^\circ)}\right| \approx 270mm
-            \end{gather}
-
-            Teoretyczny minimalny promień skręty, wychodzący z obliczeń, jest znacząco mniejszy od zmierzonego minimalnego promienia skrętu.
-            Wynika to z nie idealności konstrukcji, oraz zastosowania ,,względnie słabej jakości" serwomechanizmu.
-            Pojazd nie jest w stanie skręcić kołami jednakowo w obie strony, co wymusiło ustawienie wartości offsetu, przesuwającej wartość kąta skrętu.
-            Dla pojazdu testowego, wartość offsetu wynosiła $-6^\circ$. 
-            Co ogranicza maksymalny zakres skrętu do $\pm 23^\circ$.
-            \begin{gather}
-                r(\gamma = 90 \pm 23^\circ) = \left|\frac{155}{\tan(\pm 23^\circ)}\right| \approx 350mm
-            \end{gather}
-
-
+            

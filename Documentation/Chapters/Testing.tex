@@ -1,9 +1,8 @@
 \section{Środowisko testowe}
 \label{sec:testing}
     Podczas budowy, dowolnego systemu, niezwykle ważne jest testowanie elementów składowych każdego z bloków.
-    Testy jednostkowe dla oprogramowania, to funkcje, które sprawdzają działanie poszczególnych algorytmów i programów.
-    W przypadku prac nad hardwarem, niezbędne jest zbudowanie odpowiedniego środowiska, pozwalającego na testowanie każdego elementu osobno oraz łącznie z innymi elementami.\\
-% 
+    W informatyce, testowanie oprogramowania zapewniają testy jednostkowe, które sprawdzają działanie poszczególnych algorytmów i programów.
+    W przypadku prac nad hardwarem, niezbędne jest zbudowanie odpowiedniego środowiska, pozwalającego na testowanie każdego elementu osobno oraz łącznie z innymi elementami.
     Dlatego pracę nad projektem można podzielić na kilka części:
     \begin{enumerate}
         \item Budowa prototypu na płytce stykowej.
@@ -30,7 +29,7 @@
         Zbudowany model z płytki stykowej, został skompresowany aby zmieścił się na pojedynczej płytce o rozmiarach 400-stu pól.
         Tak ściśnięty układ można było założyć na ramę pojazdu.
         W tym celu została zaprojektowana i wydrukowana mała podpora, która pozwoliła na sztywne zamocowanie układu.
-    
+
         \begin{figure}[!ht]
             \centering
             \includegraphics[width = 0.7\textwidth, trim = {800px, 400px, 1200px, 200px}, clip]{Breadboard_car.jpg}
@@ -46,8 +45,8 @@
         W czasie dłuższych testów, okazało się, że układ akcelerometru, potrafi zawiesić się w losowym momencie.
         Rozwiązaniem tego problemu, w tej wersji projektu, okazało się niemożliwe, ze względu na działanie płytki stykowej.
         Podczas jazdy, cały pojazd drżał, co powodowało, że niektóre piny nie stykały i układ akcelerometru, po spadku zasilania, blokował magistralę $I^2C$.
-        
-        Problematyczna okazała się linia $SDA$, protokołu $I^2C$. 
+
+        Problematyczna okazała się linia $SDA$, protokołu $I^2C$.
         Rozwiązanie tego problemu było trudnym zadaniem.
         Szczególnie że bardzo ciężko było wykryć pierwotną przyczynę zawieszania się układu.
         Pierwszym rozwiązaniem problemu, było zastosowanie się do instrukcji z noty aplikacyjnej od Analog Devices o resetowaniu linii $I^2C$ \cite{application_note_I2C_AD}.
@@ -73,7 +72,7 @@
             \caption{Model pojazdu z zainstalowaną płytą prototypową}
             \label{fig:protoboard_car}
         \end{figure}
-        
+
         Największym problemem, który pojawił się po zlutowaniu prototypu, było losowe resetowanie się RB Pi Pico (Raspberry Pi Pico).
         Znalezienie przyczyny tego problemu okazało się trudne.
         Problem występował czasami zarówno po podłączeniu zewnętrznego zasilacza jak i pracy na akumulatorach.
@@ -84,7 +83,7 @@
         Po czym powrócił. Szukając problemów w okolicy silników, zostało zmienione zasilanie silników na niezależne od reszty układu.
         Uruchomienie silników, z zasilaniem niezależnym natychmiast zresetowało procesor.
         Kolejną próbą była zmiana mostka H na inny. Wymiana tego układu również nie pomogła.
-        W między czasie podczas składania prototypu, uszkodzeniu uległ jeden z układów ToF. 
+        W między czasie podczas składania prototypu, uszkodzeniu uległ jeden z układów ToF.
         Po wymianie uszkodzonego układu, problem z resetowaniem się RB Pi Pico nie zniknął.
         Ostatnim pomysłem co mogło zostać uszkodzone, była sama malinka, jednak jej wymiana również nie pomogła.
         Ostatecznie, rozwiązaniem okazało się dołożenie dużej roznoszonej pojemności (około $500\mu F$) na całej płytce.
@@ -104,3 +103,42 @@
         Poniżej przedstawiono listing \eqref{list:self_test.s} programu do testowania podstawowych działań pojazdu.
 
         \lstinputlisting[style=asm, caption={Test pojazdu}, label = list:self_test.s]{Listing/self_test.s}
+
+        \subsubsection{Interpreter własnego języka}
+            Przedstawiony w listingu \ref{list:self_test.s} program jest interpretowanym przez skrypt napisany w pythonie.
+            Jego zadaniem jest stokenizowanie instrukcji, wyznaczanie adresów skoków oraz stworzenie słownika z zmiennymi.
+            Następnie, program przechodzi do wykonywania instrukcji zapisanych w pliku.
+            Powyższy język posiada tylko kilka prostych słów kluczowych przedstawionych w tabeli \ref{table:keywords}.
+            Pozostałe instrukcje po sformatowaniu wysyłane są do malinki.
+
+            \begin{table}[!ht]
+                \centering
+                \caption{Lista słów kluczowych do mini języka}
+                \begin{tabularx}{0.8\textwidth}{|c|c|C|}\hline
+                    Nr. & Instrukcja & Opis \\\hline
+                     1. & jump $etykieta$ & Skok do $etykiety$ \\\hline
+                     2. & end & Koniec programu lub funkcji \\\hline
+                     3. & print $zmienna/napis$ & Wypisanie wartości zmiennej lub napisu\\\hline
+       \centerY{2}{ 5.} & \centerY{2}{if $warunek$} & Instrukcja warunkowa, w przypadku nie spełnienia pomija następną instrukcję\\\hline
+       \centerY{2}{ 7.} & \centerY{2}{$etykieta$\textbf{:}} & Etykieta funkcji, koniecznie zakończona znakiem ,,:''\\\hline
+       \centerY{4}{ 9.} & \centerY{4}{$\$zmienna$} & Odwołanie do zmiennej w przypadku instrukcji wysłanych. Podczas formatowania instrukcje, $\$zmienna$ zostaje podmieniona na wartość\\\hline
+       \centerY{2}{10.} & \centerY{2}{$zmienna$ = \textit{wartość}} & Przypisanie wartości do zmiennej. Pozwala na wykonywanie operacji matematycznych\\\hline
+                \end{tabularx}
+                \label{table:keywords}
+            \end{table}
+
+            Wszystkie pozostałe instrukcje, które nie są zdefiniowane w tabeli, wysyłane są bezpośrednio do mikrokontroler.
+            Natomiast w przypadku, kiedy instrukcja zostaje odnaleziona, ale zawiera błąd składniowy, program wyświetla błąd i przerwa działanie.
+            Przykład takiej sytuacji przedstawiono na rysunku \ref{fig:interpreter}.
+
+            \begin{figure}[!ht]
+                \centering
+                \includegraphics[width = 0.7\textwidth]{Terminal_program_testowy.png}
+                \caption{Program zawierający celowe błędy}
+                \label{fig:interpreter}
+            \end{figure}
+
+            W przypadku, kiedy program pracuje poprawnie, instrukcje wypisywane są równolegle z wiadomościami odebranymi od samochodu.
+            Rozkazy wysyłane do mikrokontrolera, są poprzedzone łańcuchem znaków ,,$>>>$''.
+            Natomiast instrukcja wynik instrukcji $print$ jest identyczny z tym, co zwraca mikrokontroler.
+            Podczas testowania programy, program zdążył wysłać kilka instrukcji do raspberry dlatego po zgłoszeniu błedy widnieją widnieje kilka odebranych instrukcji.
