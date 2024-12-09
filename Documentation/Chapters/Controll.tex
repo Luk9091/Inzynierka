@@ -62,13 +62,13 @@
             \item $\alpha$ -- oczekiwany kąt skrętu.
         \end{itemize}
 
-        Dzięki rozważaniom z rozdziału \ref{subsec:sterowanie_odległość}, oraz równaniu \eqref{eq:turning_arc} i \eqref{eq:turning_radius}.
+        Dzięki rozważaniom z rozdziału \ref{subsec:sterowanie_odległość} oraz równaniu \eqref{eq:turning_arc} i \eqref{eq:turning_radius}.
         Możemy stworzyć prostą logikę odpowiedzialną za skręcanie pojazdu.
 
 
         \subsubsection{Minimalny promień skrętu}
         \label{subsubsec:minamalny_promien}
-            Wyznaczenie promienia skrętu jest 
+            Wyznaczenie promienia skrętu jest
             \begin{gather}
                 2\pi (r + \Delta r) \cdot \frac{\Delta \alpha}{360^\circ} = s\\
                 r + \Delta r = \frac{s}{2\pi \cdot \frac{\Delta \alpha}{360^\circ}}
@@ -80,7 +80,7 @@
                 \item $s$ -- długość łuku.
             \end{itemize}
 
-            Zbudowany pojazd, ma możliwość jazdy przez zadaną odległość. 
+            Zbudowany pojazd, ma możliwość jazdy przez zadaną odległość.
             Odległość pokonana przez samochód jest dość precyzyjne mierzona przez enkodery,
             a pomiary odległości za pomocą czujników ToF pozwalają na zaufanie dla wartości zadanej.
 
@@ -98,9 +98,9 @@
             \end{gather}
 
             Teoretyczny minimalny promień skręty, wychodzący z obliczeń, jest znacząco mniejszy od zmierzonego minimalnego promienia skrętu.
-            Wynika to z nie idealności konstrukcji, oraz zastosowania ,,względnie słabej jakości" serwomechanizmu.
+            Wynika to z nie idealności konstrukcji oraz zastosowania ,,względnie słabej jakości" serwomechanizmu.
             Pojazd nie jest w stanie skręcić kołami jednakowo w obie strony, co wymusiło ustawienie wartości offsetu, przesuwającej wartość kąta skrętu.
-            Dla pojazdu testowego, wartość offsetu wynosiła $-6^\circ$. 
+            Dla pojazdu testowego, wartość offsetu wynosiła $-6^\circ$.
             Co ogranicza maksymalny zakres skrętu do $\pm 23^\circ$.
             \begin{gather}
                 r(\gamma = 90 \pm 23^\circ) = \left|\frac{155}{\tan(\pm 23^\circ)}\right| \approx 350mm
@@ -108,4 +108,4 @@
 
 
 
-        
+

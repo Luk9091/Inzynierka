@@ -1,24 +1,25 @@
 \section{Środowisko testowe}
 \label{sec:testing}
-    Podczas budowy, dowolnego systemu, niezwykle ważne jest testowanie elementów składowych każdego z bloków.
-    W informatyce, testowanie oprogramowania zapewniają testy jednostkowe, które sprawdzają działanie poszczególnych algorytmów i programów.
-    W przypadku prac nad hardwarem, niezbędne jest zbudowanie odpowiedniego środowiska, pozwalającego na testowanie każdego elementu osobno oraz łącznie z innymi elementami.
-    Dlatego pracę nad projektem można podzielić na kilka części:
+    Podczas budowy dowolnego systemu, niezwykle ważne jest testowanie elementów składowych każdego z bloków.
+    W informatyce testowanie oprogramowania zapewniają testy jednostkowe, które sprawdzają działanie poszczególnych algorytmów i programów.
+    W przypadku prac nad hardwarem niezbędne jest zbudowanie odpowiedniego środowiska, pozwalającego na testowanie każdego elementu osobno oraz łącznie z innymi elementami.
+    % Dlatego przedstawiony projekt można podzielić na kilka części:
+    Dlatego wykonanie fizyczne można podzielić na kilka części:
     \begin{enumerate}
         \item Budowa prototypu na płytce stykowej.
-        \item Złożenie ramy pojazdu, z elektroniką umieszczoną na płytce stykowej, wraz z doprowadzonym zewnętrznym zasilaniem.
+        \item Złożenie ramy pojazdu z elektroniką umieszczoną na płytce stykowej wraz z doprowadzonym zewnętrznym zasilaniem.
         \item Sprawdzenie działania pojazdu z płytką stykową zasilaną bateryjnie.
-        \item Wykonanie płytki prototypowej, z połączeniami wszystkich elementów na stałe ponownie z zewnętrznym zasilaniem.
+        \item Wykonanie płytki prototypowej z połączeniami wszystkich elementów na stałe ponownie z zewnętrznym zasilaniem.
         \item Sprawdzenie działania prototypu pojazdu z zasilaniem akumulatorowym.
     \end{enumerate}
-    Każdy z wymienionych etapów charakteryzował się innym rodzajem testów oraz innymi problemami.
-    A przejście z etapu do etapu, było możliwe dopiero po uznaniu przez autora, że układ pracuje poprawnie.
+    Każdy z wymienionych etapów charakteryzował się innym rodzajem testów oraz własnymi problemami.
+    Zakończenie jednej fazy i przejście do następnej, było możliwe dopiero po uznaniu przez autora, że układ pracuje poprawnie.
 
     \subsection{Modele prototypowe}
-        Pierwszym etapem, było zbudowanie modelu elektronicznego na płytce stykowej, na podstawie schematu \ref{schema:block}.
-        Poniżej przedstawiono zdjęcie układu złożonego na breadboardzie.
-        Układ ten, pozwalał na bezpieczne testowanie nowych funkcji, bez ryzyka uszkodzenia elementów.
-        Dodatkową zaletą tego modelu, jest możliwość debugowania kodu bezpośrednio na płytce, a nie poprzez symulację.
+        Pierwszym krokiem, było zbudowanie na podstawie schematu \ref{schema:block} modelu elektronicznego na płytce stykowej.
+        Poniżej przedstawiono zdjęcie układu złożonego w ten sposób.
+        Obwód ten pozwalał na bezpieczne testowanie nowych funkcji, bez ryzyka uszkodzenia elementów.
+        Dodatkowymi zaletami takiego połączenia, są: możliwość bezpośredniego debugowania kodu, a także możliwość szybkiej zmiany połączeń w przypadku konfliktów między podzespołami.
         \begin{figure}[!ht]
             \centering
             \includegraphics[width = 0.7\textwidth, trim = {500px, 500px, 350px, 350px}, clip]{Breadboard.jpg}
@@ -26,46 +27,47 @@
             \label{fig:breadboard}
         \end{figure}
 
-        Zbudowany model z płytki stykowej, został skompresowany aby zmieścił się na pojedynczej płytce o rozmiarach 400-stu pól.
+        Model z płytki stykowej, został skompresowany aby zmieścił się na pojedynczej płytce o rozmiarach 400-stu pól.
         Tak ściśnięty układ można było założyć na ramę pojazdu.
-        W tym celu została zaprojektowana i wydrukowana mała podpora, która pozwoliła na sztywne zamocowanie układu.
+        W tym celu zaprojektowano i wydrukowano niedużą podporę, która pozwoliła na sztywne zamocowanie układu.
 
         \begin{figure}[!ht]
             \centering
             \includegraphics[width = 0.7\textwidth, trim = {800px, 400px, 1200px, 200px}, clip]{Breadboard_car.jpg}
-            \caption{Model pojazdu z zainstalowaną płytą prototypową}
+            \caption{Model pojazdu z zainstalowaną płytą stykową}
             \label{fig:breadboard_car}
         \end{figure}
 
-        Po zamocowaniu płytki stykowej do prototypowej ramy, pojazd został poddany testom jednostkowym.
+        Po zamocowaniu płytki do ramy, pojazd został poddany testom jednostkowym.
         Testy te polegały na sprawdzeniu działania wszystkich komponentów.
-        Następnie, sprawdzono działanie podstawowych funkcji, typu jazda czy skręcanie.
+        Następnie sprawdzono działanie podstawowych funkcji takich jak: jazda czy skręcanie.
 
-        Podczas testowanie elementów pojedynczo, wszystko działało poprawnie.
-        W czasie dłuższych testów, okazało się, że układ akcelerometru, potrafi zawiesić się w losowym momencie.
-        Rozwiązaniem tego problemu, w tej wersji projektu, okazało się niemożliwe, ze względu na działanie płytki stykowej.
-        Podczas jazdy, cały pojazd drżał, co powodowało, że niektóre piny nie stykały i układ akcelerometru, po spadku zasilania, blokował magistralę $I^2C$.
+        Podczas testowania elementów pojedynczo, wszystko działało poprawnie.
+        Natomiast po dłuższym czasie testy wykazały, że układ akcelerometru, potrafi zawiesić się w przypadkowym momencie.
+        Dodatkowo czasami, mikrokontroler przestawał reagować na polecenia.
 
-        Problematyczna okazała się linia $SDA$, protokołu $I^2C$.
+        Problematyczna okazała się linia $SDA$ protokołu $I^2C$.
         Rozwiązanie tego problemu było trudnym zadaniem.
-        Szczególnie że bardzo ciężko było wykryć pierwotną przyczynę zawieszania się układu.
-        Pierwszym rozwiązaniem problemu, było zastosowanie się do instrukcji z noty aplikacyjnej od Analog Devices o resetowaniu linii $I^2C$ \cite{application_note_I2C_AD}.
+        Szczególnie że bardzo ciężko było wykryć pierwotną przyczynę zawieszania się całego systemu.
+        Pierwszą próbą rozwiązania problemu, było zastosowanie się do instrukcji z noty aplikacyjnej od Analog Devices o resetowaniu linii $I^2C$ \cite{application_note_I2C_AD}.
         Podobne rozwiązanie można znaleźć w dokumentacji do magistrali $I^2C$ \cite{I2C_manual_NXP} wydanej przez NXP.
         Niestety, zastosowane rozwiązanie nie przyniosło oczekiwanych rezultatów.
 
         Drugim rozwiązaniem sugerowanym przez oba dokumenty, w sytuacji kiedy nie udało się odblokować magistrali jest zresetowanie niedziałających (w domyśle wszystkich) układów.
-        To rozwiązanie, mimo swojej skuteczności nie zostało wykorzystane.
-        Autor skupił się na znalezieniu pierwotnej przyczyny problemu.
+        To rozwiązanie, mimo swojej skuteczności nie zostało wykorzystane, ze względu na bardzo długo czas ponownej inicializacji wszystkich czujników.
+        Autor skupił się na znalezieniu pierwotnej przyczyny problemu, którą okazała się płytka stykowa.
+        Podczas jazdy, cały pojazd drżał, co powodowało, że niektóre piny nie stykały i układ akcelerometru, po spadku zasilania, blokował magistralę $I^2C$.
+        Rozwiązaniem tego problemu, w tej wersji projektu, okazało się niemożliwe, ze względu na działanie zastosowaną metodę połączeń.
 
-        Dodatkową zaletą wykonanie w pierwszej wersji projektu na płytce stykowej oraz losowego zawieszania się programu, było udoskonalenie funkcji odpowiedzialnych za kontrolę protokołu $I^2C$.
+        Niespodziewaną zaletą wykonania w pierwszej wersji projektu na płytce stykowej oraz losowego zawieszania się programu, było udoskonalenie funkcji odpowiedzialnych za kontrolę protokołu $I^2C$.
         W pierwszej wersji programu, komunikacja $I^2C$, blokowała pracę procesora.
         Rozwiązanie to sprawdzało się tak długo jak wszystko działało poprawnie.
-        Jednak luźne połączenia ukazały, że to rozwiązanie jest niepraktyczne.
-        W drugiej wersji programu, instrukcje odpowiedzialne za komunikację $I^2C$ zostały ograniczone \textit{timeoutem}.
+        Jednak luźne połączenia ukazały, że jest to niepraktyczne.
+        W poprawionej wersji programu dla Raspberry, instrukcje odpowiedzialne za komunikację $I^2C$ zostały ograniczone \textit{timeoutem} dzięki czemu, procesor nie zawieszał się w przypadku braku odpowiedzi od czujnika.
 
-        Ostateczną wersją prototypu jest płytka prototypowa, zlutowana na stałe.
-        Zlutowanie układu na płytce, pozwoliło pozbyć się niektórych problemów, przykładowo blokowania się magistrali $I^2C$.
-        Jednak złożenie zlutowanej wersji objawiło inne problemy, które ukrywała płytka stykowa.
+        Ostateczną wersją prototypu jest zlutowana na stałe płytka prototypowa.
+        To połączenie układu pozwoliło pozbyć się niektórych problemów, przykładowo blokowania się magistrali $I^2C$.
+        Jednak zlutowana wersja objawiła inne problemy, które ukrywała płytka stykowa.
         \begin{figure}[!ht]
             \centering
             \includegraphics[width = 0.7\textwidth, trim = {500px, 300px, 300px, 200px}, clip]{Protoboard_car.jpg}
@@ -73,14 +75,14 @@
             \label{fig:protoboard_car}
         \end{figure}
 
-        Największym problemem, który pojawił się po zlutowaniu prototypu, było losowe resetowanie się RB Pi Pico (Raspberry Pi Pico).
-        Znalezienie przyczyny tego problemu okazało się trudne.
+        Największym problemem, który pojawił się podczas testowania tej fazy, było losowe resetowanie się RPi Pi (Raspberry Pi).
+        Znalezienie przyczyny takiego zachowania również nie było łatwym zadaniem.
         Problem występował czasami zarówno po podłączeniu zewnętrznego zasilacza jak i pracy na akumulatorach.
         Po testach okazało, się że sytuacja ta występuje tylko wtedy, gdy pracują silniki oraz podłączone są enkodery.
         Po odłączeniu wyjść sygnałowych enkoderów, kłopot z resetowaniem się układu zniknął.
-        W celu upewnienia, się że przyczyną są uszkodzone enkodery, w szereg z wyjściem sygnałowym został podłączony rezystor o rezystancji $R =1k\Omega$.
-        Po podłączeniu rezystora, problem z resetowaniem się układu zniknął na kilka dni.
-        Po czym powrócił. Szukając problemów w okolicy silników, zostało zmienione zasilanie silników na niezależne od reszty układu.
+        W celu upewnienia, się że przyczyną są uszkodzone enkodery, w szereg z wyjściem sygnałowym został podłączony rezystor o rezystancji $R =1k\Omega$, które chroniły układ przed zwarciem.
+        Po podłączeniu rezystora, problem z resetowaniem się układu zniknął na kilka dni, po czym powrócił.
+        Szukając problemów w okolicy silników, zostało zmienione zasilanie silników na niezależne od reszty układu.
         Uruchomienie silników, z zasilaniem niezależnym natychmiast zresetowało procesor.
         Kolejną próbą była zmiana mostka H na inny. Wymiana tego układu również nie pomogła.
         W między czasie podczas składania prototypu, uszkodzeniu uległ jeden z układów ToF.

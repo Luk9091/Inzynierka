@@ -17,7 +17,7 @@
         Poniższy projekt podczas testów, wykazywał wiele mankamentów, które uniemożliwiały jazdę prostą.
         W poniższym rozdziale pokrótce zostaną one opisane wraz z proponowanymi metodami radzenia sobie z nie idealnością konstrukcji.
         % Były to między innymi:
-        
+
         \subsubsection{Różnica prędkości silników}
             Zastosowanie dwóch silników, ma swoje wady i zalety.
             Niewątpliwą zaletą jest podwojenie mocy pojazdu.
@@ -77,12 +77,12 @@
         Wszystkie wyżej wymienione niedokładności powodowały, że pojazd cały czas skręcał w jedną stronę.
         Rozwiązaniem tego problemu jest zastosowanie pętli sprzężenia zwrotnego, opartej na czujniku $MPU6050$, który został użyty jak żyroskop, pozwalający na pomiar biedzącego kąta.
         Dzięki czemu można korygować kierunek skręcania pojazdu.
-        
+
         Jednak jego wykorzystanie nie było bezproblemowe i wymagało dodatkowych poprawek.
         Na wykresie \ref{plot:gyro_magneto_measure} przedstawiono pomiar kąta dla obrotu pojazdu ze stałą prędkością w jednym kierunku po kalibracji czujnika.
-        Poniższy pomiar został wykonany w celu ustalenia liniowości pracy żyroskopu opartego na akcelerometrze. 
+        Poniższy pomiar został wykonany w celu ustalenia liniowości pracy żyroskopu opartego na akcelerometrze.
         Układem referencyjnym był uprzednio skalibrowany magnetometr (układ $QMC5883L$).
-% 
+%
         \begin{figure}[!ht]
             \centering
                 \begin{tikzpicture}
@@ -105,7 +105,7 @@
                     \end{axis}
                 \end{tikzpicture}
                 \renewcommand{\figurename}{Wykres}
-                \caption{pomiary azymutu za pomocą magnetometru, oraz zmiany kąta wykazanego przez żyroskop.}
+                \caption{pomiary azymutu za pomocą magnetometru oraz zmiany kąta wykazanego przez żyroskop.}
                 \label{plot:gyro_magneto_measure}
         \end{figure}
         Podczas pomiaru, na oba układy został nałożony filtr dolnoprzepustowy, eliminujący szumy.
@@ -143,13 +143,13 @@
 
     \subsection{Skręcanie}
         Rozwiązanie problemów z jazdą prosto to tylko połowa sukcesu.
-        Kolejnym problemem okazało się skręcanie. 
+        Kolejnym problemem okazało się skręcanie.
         Nie tylko w pierwotnej wersji nie było stałe, ustawienie stałego kąta kół oraz przejechanie tej samej drogi, nie zawsze dawało ten sam rezultat.
         To pojazd cały czas miał tendencję do preferowania skrętu w jedną stronę.
-        
+
         \subsubsection{Dyferencjał}
         \label{subsubsec:dyferencjal}
-        Najprostszym do zauważenia problemem był brak dyferencjału. 
+        Najprostszym do zauważenia problemem był brak dyferencjału.
         Tylna oś pojazdu posiada dwa silniki, jednak w poprzednich testach, zostały one ,,software'owo połączona sztywną belką".
         Powodowało to poślizg pojazdu podczas skręcania a w konsekwencji uniemożliwiało powtarzalność manewru.
 
@@ -184,7 +184,7 @@
         \begin{gather}
             \frac{v_{\text{prawe koła}}}{v_{\text{lewe koła}}} = 1 + \frac{\Delta r}{r} = 1 + \Delta r \cdot \frac{\tan(90 - \gamma)}{l}
         \end{gather}
-    
+
 
     Dzięki wszystkim wyżej wymiennym zabiegom, udało się uzyskać powtarzalne wyniki zarówno podczas jazdy prosto, cofania się oraz skręcania.
     Powyższe działania są niezbędne, jeśli budowany robot ma być sterowany autonomicznie.

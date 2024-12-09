@@ -1,5 +1,5 @@
 \section{Mapa i orientacja przestrzenna}
-    W celach testowych została napisana dedykowana aplikacja graficzna do sterowani pojazdem, oraz reprezentująca mapę użytkownikowi.
+    W celach testowych została napisana dedykowana aplikacja graficzna do sterowani pojazdem oraz reprezentująca mapę użytkownikowi.
     Na zdjęciu \ref{fig:app} przedstawiono interfejs aplikacji.
     \begin{figure}[!ht]
         \centering
@@ -19,7 +19,7 @@
         Natomiast wszystkie obliczenia powinny zostać wykonane przez kontroler zarządzający pojazdem.
         Jednak ze względu na duże skomplikowanie opisywanych problemów, w celach testowych, to aplikacja posiada zaimplementowany algorytm do wyszukiwania ścieżek.
         Następnie wyznaczona ścieżka zamieniana jest na proste instrukcje w stylu ,,uruchom oba silniki na 500mm'' czy ,,skręć kołami o $30^\circ$ w lewo''.
-        
+
 
 
 
@@ -46,7 +46,7 @@
                 \figurePlotName
                 \includegraphics[width=0.7\textwidth]{PathFinding/Wykres_sredni_czas_algorytmu_pathfinding.png}
                 \caption{Porównanie średniego czasu wykonania algorytmów}
-                Źródło:\cite{AnalizaAlgorytmówŚcieżek} \citetitle{AnalizaAlgorytmówŚcieżek} 
+                Źródło:\cite{AnalizaAlgorytmówŚcieżek} \citetitle{AnalizaAlgorytmówŚcieżek}
                 \label{fig:PathFindingTime}
             \end{figure}
             \begin{figure}[!ht]
@@ -57,7 +57,7 @@
                 Źródło:\cite{AnalizaAlgorytmówŚcieżek} \citetitle{AnalizaAlgorytmówŚcieżek}
                 \label{fig:PathFindingCost}
             \end{figure}
-            
+
             Z powyższej pracy wynika, że najlepszym rozwiązaniem jest algorytm Dijkstry.
             Dodatkowym czynnikiem, potwierdzającą powyższe stwierdzenie jest samo skomplikowanie algorytmu.
             Algorytm Dijkstry jest stosunkowo prosty w implementacji, a także posiada niski koszt obliczeniowy.
@@ -69,9 +69,9 @@
             \label{subsec:wygładzanie_ścieżek}
             Na rysunku \ref{fig:pathfinding_dikstra} przedstawiono przykładową ścieżkę wyznaczoną przez algorytm Dijkstry.
             Algorytm ten, zwraca najkrótsze możliwe połączenie między dwoma punkami.
-            Najczęściej jest to prosta łącząca dwa punkty. 
+            Najczęściej jest to prosta łącząca dwa punkty.
             Jednak ze względu na ograniczenia kontrakcyjne wyrysowana trasa jest niemożliwa do wykonania przez drona.
-            
+
             \begin{figure}[!ht]
                 \centering
                 \includegraphics[width = 0.7\textwidth, trim = {120px, 30px, 20px, 300px}, clip]{PathFinding/pathfinding_dikstra.png}
@@ -98,7 +98,7 @@
             Jednak olbrzymią wadą, jest brak kontroli nad wygładzeniem trasy, a także pocięcie drogi na pojedyncze punkty między którymi pojazd będzie stawał i ponownie ruszał.
             Dodatkowo, pojawia się problem przechowywania mapy w pamięci (problem ten został dokładniej opisany w rozdziale \ref{subsec:przechowywanie_mapy}).
             W związku z powyższym, autor zdecydował się na zastosowanie bardziej skomplikowanego algorytmu.
-            
+
             Alternatywnymi metodami wygładzenia ścieżek zostały opisane w artykułach: \citetitle{Compare_PathSmoothing} \cite{Compare_PathSmoothing} oraz \citetitle{Compare_PathSmoothing2} \cite{Compare_PathSmoothing2}.
             Oba artykuły przedstawiają i porównują różne metody dostosowywania wyznaczonej ścieżki do możliwości robota.
             Poniżej na wykresie \ref{fig:smoothingPath_res}
@@ -181,13 +181,13 @@
                 \label{fig:path_dublin}
             \end{figure}
 
-            
+
 
     \subsection{Przechowywanie mapy}
     \label{subsec:przechowywanie_mapy}
-        Przechowywanie mapy, jest niezwykle złożonym zagadnieniem. 
+        Przechowywanie mapy, jest niezwykle złożonym zagadnieniem.
         W zależności od zastosowania oraz platformy na której pracujemy, ta sama mapa może być przedstawiona na różne sposoby.
-        Mapa zapisana na komputerze -- o bardzo dużej dostępnej pamięci, może być bardzo dokładna. 
+        Mapa zapisana na komputerze -- o bardzo dużej dostępnej pamięci, może być bardzo dokładna.
         Natomiast ta sama mapa zapisana na mikrokontrolerze, o bardzo ograniczonej pamięci, musi zawierać uproszczenia.
 
         \subsubsection{Mapa jako tablica ścian}
@@ -208,7 +208,7 @@
             Jednak przechowywanie mapy otwartej przestrzeni w taki sposób jest bardzo nieefektywne.
             Przykładowo, jeśli połaczymy z komórki $A$, nie możemy jechać prosto, to może zarówno oznaczać że w miejscu komórki $B$ jest ściana, jak i to że komórka $B$ jest nie przejezdna.
             W labiryncie, gdzie znaczenie mają ściany to rozwiązanie jest bardzo dobre, jednak jeśli nie jesteśmy w stanie powiedzieć czy to co wykrywamy to cienka ścianka czy też duża przeszkoda to rozwiązanie staje się nie optymalne.
-            
+
             \begin{figure}[!ht]
                 \centering
                 \begin{tikzpicture}
@@ -221,7 +221,7 @@
                 \end{tikzpicture}
                 \caption{Przykład niejednoznaczności wymiarów}
             \end{figure}
-            
+
             Dodatkową wadą przedstawionego rozwiązani jest rozmiar każdej takiej komórki oraz czas potrzebny na przeanalizowanie każdej możliwości.
             Każda kwadrat w powyższej metodzie składa się z 4 bitów, dodatkowo, łącząc poszczególne kratki ze sobą, okazuje się że niektóre bity są nadmiarowe.
             Jeśli z punktu $A$ nie możemy jechać do góry, to znaczy że z punktu $C$ nie będzie można jechać w dół.
@@ -252,7 +252,7 @@
             To rozwiązanie nie nadaje się do reprezentacji otwartej przestrzeni.
             Posiada za dużo wad aby można było próbować ją zastosować w rzeczywistości.
 
-        \subsection{Mapy wektorowe}
+        \subsubsection{Mapy wektorowe}
             Innym podejściem do przedstawionego problemu jest zastosowanie wektorów.
             W takim przypadku, nie rozważamy przeszkód, jako pojedyncze komórki a jako proste figure geometryczne.
             Takie podejście zostało opisane w artykule \citetitle{vector_map}\cite{vector_map}.
@@ -265,7 +265,7 @@
                 Źródło: \citetitle{vector_map}\cite{vector_map}
                 \label{fig:buildVectMap}
             \end{figure}
-            
+
             Jak widać przedstawiony na powyższym rusku algorytm nie należy do prostych.
             Wymaga on bardzo dokładnego procesu pomiarowego, który nie ogranicza się tylko do minimalnej ilości punktów.
             A najlepsze efekty daje dla pełnego skanu otoczenia.
@@ -282,14 +282,14 @@
             Jak również mały rozmiar takiej mapy oraz możliwość bardzo dokładnego wyznaczania trasy.
 
 
-        \subsection{Mapa rastrowa}
+        \subsubsection{Mapa rastrowa}
             Ostatnim przedstawionym rozwiązaniem jest mapa rastrowa.
             W tym przypadki, dzielimy całą przestrzeń na równe kwadraty, a każdy z kwadratów opisuje jeden z kilku możliwych stanów.
             Przykładowe stany to:
             \begin{enumerate}
                 \item pole nieznane,
                 \item pole wolne,
-                \item pole zajęte. 
+                \item pole zajęte.
             \end{enumerate}
 
             Olbrzymią wadą tej metody jest dyskretyzacja przestrzeni, która w zależności od rozmiary pojedynczej komórki może za bardzo przełamywać rzeczywistość.
@@ -327,7 +327,7 @@
             Średni czas potrzebny na wyznaczenie ścieżki wynosił około $100ms$.
             Złożoność mapy ma niewielki wpływ na czas wyznaczenia ścieżek, dla pustej mapy czas ten oscylował w okół $95ms$.
             Pozycja pojazdu oraz odległość do celu, także mają nieznaczący wpływ na czas wyznaczenie trasy.
-            
+
     \subsection{Nanoszenie punktów pomiarowych}
         Jednym z podstawowych założeń, była możliwość budowania mapy przez pojazd.
         W tym celu, samochód, musi mierzyć odległość w trakcie ruchu.
@@ -338,7 +338,7 @@
             Czas odebrania pomiaru od pojedynczego czujnika wynosi około $3ms$.
             Dlatego okres pomiarowy, powinien być na tyle długi aby pozwolić na odczytanie wszystkich czujników.
             Wartość $T$ powinna być większa od $9ms$.
-            Okres pomiarowy został ustawiony na $T = 100ms$. 
+            Okres pomiarowy został ustawiony na $T = 100ms$.
             Dzięki czemu pojazd jest w stanie w miarę na bieżąco reagować na zdarzenia.
 
         \subsection{Przykładowa mapa}
@@ -355,14 +355,11 @@
             Załączone zdjęcie przedstawia obraz mapy, zbudowanej na kratkach o rozmiarze $100mm \times 100mm$.
             A cała mapa ma wymiary $ 2.4m \times 2.4m$.
             Oraz przedstawiają rzut powierzchni przedstawionej na schematycznym rysunku \ref{schematic:room}.
-            
+
             \input{Schematic/room.tex}
 
             Na czerwono, zostały zaznaczone przybliżone miejsca zatrzymania się pojazdu, a linią przerywaną, pokonaną trasę.
             Jak widać odzwierciedlenie mapy, stworzonej przez drona, jest dość dokładne względem rzeczywistego terenu.
 
-            Widać pewne zniekształcenia, wynikające prawdopodobnie z niskiej rodzielczości mapy, oraz nie idealność algorytmu rysującego.
+            Widać pewne zniekształcenia, wynikające prawdopodobnie z niskiej rodzielczości mapy oraz nie idealność algorytmu rysującego.
             Pomimo tego przedstawioną próbę można uznać za udaną.
-            
-
-            
