@@ -1,10 +1,10 @@
 \section{Środowisko testowe}
 \label{sec:testing}
-    Podczas budowy dowolnego systemu, niezwykle ważne jest testowanie elementów składowych każdego z bloków.
-    W informatyce testowanie oprogramowania zapewniają testy jednostkowe, które sprawdzają działanie poszczególnych algorytmów i programów.
-    W przypadku prac nad hardwarem niezbędne jest zbudowanie odpowiedniego środowiska, pozwalającego na testowanie każdego elementu osobno oraz łącznie z innymi elementami.
-    % Dlatego przedstawiony projekt można podzielić na kilka części:
-    Dlatego wykonanie fizyczne można podzielić na kilka części:
+    Podczas budowy dowolnego systemu, niezwykle ważne jest testowanie elementów składowych.
+    Połączone moduły również wymagają sprawdzenia współpracy.
+    W informatyce kontrolę oprogramowania zapewniają testy jednostkowe, które sprawdzają działanie poszczególnych algorytmów i programów.
+    Natomiast w przypadku prac nad hardwarem niezbędne jest zbudowanie odpowiedniego środowiska, pozwalającego na testowanie każdego elementu osobno oraz łącznie poszczególnych podzespołów w bloki funkcjonalne.
+    Dlatego wykonanie fizyczne należy podzielić na kilka etapów opisanych poniżej.
     \begin{enumerate}
         \item Budowa prototypu na płytce stykowej.
         \item Złożenie ramy pojazdu z elektroniką umieszczoną na płytce stykowej wraz z doprowadzonym zewnętrznym zasilaniem.
@@ -27,9 +27,15 @@
             \label{fig:breadboard}
         \end{figure}
 
-        Model z płytki stykowej, został skompresowany aby zmieścił się na pojedynczej płytce o rozmiarach 400-stu pól.
-        Tak ściśnięty układ można było założyć na ramę pojazdu.
-        W tym celu zaprojektowano i wydrukowano niedużą podporę, która pozwoliła na sztywne zamocowanie układu.
+        Tak zbudowany obwód działał bez zarzutu dzięki czemu, możliwe było przejście do następnej fazy pracy.
+
+        W tym celu system z zdjęcia \ref{fig:breadboard} został skompresowany aby zmieścił się na pojedynczej płytce o mniejszym rozmiarze.
+        Kolejnym krokiem było zamocowanie układu na samochodzie.
+        Do tego celu zaprojektowano obudowę, która została przykręcono do całości a następnie umieszczono w niej zminiaturyzowany układ.
+        Na zdjęciu \ref{fig:breadboard_car} przedstawiono wyżej opisaną sytuację.
+
+        Pojazd został również wyposażony w dwa pojedyncze koszyki na akumulatory oraz moduł BMS (Battery Management System).
+        Dzięki temu, całość mogła pracować na zasilaniu bateryjnym bez obawy o nadmierne uszkodzenia.
 
         \begin{figure}[!ht]
             \centering
@@ -38,26 +44,26 @@
             \label{fig:breadboard_car}
         \end{figure}
 
-        Po zamocowaniu płytki do ramy, pojazd został poddany testom jednostkowym.
-        Testy te polegały na sprawdzeniu działania wszystkich komponentów.
+        Po zamocowaniu płytki do ramy, pojazd został poddany prostym testom, które polegały na sprawdzeniu działania wszystkich komponentów.
         Następnie sprawdzono działanie podstawowych funkcji takich jak: jazda czy skręcanie.
 
-        Podczas testowania elementów pojedynczo, wszystko działało poprawnie.
+        Podczas kontroli poszczególnych elementów pojedynczo, wszystko działało poprawnie.
         Natomiast po dłuższym czasie testy wykazały, że układ akcelerometru, potrafi zawiesić się w przypadkowym momencie.
         Dodatkowo czasami, mikrokontroler przestawał reagować na polecenia.
 
         Problematyczna okazała się linia $SDA$ protokołu $I^2C$.
-        Rozwiązanie tego problemu było trudnym zadaniem.
-        Szczególnie że bardzo ciężko było wykryć pierwotną przyczynę zawieszania się całego systemu.
-        Pierwszą próbą rozwiązania problemu, było zastosowanie się do instrukcji z noty aplikacyjnej od Analog Devices o resetowaniu linii $I^2C$ \cite{application_note_I2C_AD}.
+        Rozwiązanie tego problemu nie było łatwym zadaniem.
+        Szczególnie że bardzo trudno było wykryć pierwotną przyczynę zawieszania się całego systemu.
+        Pierwszą próbą rozwiązania, było zastosowanie się do instrukcji z noty aplikacyjnej od Analog Devices o resetowaniu linii $I^2C$ \cite{application_note_I2C_AD}.
         Podobne rozwiązanie można znaleźć w dokumentacji do magistrali $I^2C$ \cite{I2C_manual_NXP} wydanej przez NXP.
-        Niestety, zastosowane rozwiązanie nie przyniosło oczekiwanych rezultatów.
+        Niestety, zastosowane rozwiązanie polegające na ręcznym zwolnienie układu poprzez wysłanie na linię zegara kilku cykli, nie przyniosło oczekiwanych rezultatów.
 
         Drugim rozwiązaniem sugerowanym przez oba dokumenty, w sytuacji kiedy nie udało się odblokować magistrali jest zresetowanie niedziałających (w domyśle wszystkich) układów.
         To rozwiązanie, mimo swojej skuteczności nie zostało wykorzystane, ze względu na bardzo długo czas ponownej inicializacji wszystkich czujników.
         Autor skupił się na znalezieniu pierwotnej przyczyny problemu, którą okazała się płytka stykowa.
         Podczas jazdy, cały pojazd drżał, co powodowało, że niektóre piny nie stykały i układ akcelerometru, po spadku zasilania, blokował magistralę $I^2C$.
         Rozwiązaniem tego problemu, w tej wersji projektu, okazało się niemożliwe, ze względu na działanie zastosowaną metodę połączeń.
+        Natomiast kolejny prototyp nie posiadał tego problemu.
 
         Niespodziewaną zaletą wykonania w pierwszej wersji projektu na płytce stykowej oraz losowego zawieszania się programu, było udoskonalenie funkcji odpowiedzialnych za kontrolę protokołu $I^2C$.
         W pierwszej wersji programu, komunikacja $I^2C$, blokowała pracę procesora.
@@ -65,9 +71,9 @@
         Jednak luźne połączenia ukazały, że jest to niepraktyczne.
         W poprawionej wersji programu dla Raspberry, instrukcje odpowiedzialne za komunikację $I^2C$ zostały ograniczone \textit{timeoutem} dzięki czemu, procesor nie zawieszał się w przypadku braku odpowiedzi od czujnika.
 
-        Ostateczną wersją prototypu jest zlutowana na stałe płytka prototypowa.
+        Ostatnią testowaną wersją układu jest zlutowana na stałe płytka prototypowa.
         To połączenie układu pozwoliło pozbyć się niektórych problemów, przykładowo blokowania się magistrali $I^2C$.
-        Jednak zlutowana wersja objawiła inne problemy, które ukrywała płytka stykowa.
+        Jednak i na tym etapie objawiła inne problemy, które ukrywała płytka stykowa.
         \begin{figure}[!ht]
             \centering
             \includegraphics[width = 0.7\textwidth, trim = {500px, 300px, 300px, 200px}, clip]{Protoboard_car.jpg}
@@ -87,31 +93,34 @@
         Kolejną próbą była zmiana mostka H na inny. Wymiana tego układu również nie pomogła.
         W między czasie podczas składania prototypu, uszkodzeniu uległ jeden z układów ToF.
         Po wymianie uszkodzonego układu, problem z resetowaniem się RB Pi Pico nie zniknął.
-        Ostatnim pomysłem co mogło zostać uszkodzone, była sama malinka, jednak jej wymiana również nie pomogła.
+        Ostatnim co mogło zostać uszkodzone, był sam kontroler, jednak jej wymiana również nie pomogła.
         Ostatecznie, rozwiązaniem okazało się dołożenie dużej roznoszonej pojemności (około $500\mu F$) na całej płytce.
 
         Kolejnym problemem, na który natrafił autor, były oscylacje na liniach przerwań od czujników obiektów zamontowanych na tyle pojazdu.
-        Oscylacje te, nie pozwalały na poruszanie się do tyłu, ponieważ czujniki w losowych momentach zgłaszały obiekt i zatrzymywały silniki.
+        Oscylacje te, nie pozwalały na poruszanie się do tyłu, ponieważ czujniki przy ruszeniu natychmiast zgłaszały przerwanie a w konsekwencji program zatrzymywał silniki.
         Rozwiązaniem tego problemu było zastosowanie filtru RC, który niweluje drgania.
 
 
 
     \subsection{Automatyzacja praca}
-        Automatyzacja pracy jest niezwykle ważnym zadaniem w momencie, testowania podstawowych funkcji.
-        Oczywiście, każdą funkcję można wywołać ręcznie, jednak podczas testów, kiedy wielokrotnie wykonywane są podobne funkcje, automatyzacja staje się obowiązkowa.
+        Automatyzacja pracy jest niezwykle ważnym zadaniem w momencie testowania.
+        Istnieje wiele gotowych narzędzi, specjalnie przeznaczonych do tego jednak autor zdecydował się na napisanie własnego programu.
+        Podstawowymi założeniami była możliwość komunikacji z mikrokontrolerem, zapisywanie danych odebranych danych do pliku oraz czytanie i wykonywanie specjalnie napisanych podprogramów.
+        Dodatkowym założeniem jest, możliwość wywołania każdej funkcji ręcznie.
+        Całość powinna być w miarę możliwości przejrzysta dla użytkownika tak aby proces czytanie z pliku i pracy ręcznej nie wymuszał każdorazowego uruchomienia programu.
 
         Aby wykonać to zadanie, w języku Python został napisany skrypt, który pozwala na dwustronną komunikację za pomocą protokołu $UDP$.
-        Dodatkowo, program pozwala na interpretację plików, napisanych specjalnie dla tego układu.
-        Poniżej przedstawiono listing \eqref{list:self_test.s} programu do testowania podstawowych działań pojazdu.
+        Użytkownik może wysłać komendę do mikrokontrolera, a równocześnie program nasłuchuje odpowiedzi i wyświetla wyniki użytkownikowi.
+        Co więcej instrukcja $file\ \{path\}$ pozwala na interpretację podprogramów, napisanych specjalnie dla tego układu.
+        Poniżej w listingu \eqref{list:self_test.s} przedstawiono przykład kodu do testowania podstawowych działań pojazdu.
 
         \lstinputlisting[style=asm, caption={Test pojazdu}, label = list:self_test.s]{Listing/self_test.s}
 
         \subsubsection{Interpreter własnego języka}
-            Przedstawiony w listingu \ref{list:self_test.s} program jest interpretowanym przez skrypt napisany w pythonie.
-            Jego zadaniem jest stokenizowanie instrukcji, wyznaczanie adresów skoków oraz stworzenie słownika z zmiennymi.
+            Przedstawiony kod z listingu \ref{list:self_test.s} jest interpretowany przez wyżej wymieniony skrypt.
+            Działanie interpretera polega na stokenizowanie instrukcji, wyznaczanie adresów skoków oraz stworzenie słownika z zmiennymi.
             Następnie, program przechodzi do wykonywania instrukcji zapisanych w pliku.
             Powyższy język posiada tylko kilka prostych słów kluczowych przedstawionych w tabeli \ref{table:keywords}.
-            Pozostałe instrukcje po sformatowaniu wysyłane są do malinki.
 
             \begin{table}[!ht]
                 \centering
@@ -129,9 +138,10 @@
                 \label{table:keywords}
             \end{table}
 
-            Wszystkie pozostałe instrukcje, które nie są zdefiniowane w tabeli, wysyłane są bezpośrednio do mikrokontroler.
-            Natomiast w przypadku, kiedy instrukcja zostaje odnaleziona, ale zawiera błąd składniowy, program wyświetla błąd i przerwa działanie.
-            Przykład takiej sytuacji przedstawiono na rysunku \ref{fig:interpreter}.
+            Wszystkie pozostałe instrukcje, które nie są zdefiniowane w tabeli, są formatowane i wysyłane do mikrokontroler.
+
+            Natomiast w przypadku, kiedy instrukcja zostaje odnaleziona, ale zawiera błąd składniowy, program wyświetla informacje o błędzie i przerwa działanie.
+            Przykład takiej sytuacji przedstawiono na zdjęciu \ref{fig:interpreter}.
 
             \begin{figure}[!ht]
                 \centering
@@ -140,7 +150,10 @@
                 \label{fig:interpreter}
             \end{figure}
 
-            W przypadku, kiedy program pracuje poprawnie, instrukcje wypisywane są równolegle z wiadomościami odebranymi od samochodu.
-            Rozkazy wysyłane do mikrokontrolera, są poprzedzone łańcuchem znaków ,,$>>>$''.
-            Natomiast instrukcja wynik instrukcji $print$ jest identyczny z tym, co zwraca mikrokontroler.
-            Podczas testowania programy, program zdążył wysłać kilka instrukcji do raspberry dlatego po zgłoszeniu błedy widnieją widnieje kilka odebranych instrukcji.
+            Praca programu polegająca na odczytywaniu danych jest równoległa z wykonywaniem instrukcji.
+            Dlatego zdarza się, że pomimo błędu program wyświeli wynik ostatniej poprawnej operacji.
+            Podczas testowania programy, program zdążył wysłać kilka instrukcji do raspberry następnie trafił na błąd składniowy co zatrzynało proces.
+            Po czym ostatni wykonana instrukcja zwróciłą wartość a program wyświetlił jej wynik.
+
+            W celu rozróżnienia instrukcji wysyłanych do pojazdu a tych odebranych w trakcie interpretacji kodu, polecenia poprzedzone są łańcuchem znaków ,,$>>>$''.
+            Natomiast wynik instrukcji $print$ jest identyczny z tym, co zwraca mikrokontroler.

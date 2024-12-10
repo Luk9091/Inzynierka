@@ -9,7 +9,7 @@
         Jednak dla precyzyjnego sterowania, informacja o tym, że pojazd porusza po linii prostej, jest niewystarczająca.
         Obowiązkowym jest poznanie odległości jaką pokonuje pojazd.
 
-        Wartość odległości jaką pokonuje pojazd od momentu startu, możemy dość dokładnie obliczyć, korzystając ze wzoru \eqref{eq:pulseToDistance}.
+        Dystans jaką pokonuje pojazd od momentu startu, możemy dość dokładnie obliczyć, korzystając ze wzoru \eqref{eq:pulseToDistance}.
         \begin{gather}
             s = \frac{\text{pulse} \cdot 2\pi R}{N}
             \label{eq:pulseToDistance}
@@ -34,78 +34,66 @@
             \Delta s \approx \pm2.0mm
         \end{gather}
 
+        Dzięki zastosowaniu równania \eqref{eq:distanceToPulse}, możliwe jest wysłanie informacji do pojazdu aby po określonej ilości impulsów z enkoderów, zatrzymał się.
+
 
     \subsection{Wyznaczanie zakrętów}
         Wyznaczenie idealnie prostej trasy dla pojazdów nie zawsze jest możliwe.
-        W trakcie jazdy, pojazd będzie skręcał wielotonie, w każdym możliwym kierunku.
-        Dlatego niezwykle ważne jest, aby zachować maksymalną precyzję podczas skręcania.
-
-        Aby wyznaczyć w jaki sposób nasz samochód powinien skręcić, musi wyznaczyć kilka podstawowych parametrów.
-        A są to:
-        \begin{itemize}
-            \item długość łuku,
-            \item promień skrętu,
-            \item kąt skrętu kół.
-        \end{itemize}
-        Na tej podstawie, możemy stworzyć zależność, która pozwoli na napisanie instrukcji dla samochodu, w jaki sposób ma się poruszać.
-        \begin{gather}
-            s = 2\pi (r(\gamma) + \Delta r) \cdot \frac{\alpha}{360}
-            \label{eq:turning_arc}
-            \\
-            \alpha = \frac{2\pi (r(\gamma + \Delta r))}{s \cdot 360}
-        \end{gather}
-        gdzie:
-        \begin{itemize}
-            \item $s$ -- długość łuku,
-            \item $r(\gamma)$ -- promień skrętu wyznaczany zgodnie z równaniem \eqref{eq:turning_radius},
-            \item $\Delta r$ -- odległość między kołami,
-            \item $\alpha$ -- oczekiwany kąt skrętu.
-        \end{itemize}
-
-        Dzięki rozważaniom z rozdziału \ref{subsec:sterowanie_odległość} oraz równaniu \eqref{eq:turning_arc} i \eqref{eq:turning_radius}.
-        Możemy stworzyć prostą logikę odpowiedzialną za skręcanie pojazdu.
-
+        W trakcie jazdy, samochód będzie skręcał wielotonie, w każdym możliwym kierunku.
+        Przedstawiony model posiada dwie osiowe, przez co nie są w stanie wykonać tego manewru w miejscu.
+        Natomiast może swobodnie poruszać się po okręgu o minimalnym promieniu.
+        W tym rozdziale zostanie opisany sposób wyznaczania tego promienia w zależności od kąta skrętu kół.
 
         \subsubsection{Minimalny promień skrętu}
         \label{subsubsec:minamalny_promien}
-            Wyznaczenie promienia skrętu jest
-            \begin{gather}
-                2\pi (r + \Delta r) \cdot \frac{\Delta \alpha}{360^\circ} = s\\
-                r + \Delta r = \frac{s}{2\pi \cdot \frac{\Delta \alpha}{360^\circ}}
-            \end{gather}
-            gdzie:
-            \begin{itemize}
-                \item $r + \Delta r$ -- promień skrętu zewnętrznego koła,
-                \item $\Delta \alpha$ -- zakreślony kąt,
-                \item $s$ -- długość łuku.
-            \end{itemize}
-
-            Zbudowany pojazd, ma możliwość jazdy przez zadaną odległość.
-            Odległość pokonana przez samochód jest dość precyzyjne mierzona przez enkodery,
-            a pomiary odległości za pomocą czujników ToF pozwalają na zaufanie dla wartości zadanej.
-
-            Dzięki rozważaniom z rozdziału \ref{subsubsec:dyferencjal} udało się uzyskać powtarzalności pomiarów zakreślonego kąta.
-            I tak przykładowo, dla ustawionego maksymalnego kąta skrętu kół $\gamma = 90 \pm 30^\circ$ oraz długości łuku $s = 500mm$, wartość zakreślony kąt wynosił około $\Delta \alpha = \left(60.0 \pm 3.0\right)^\circ$.
-            Wartość promienia skrętu wynosiła około:
-            \begin{gather}
-                r = \frac{500mm}{2\pi \cdot \frac{60}{360}} - 125mm \approx (350)mm
-            \end{gather}
-
-            Przedstawiony minimalny promień skrętu, możemy oczywiści porównać zgodnie z równaniem \eqref{eq:turning_radius}.
-            Po podstawieniu wyżej wymienionych wartości, otrzymujemy:
+            Wykorzystując rysunek \ref{draw:turning_car} oraz zależność \eqref{eq:turning_radius}, można obliczyć minimalny promień skrętu.
+            Po podstawieniu wartości do wzoru, otrzymujemy:
             \begin{gather}
                 r(\gamma = 90 \pm 30^\circ) = \left|\frac{155}{\tan(\pm 30^\circ)}\right| \approx 270mm
             \end{gather}
 
-            Teoretyczny minimalny promień skręty, wychodzący z obliczeń, jest znacząco mniejszy od zmierzonego minimalnego promienia skrętu.
-            Wynika to z nie idealności konstrukcji oraz zastosowania ,,względnie słabej jakości" serwomechanizmu.
-            Pojazd nie jest w stanie skręcić kołami jednakowo w obie strony, co wymusiło ustawienie wartości offsetu, przesuwającej wartość kąta skrętu.
-            Dla pojazdu testowego, wartość offsetu wynosiła $-6^\circ$.
-            Co ogranicza maksymalny zakres skrętu do $\pm 23^\circ$.
+            Otrzymaną wartość należy jednak skonfrontować z rzeczywistością.
+            W tym celu przedstawiono inny sposób wyznaczenia promienia skrętu.
+            Równanie \eqref{eq:turning_arc} pozwala na obliczenie tego parametru na podstawie zakreślonego kąta i długości łuku.
             \begin{gather}
-                r(\gamma = 90 \pm 23^\circ) = \left|\frac{155}{\tan(\pm 23^\circ)}\right| \approx 350mm
+                s = 2\pi (r(\gamma) + \Delta r) \cdot \frac{\alpha}{360}
+                \label{eq:turning_arc}
+                % \\
+                % \alpha = \frac{2\pi (r(\gamma + \Delta r))}{s \cdot 360}
+            \end{gather}
+            gdzie:
+            \begin{itemize}
+                \item $s$ -- długość łuku,
+                \item $r(\gamma)$ -- promień skrętu dla danego skrętu kół,
+                \item $\Delta r$ -- odległość między kołami,
+                \item $\alpha$ -- oczekiwany kąt skrętu.
+            \end{itemize}
+
+            Przekształcając powyższe równanie otrzymujemy zależność:
+            \begin{gather}
+                r(\gamma) = \frac{s}{2\pi \cdot \frac{\alpha}{360}} - \Delta r
+                \label{eq:turning_radius_with_arc}
+            \end{gather}
+
+            Odległość pokonana przez samochód jest dość precyzyjne mierzona przez enkodery.
+            A zakreślony kąt został zmierzony przez wcześniej skalibrowany akcelerometr.
+            Dzięki czemu można uznać że zadana długość łuku i zakreślony kat są precyzyjne.
+
+            I tak przykładowo, dla ustawionego maksymalnego kąta skrętu kół $\gamma = 90 + 30^\circ$ oraz długości łuku $s = 500mm$, wartość zakreślonego kąta wynosiła około $\alpha = 60.0^\circ$.
+            Podstawiając podane wyniki do równania \eqref{eq:turning_radius_with_arc}, otrzymujemy:
+            \begin{gather}
+                r = \frac{500mm}{2\pi \cdot \frac{60}{360}} - 125mm \approx (350)mm
             \end{gather}
 
 
+            Teoretyczny minimalny promień skrętu, wychodzący z obliczeń, jest znacząco mniejszy od zmierzonego minimalnego promienia skrętu.
+            Wynika to z nie idealności konstrukcji oraz zastosowania ,,względnie słabej jakości'' serwomechanizmu.
+            Co ogranicza maksymalny zakres skrętu do $\pm 24^\circ$.
+            \begin{gather}
+                r(\gamma = 90 + 24^\circ) = \left|\frac{155}{\tan(+ 24^\circ)}\right| \approx 350mm
+            \end{gather}
+
+            Jednak po uwzględnieniu zależności z rozdziału \ref{subsec:nierownomiernosc_skretu}, okazuje się że różnica między teoretycznym a obliczonym kątem skrętu kół wynosi dokładnie wartość offsetu.
+            Dlatego też, ograniczenie skrętu kół do $\pm 24^\circ$ nie jest potrzebne. I w późniejszych obliczeniach kąt skrętu kół brany pod uwagę będzie w zakresie $\pm 30^\circ$.
 
 

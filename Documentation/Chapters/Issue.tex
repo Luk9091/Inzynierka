@@ -6,17 +6,16 @@
     \subsection{Jazda prosto}
     \label{section:jazda_prosto}
         Najprostszą czynnością każdego pojazdu, jest jazda prosto.
-        Operacja ta może wydawać się prosta, jednak wcale taka nie jest.
+        Operacja ta może wydawać się łatwa, jednak wcale taka nie jest.
         Przykładowo, kiedy usiądziemy za kierownicą, prawdziwego samochodu, kontroluje podświadomie wiele parametrów takich jak:
         \begin{itemize}
             \item nachylenie terenu,
             \item aktualną pozycję kół,
             \item linie poziome na drodze czy pobocze drogi.
         \end{itemize}
-        Jako ludzie, wiele tych parametrów kontroluje ,,na wyczucie''`' jednak pojazdy autonomiczne, są poniekąd robotami, dla których istnieje tylko informacja \textit{tak} lub \textit{nie}.
-        Poniższy projekt podczas testów, wykazywał wiele mankamentów, które uniemożliwiały jazdę prostą.
-        W poniższym rozdziale pokrótce zostaną one opisane wraz z proponowanymi metodami radzenia sobie z nie idealnością konstrukcji.
-        % Były to między innymi:
+        Jako ludzie, wiele tych parametrów kontroluje ,,na wyczucie'' jednak pojazdy autonomiczne, są poniekąd robotami, które nie mogą polegać na ,,uczuciu'', że jadą prosto.
+        Dlatego koniecznym jest zastosowanie odpowiednich czujników, które pozwolą na dokładną kontrolę jazdy.
+        W poniższym rozdziale pokrótce zostaną opisane rozwiązanie dzięki którym samochód jest w stanie jeździć w sposób powtarzalny.
 
         \subsubsection{Różnica prędkości silników}
             Zastosowanie dwóch silników, ma swoje wady i zalety.
@@ -136,15 +135,15 @@
         % \end{wrapfig}
 
 
-    \newpage
+% \newpage
     Oba wyżej opisane rozwiązania pozwalają na w miarę stałą jazdę prostą ($\pm 2^\circ$).
     A w sytuacjach, kiedy pojazd zaczyna znacząco skręcać, na przykład po impakcie z boku, sprzężenie zwrotne z żyroskopu pozwala wykryć znaczącą zmianę kąta ruchu.
     Kolejny regulator PID, odczytuje wartość kąta i koryguje kąt serwomechanizmu, tak aby pojazd wrócił na prostą.
 
     \subsection{Skręcanie}
         Rozwiązanie problemów z jazdą prosto to tylko połowa sukcesu.
-        Kolejnym problemem okazało się skręcanie.
-        Nie tylko w pierwotnej wersji nie było stałe, ustawienie stałego kąta kół oraz przejechanie tej samej drogi, nie zawsze dawało ten sam rezultat.
+        Kolejne mankamenty wyszły podczas próby skręcania.
+        Nie tylko w pierwotnej wersji nie było stałe - ustawienie stałego kąta kół oraz przejechanie tej samej drogi, nie zawsze dawało ten sam rezultat.
         To pojazd cały czas miał tendencję do preferowania skrętu w jedną stronę.
 
         \subsubsection{Dyferencjał}
@@ -155,36 +154,52 @@
 
         Rozwiązaniem tego problemu jest zmiana prędkości pracy silników w zależności od promienia skrętu.
         Poniżej przedstawiono schemat algorytmu, na którego podstawie wyznaczono procentową wartość dyferencjału.
-        Rysunek \ref{fig:turning_car}, przedstawia schematyczną sytuację skręcania.
+        Rysunek \ref{draw:turning_car}, przedstawia schematyczną sytuację skręcania.
         \input{Schematic/turning.tex}
 
-        Jak widać na powyższym rysunku, skręt pojazdu można opisać jako ruch po kręgu, w którym poszczególne prędkości liniowe nie są sobie równe.
+        Jak widać, skręt pojazdu można opisać jako ruch dwóch kół po okręgach o wspólnym środku, w których poszczególne prędkości liniowe nie są sobie równe.
         Jednak występuje zależność:
         \begin{gather}
             \omega_{\text{wewnęrznego koła}} = \omega_{\text{zewnętrznego koła}}\\
             \frac{v_{\text{wewnęrznego koła}}}{r} = \frac{v_{\text{zewnętrznego koła}}}{r + \Delta r}\\
             \frac{v_\text{wewnęrznego koła}}{v_{\text{zewnętrznego koła}}} = \frac{r}{r + \Delta r}
         \end{gather}
+
+        Aby policzyć zależność między prędkościami silników, należy wyznaczyć promień skrętu.
+        Do tego celu, można wykorzystać znane wartości i równanie \ref{eq:turning_radius}.
         Znanymi wartościami są:
+        \begin{gather}
+            \tan \left(90 - \gamma\right) = \frac{l}{r}\\
+            r(\gamma) = \frac{l}{\tan(90-\gamma)}
+            \label{eq:turning_radius}
+        \end{gather}
+
+        Gdzie:
         \begin{itemize}
             \item $l = 155$ -- długość między osiami samochodu:,
             \item $\Delta r = 125$ -- odległość między kołami w jednej osi,
             \item $\gamma \in <60^\circ \div 120^\circ>$ -- kąt skrętu kół, ustawiany przez algorytm nawigacji lub użytkownika.
         \end{itemize}
-        Dla powyższych parametrów, można wyznaczyć następujące równanie:
-        \begin{gather}
-            \tan \left(90 - \gamma\right) = \frac{l}{r}
-        \end{gather}
-        Na jego podstawie wyznaczono funkcję długości promienia skrętu od aktualnego kąta:
-        \begin{gather}
-            r(\gamma) = \frac{l}{\tan(90-\gamma)}
-            \label{eq:turning_radius}
-        \end{gather}
+
         A zatem procentowy stosunek prędkości w funkcji kąta można wyrazić jako:
         \begin{gather}
             \frac{v_{\text{prawe koła}}}{v_{\text{lewe koła}}} = 1 + \frac{\Delta r}{r} = 1 + \Delta r \cdot \frac{\tan(90 - \gamma)}{l}
         \end{gather}
 
 
+        \subsection{Nierównomierność skrętu}
+        \label{subsec:nierownomiernosc_skretu}
+            W trakcie testów, okazało się że pojazd nie skręca równomiernie w obie strony.
+%
+            Podczas manewrów w prawo, na łuku o długości $s = 500mm$, pojazd zakreślał kąt około $70^\circ$.
+            Natomiast na tym samym odcinku ale w lewo zakreślany kąt to około $50^\circ$.
+
+            Wymusiło ustawienie wartości offsetu, przesuwającej wartość kąta skrętu.
+            Jego wartość została wyznaczona eksperymentalnie i wynosiła około $-6^\circ$.
+            Dla podanej wartości kąt zakreślany podczas skrecania w obu kierunkach wynosił około $60^\circ$.
+
+
+
     Dzięki wszystkim wyżej wymiennym zabiegom, udało się uzyskać powtarzalne wyniki zarówno podczas jazdy prosto, cofania się oraz skręcania.
     Powyższe działania są niezbędne, jeśli budowany robot ma być sterowany autonomicznie.
+

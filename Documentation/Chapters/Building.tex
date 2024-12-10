@@ -1,4 +1,4 @@
-\section{Budowa pojazdu - założenia i testy}
+\section{Budowa pojazdu}
     Inspiracją do stworzenia poniższego projektu, były samochody autonomiczne, które najczęściej są pojazdami dwuosiowymi, o jednej osi skrętnej i jednej osi napędzającej.
     Obie osie, nie będą połączone ze sobą, co pozwoli na niezależne sterowanie nimi.
     W projekcie zostaną użyte dwa silniki prądu stałego wybrane w rozdziale \ref{sec:engines}.
@@ -13,12 +13,12 @@
             \caption{Przykładowy układ kierowniczy zaprojektowany w narzędziu FreeCAD}
             \label{fig:frontAxis_model}
         \end{figure}
-        Oś ta została zaprojektowana w taki sposób, aby środek kół znajdował się w linii z środkiem serwomechanizmu.
-        Dzięki temu, kąt ustawienia serwomechanizmu, odpowiada kątowi skrętu kół.
+        Oś ta została zbudowana w taki sposób, aby środek kół znajdował się w linii z środkiem serwomechanizmu.
+        Dzięki czemu ustawiony kąt odpowiada kątowi skrętu kół.
         Natomiast dużą wadą takiego układu, jest brak możliwości odczynia aktualnej pozycji kół, które po osiągnięciu swojego limitu mogą zniszczyć serwo.
 
     \subsection{Rama pojazdu}
-    Na czas beta testów, został wykorzystana gotowa rama przedstawiona na zdjęciu \ref{fig:test_chassis}.
+    Do budowy podwozia została wykorzystana gotowa rama przedstawiona na zdjęciu \ref{fig:test_chassis} produkowana przez firmę Waveshare..
     \begin{figure}[!ht]
         \centering
         \includegraphics[width=0.7\textwidth]{chassis-waveshare-24419.png}
@@ -27,8 +27,8 @@
         \label{fig:test_chassis}
     \end{figure}
 
-    Rama wstępnie została przerobiona aby możliwe było sterowanie przednią osią. Zgodnie z zdjęciem \ref{fig:frontAxis_model}.
-    Dodatkowo, został zmieniony sposób montażu silników, które zostały zamocowane na odwrotnie do zaleceń producenta, a także, zrezygnowano z ,,gumek", odpowiadających za amortyzację.
+    Przednia oś ramy została wymieniona na przedstawioną na rysunku \ref{fig:frontAxis_model}, dzięki czemu pojazd mógł skręcać.
+    Dodatkowo, został zmieniony sposób tylnych montażu silników, które zostały zamocowane na odwrotnie do zaleceń producenta a także, zrezygnowano z ,,gumek", odpowiadających za amortyzację.
 
 
     % TODO: dodać opis ramy pojazdu
@@ -39,7 +39,7 @@
         Same lidary, zaś są bardzo drogimi urządzeniami, często z niestandardowym sposobem komunikacji (np. za pomocą UART).
         Dlatego, też autor, zdecydował się na zastosowanie tańszych czujników ToF.
         Trzy takie czujniki zostały zamocowane z przodu pojazdu, z rozstawieniem co $30^\circ$.
-        Na rysunku \ref{fig:ToF_holder}, przedstawiono wyżej opisany sposób montażu.
+        Na rysunku \ref{fig:ToF_holder} przedstawiono model mocowani wyżej wymienionych czujników.
 % \newpage
         \begin{figure}[!ht]
             \centering

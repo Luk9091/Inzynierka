@@ -98,11 +98,11 @@
                 % Co więcej ich pomiary bywają niestabilne.
                 \item Czujniki Time of Flight (ToF) -- wyspecjalizowane moduły o wysokiej dokładności, pozwalają na pomiary na znacznych odległościach.
                 Zazwyczaj wymagają odpowiednich bibliotek dostarczonych przez producentów, co stanowi zarówno wadę jak i zaletę.
-                Takie czujniki mogą pracować bardzo szybkie jednak złożona, uniwersalna biblioteka spowalnia cały proces.
-                \item Układy obiciowe IR -- obwody składające się z dwóch diod, emitera i odbiornika.
+                Takie czujniki mogą pracować bardzo szybko jednak złożona, uniwersalna biblioteka spowalnia cały proces.
+                \item Układy obiciowe IR -- obwody składające się z dwóch diod: emitera i odbiornika.
                 Cechują się niewielkim zakresem pomiarowym (od $2cm$ do $20cm$) i znikomą dokładnością (pomiar zależy od koloru obiektu) oraz zauważalną strefą martwą.
                 \item Lidar -- wyspecjalizowane układy, umożliwiające bardzo precyzyjny określenie odległości w pełnym zakresie $360^\circ$.
-                Sprawia to że jest jedną z najlepszych dostępnych opcji, jednak ceny takich układów są zaporowe.
+                Sprawia to, że jest jedną z najlepszych dostępnych opcji, jednak ceny takich układów są zaporowe.
                 \item Radar -- niezwykle dokładne i kosztowne układy pomiarowe, pozwalające na nieporównywalną precyzję.
                 Niestety ich rozmiar wymagany do tego projektu jest trudno dostępny na rynku konsumenckim.
                 Co gorsza obowiązkowym staje się zastosowanie specjalnych procesorów sygnałowych, pozwalających na bieżąco przetwarzać dane z radarów.
@@ -118,30 +118,33 @@
         W ostatnich latach powstało wiele narzędzi, pozwalających na dostosowanie całości do własnych potrzeb.
         Najpopularniejszymi narzędziami do programowania mikrokontrolerów są:
         \begin{enumerate}
-            \item Eclipse -- kiedyś bardzo popularny program, posiadający olbrzymi zbiór dodatków.
+            \item Eclipse -- kiedyś bardzo popularny program, posiadający olbrzymi zbiór rozszerzeń.
             Rozprowadzany na otwartej licencji, dlatego stanowi doskonałą bazę dla wielu bardziej zaawansowanych projektów.
             \item STM32 Cube -- środowisko przeznaczone głównie do pracy z modułami STM32, oparte na wyżej wymienionym Eclipse.
             \item Microchip Studio -- zbiór narzędzi wyspecjalizowanych do pracy z mikrokontrolerami z rodziny AVR od firmy Microchip.
             \item Keil µVision -- program do programowania procesorów Cortex. Pomimo ograniczonej licencji jest bardzo popularny.
             \item Notepad++ -- bardziej zaawansowany notatnik, pozwalający na autouzupełnianie słów.
             Posiada też masę wtyczek, umożliwiających stworzenie z niego pełnoprawnego środowiska programistycznego, jednak w swojej pierwotnej wersji bardzo toporny w użyciu.
-            \item VS Code -- uniwersalne narzędzie, mające ogrom dodatków, które dają możliwość przystosowania edytor w pełni pod własne wymagania.
+            \item Visual Studio Code (VS Code) -- uniwersalne narzędzie, mające ogrom dodatków, które dają możliwość przystosowania edytor w pełni pod własne wymagania.
             Sam program zbudowany jest na silniku przeglądarki internetowej, dzięki czemu może z powodzeniem zastąpić jej funkcje takie jak: przeglądarka PDF, a wbudowany tile menedżer pozwala układać całość w bardzo czytelny sposób.
         \end{enumerate}
         Projekt został, zbudowany z wykorzystaniem programu VS Code, ze względu na największą elastyczność oraz możliwość dostosowania go do własnych potrzeb.
 
 
     \subsection{Środowisko CAD}
-        Zbudowanie pojazdu autonomicznego wymaga wymodelowania odpowiednich części.
-        % Dodatkowo, praca wymagała zaprojektowania kilku dodatkowych elementów mechanicznych.
-        W tym celu, zostało wykorzystane środowisko CAD, które pozwala na zaprojektowanie modelu 3D.
+        Zbudowanie pojazdu autonomicznego wymagało wymodelowania kilku niestandardowych części.
+        W tym celu, zostało wykorzystane środowisko CAD, pozwalające na zaprojektowanie modelu 3D.
         Poniżej przedstawiono trzy najpopularniejsze programów do projektowania.
         \begin{enumerate}
-            \item SolidWorks -- program stworzony przez firmę Dassault Systemes, który jest bardzo popularny w przemyśle. Jest też niezwykle precyzyjny i każda operacja wymaga zastanowienia się dokładnie co chce się osiągnąć - przez co próg wejścia jest bardzo wysoki.
-            \item Fusion 360 -- program stworzony przez firmę Autodesk, przeznaczony specjalnie do modelowania 3D. Posiada olbrzymie wsparcie dla drukarek 3D, a także dla obrabiarek CNC.
-                                Jest także niezwykle intuicyjny a próg wejścia jest bardzo niski. Jedyną wadą programu, jest możliwość jedynie pracy w chmurze.
+            \item SolidWorks -- program stworzony przez firmę Dassault Systemes, który jest bardzo popularny w przemyśle.
+            Pozwala na nieporównywalną precyzję a każda operacja wymaga zastanowienia przez co próg wejścia jest bardzo wysoki.
+            \item Fusion 360 -- program stworzony przez firmę Autodesk, przeznaczony specjalnie do modelowania 3D.
+            Posiada olbrzymie wsparcie dla drukarek 3D, a także dla obrabiarek CNC.
+            Jest także niezwykle intuicyjny a próg wejścia jest bardzo niski.
+            Jedyną wadą programu w wersji konsumenckiej, jest możliwość pracy wyłącznie w chmurze.
             \item FreeCAD -- darmowy program do projektowania modeli 3D, bardzo prosty w obsłudze, a nauczenie się tego programu wymaga naprawdę niewielkiego wkładu pracy.
-                             Program jest stale rozwijany, a społeczność wokół niego ma możliwość rozbudowywania go o nowe funkcje. Niewątpliwą zaletą w porównaniu do innych programów jest możliwość uruchomienia go na każdym systemie operacyjnym.
+            Program jest stale rozwijany, a społeczność wokół niego ma możliwość rozbudowywania go o nowe funkcje.
+            Niewątpliwą zaletą w porównaniu do innych programów jest możliwość uruchomienia go na każdym systemie operacyjnym.
         \end{enumerate}
 
         W projekcie został wykorzystany program FreeCAD, ze względu na swoją prostotę oraz możliwość uruchomienia na systemie Linux.
