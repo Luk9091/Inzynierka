@@ -1,15 +1,15 @@
 \section{Sterowanie pojazdem}
     Sterowanie pojazdem powinno odbywać się w sposób płynny i precyzyjny.
-    W poniższym rozdziale zostaną omówione algorytmy, odpowiedzialne za najbardziej podstawowe funkcje poruszania się takie jak: jazda prosto, skręt oraz cofanie.
+    W poniższym rozdziale zostaną omówione algorytmy odpowiedzialne za najbardziej podstawowe funkcje poruszania się takie jak: jazda prosto, skręt oraz cofanie.
 
     \subsection{Jazda przez pewien odcinek}
     \label{subsec:jazda_przez_odcinek}
-        W rozdziale \ref{section:jazda_prosto}, zostały opisane problemy jakie wystąpiły podczas budowy pojazdu. %oraz problemy jakie musiały zostać rozwiązane aby samochód był w stanie jechać prosto.
-        Dzięki rozwiązaniu wyżej wymienionych problemów, pojazd był w stanie jechać prosto.
-        Jednak dla precyzyjnego sterowania, informacja o tym, że pojazd porusza po linii prostej, jest niewystarczająca.
-        Obowiązkowym jest poznanie odległości jaką pokonuje pojazd.
+        W rozdziale \ref{section:jazda_prosto} zostały opisane problemy jakie wystąpiły podczas budowy pojazdu. %oraz problemy jakie musiały zostać rozwiązane aby samochód był w stanie jechać prosto.
+        Dzięki ich rozwiązaniu możliwa była jazda prosto.
+        Jednak dla precyzyjnego sterowania informacja o tym, że pojazd porusza się po linii prostej jest niewystarczająca.
+        Obowiązkowym staje się poznanie odległości jaka została pokonana.
 
-        Dystans jaką pokonuje pojazd od momentu startu, możemy dość dokładnie obliczyć, korzystając ze wzoru \eqref{eq:pulseToDistance}.
+        Dystans jaki pokonuje pojazd od momentu startu, możemy dość dokładnie obliczyć korzystając ze wzoru \eqref{eq:pulseToDistance}.
         \begin{gather}
             s = \frac{\text{pulse} \cdot 2\pi R}{N}
             \label{eq:pulseToDistance}
@@ -22,13 +22,13 @@
             \item $N$ -- liczba impulsów na obrót koła.
         \end{itemize}
 
-        Wzór ten, można także przekształcić w drugą stronę, aby obliczyć ile impulsów enkodera musi zostać zliczonych, przez procesor aby pojazd pokonał zadaną odległość.
+        Wzór ten można także przekształcić w drugą stronę, aby obliczyć ile impulsów enkodera musi zostać zliczonych przez procesor aby pojazd pokonał zadaną odległość.
         \begin{gather}
             \text{pulse} = \frac{s \cdot N}{2\pi R}
             \label{eq:distanceToPulse}
         \end{gather}
 
-        Dla zbudowanego modelu, promień koła wynosi $R = 50cm$, a liczba impulsów zgodnie z dokumentacją wynosi $N = 1920$.
+        Dla zbudowanego modelu promień koła wynosi $R = 50cm$ a liczba impulsów zgodnie z dokumentacją wynosi $N = 1920$.
         A więc dokładność pomiaru odległości wynosi około:
         \begin{gather}
             \Delta s \approx \pm2.0mm
@@ -40,7 +40,7 @@
     \subsection{Wyznaczanie zakrętów}
         Wyznaczenie idealnie prostej trasy dla pojazdów nie zawsze jest możliwe.
         W trakcie jazdy, samochód będzie skręcał wielotonie, w każdym możliwym kierunku.
-        Przedstawiony model posiada dwie osiowe, przez co nie są w stanie wykonać tego manewru w miejscu.
+        Przedstawiony model posiada dwie osiowe, przez co nie jest w stanie wykonać tego manewru w miejscu.
         Natomiast może swobodnie poruszać się po okręgu o minimalnym promieniu.
         W tym rozdziale zostanie opisany sposób wyznaczania tego promienia w zależności od kąta skrętu kół.
 
@@ -50,6 +50,7 @@
             Po podstawieniu wartości do wzoru, otrzymujemy:
             \begin{gather}
                 r(\gamma = 90 \pm 30^\circ) = \left|\frac{155}{\tan(\pm 30^\circ)}\right| \approx 270mm
+                \label{eq:theoretical_radius}
             \end{gather}
 
             Otrzymaną wartość należy jednak skonfrontować z rzeczywistością.
@@ -77,23 +78,24 @@
 
             Odległość pokonana przez samochód jest dość precyzyjne mierzona przez enkodery.
             A zakreślony kąt został zmierzony przez wcześniej skalibrowany akcelerometr.
-            Dzięki czemu można uznać że zadana długość łuku i zakreślony kat są precyzyjne.
+            Dzięki czemu można uznać, że zadana długość łuku i zakreślony kat są precyzyjne.
 
-            I tak przykładowo, dla ustawionego maksymalnego kąta skrętu kół $\gamma = 90 + 30^\circ$ oraz długości łuku $s = 500mm$, wartość zakreślonego kąta wynosiła około $\alpha = 60.0^\circ$.
+            Przykładowo dla ustawionego maksymalnego kąta skrętu kół $\gamma = 90 + 30^\circ$ oraz długości łuku $s = 500mm$, wartość zakreślonego kąta wynosiła około $\alpha = 60.0^\circ$.
             Podstawiając podane wyniki do równania \eqref{eq:turning_radius_with_arc}, otrzymujemy:
             \begin{gather}
                 r = \frac{500mm}{2\pi \cdot \frac{60}{360}} - 125mm \approx (350)mm
             \end{gather}
 
 
-            Teoretyczny minimalny promień skrętu, wychodzący z obliczeń, jest znacząco mniejszy od zmierzonego minimalnego promienia skrętu.
+            Teoretyczny minimalny promień skrętu wychodzący z obliczeń (równanie \eqref{eq:theoretical_radius}), jest znacząco mniejszy od zmierzonego minimalnego promienia skrętu.
             Wynika to z nie idealności konstrukcji oraz zastosowania ,,względnie słabej jakości'' serwomechanizmu.
             Co ogranicza maksymalny zakres skrętu do $\pm 24^\circ$.
             \begin{gather}
                 r(\gamma = 90 + 24^\circ) = \left|\frac{155}{\tan(+ 24^\circ)}\right| \approx 350mm
             \end{gather}
 
-            Jednak po uwzględnieniu zależności z rozdziału \ref{subsec:nierownomiernosc_skretu}, okazuje się że różnica między teoretycznym a obliczonym kątem skrętu kół wynosi dokładnie wartość offsetu.
-            Dlatego też, ograniczenie skrętu kół do $\pm 24^\circ$ nie jest potrzebne. I w późniejszych obliczeniach kąt skrętu kół brany pod uwagę będzie w zakresie $\pm 30^\circ$.
+            Jednak po uwzględnieniu zależności z rozdziału \ref{subsec:nierownomiernosc_skretu}, okazuje się że różnica między teoretycznym a obliczonym kątem skrętu kół wynosi dokładnie wartość offsetu ($-6^\circ$).
+            Dlatego też ograniczenie skrętu kół do $\pm 24^\circ$ nie jest potrzebne. 
+            I w późniejszych obliczeniach kąt skrętu kół brany pod uwagę będzie w zakresie $\pm 30^\circ$.
 
 

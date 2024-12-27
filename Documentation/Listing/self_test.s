@@ -1,4 +1,4 @@
-jump main           # Rozpocznij od funkcji main
+jump main           # Rozpocznij od funkcji main, linia 8
 speed = 0.1
 distance = 100
 baseAngle = 90
@@ -34,7 +34,7 @@ main:
 
     print "Please check back sensor"
     # Jeśli czujniki IR wykryją przeszkodę, robot zatrzyma się
-    b $distance    # Przejechaj 100mm do tyłu
+    b $distance    # Przejedź 100mm do tyłu
     sleep 10
     end            # Zakończ program lub funkcję
 

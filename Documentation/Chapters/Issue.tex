@@ -5,20 +5,20 @@
 
     \subsection{Jazda prosto}
     \label{section:jazda_prosto}
-        Najprostszą czynnością każdego pojazdu, jest jazda prosto.
-        Operacja ta może wydawać się łatwa, jednak wcale taka nie jest.
-        Przykładowo, kiedy usiądziemy za kierownicą, prawdziwego samochodu, kontroluje podświadomie wiele parametrów takich jak:
+        Najprostszą czynnością każdego pojazdu jest jazda prosto.
+        Operacja ta może wydawać się łatwa jednak wcale taka nie jest.
+        Przykładowo kiedy usiądziemy za kierownicą, prawdziwego samochodu kontroluje podświadomie wiele parametrów takich jak:
         \begin{itemize}
             \item nachylenie terenu,
             \item aktualną pozycję kół,
             \item linie poziome na drodze czy pobocze drogi.
         \end{itemize}
-        Jako ludzie, wiele tych parametrów kontroluje ,,na wyczucie'' jednak pojazdy autonomiczne, są poniekąd robotami, które nie mogą polegać na ,,uczuciu'', że jadą prosto.
+        Jako ludzie wiele tych parametrów kontroluje ,,na wyczucie'' jednak pojazdy autonomiczne, są poniekąd robotami, które nie mogą polegać na ,,uczuciu'', że jadą prosto.
         Dlatego koniecznym jest zastosowanie odpowiednich czujników, które pozwolą na dokładną kontrolę jazdy.
         W poniższym rozdziale pokrótce zostaną opisane rozwiązanie dzięki którym samochód jest w stanie jeździć w sposób powtarzalny.
 
         \subsubsection{Różnica prędkości silników}
-            Zastosowanie dwóch silników, ma swoje wady i zalety.
+            Zastosowanie dwóch silników ma swoje wady i zalety.
             Niewątpliwą zaletą jest podwojenie mocy pojazdu.
             Jednak olbrzymią wadą okazało się sterowanie i nierównomierność pracy silników.
             Na wykresie \ref{plot:distance_err_in_time_const_speed} poniżej przedstawiono różnicę drogi pokonanej przez każdy silnik dla jednakowego sygnału sterującego.
@@ -40,13 +40,12 @@
                         \legend{Błąd odległości}
                     \end{axis}
                 \end{tikzpicture}
-                \renewcommand{\figurename}{Wykres}
-                \caption{Różnica przebytej drogi między prawym a lewym silnikiem bez regulacji}
+                \caption{Wykres różnicy przebytej drogi między prawym a lewym silnikiem bez regulacji}
                 \label{plot:distance_err_in_time_const_speed}
             \end{figure}
 
-            Aby rozwiązać powyższy problem należy zastosować regulator PID, pozwalający w trakcie pracy, korygować prędkość silników.
-            Natomiast podczas startu silników została zastosowana sztywna korekta prędkości, w celu zminimalizowania błędu.
+            Aby rozwiązać powyższy problem należy zastosować regulator PID pozwalający w trakcie pracy, korygować prędkość silników.
+            Natomiast podczas startu silników została zastosowana sztywna korekta prędkości w celu zminimalizowania błędu.
             \begin{figure}[!ht]
                 \centering
                 \begin{tikzpicture}
@@ -63,16 +62,15 @@
                         \legend{Błąd odległości}
                     \end{axis}
                 \end{tikzpicture}
-                \renewcommand{\figurename}{Wykres}
-                \caption{Różnica przebytej drogi między prawym a lewym silnikiem z włączonym regulatorem PID. Prędkość pojazdu: $(35.10 \pm 0.10)\frac{mm}{s}$.}
+                \caption{Wykres różnicy przebytej drogi między prawym a lewym silnikiem z włączonym regulatorem PID. Prędkość pojazdu: $(35.10 \pm 0.10)\frac{mm}{s}$.}
                 \label{plot:PID_distance_err_in_time}
             \end{figure}
 
             Jak widać na wykresie \ref{plot:PID_distance_err_in_time} w początkowej fazie, silniki nadal nie pracują równomiernie, w dłuższej perspektywie praca silników osypuje w okół stałej wartości $(0 \pm 3)mm$.
 
     \subsubsection{Nieidealność podwozia}
-        Kolejnym napotkanym problemem, okazuje się nie idealność podwozia.
-        Szczególnie elementu przedstawionego na rysunku \ref{fig:frontAxis_model} oraz nie równomierne rozłożenie masy względem środka.
+        Kolejnym napotkanym problemem, okazuje się nieidealność podwozia.
+        Szczególnie elementu przedstawionego na rysunku \ref{fig:frontAxis_model} oraz nierównomierne rozłożenie masy względem środka.
         Wszystkie wyżej wymienione niedokładności powodowały, że pojazd cały czas skręcał w jedną stronę.
         Rozwiązaniem tego problemu jest zastosowanie pętli sprzężenia zwrotnego, opartej na czujniku $MPU6050$, który został użyty jak żyroskop, pozwalający na pomiar biedzącego kąta.
         Dzięki czemu można korygować kierunek skręcania pojazdu.
@@ -103,13 +101,12 @@
                         \legend{magnetometr,żyroskop}
                     \end{axis}
                 \end{tikzpicture}
-                \renewcommand{\figurename}{Wykres}
-                \caption{pomiary azymutu za pomocą magnetometru oraz zmiany kąta wykazanego przez żyroskop.}
+                \caption{Wykres pomiary azymutu za pomocą magnetometru oraz zmiany kąta wykazanego przez żyroskop}
                 \label{plot:gyro_magneto_measure}
         \end{figure}
         Podczas pomiaru, na oba układy został nałożony filtr dolnoprzepustowy, eliminujący szumy.
 
-        Wykres \ref{plot:delta_angle_with_gyro}, przedstawia narastanie katą, mierzonego przez żyroskop.
+        Wykres \ref{plot:delta_angle_with_gyro} przedstawia narastanie katą, mierzonego przez żyroskop.
         Widać bardzo dużą liniowość pracy żyroskopu, co pozwala zaufać temu czujnikowi na tyle, aby na jego podstawie określać czy pojazd jedzie prosto.
 
         % \begin{wrapfig}[!ht]
@@ -128,8 +125,7 @@
                         \addplot[blue] table[x = Time, y = Delta_angle, col sep = comma]{Measure/angles.csv};
                     \end{axis}
                 \end{tikzpicture}
-                \renewcommand{\figurename}{Wykres}
-                \caption{narastania kąta, zmierzonego przez żyroskop}
+                \caption{Wykres narastania kąta, zmierzonego przez żyroskop}
                 \label{plot:delta_angle_with_gyro}
         \end{figure}
         % \end{wrapfig}
@@ -137,27 +133,27 @@
 
 % \newpage
     Oba wyżej opisane rozwiązania pozwalają na w miarę stałą jazdę prostą ($\pm 2^\circ$).
-    A w sytuacjach, kiedy pojazd zaczyna znacząco skręcać, na przykład po impakcie z boku, sprzężenie zwrotne z żyroskopu pozwala wykryć znaczącą zmianę kąta ruchu.
-    Kolejny regulator PID, odczytuje wartość kąta i koryguje kąt serwomechanizmu, tak aby pojazd wrócił na prostą.
+    A w sytuacjach, kiedy pojazd zaczyna znacząco skręcać na przykład po impakcie z boku, sprzężenie zwrotne z żyroskopu pozwala wykryć znaczącą zmianę kąta ruchu.
+    Kolejny regulator PID odczytuje wartość kąta i koryguje kąt serwomechanizmu tak aby pojazd wrócił na prostą.
 
     \subsection{Skręcanie}
         Rozwiązanie problemów z jazdą prosto to tylko połowa sukcesu.
         Kolejne mankamenty wyszły podczas próby skręcania.
-        Nie tylko w pierwotnej wersji nie było stałe - ustawienie stałego kąta kół oraz przejechanie tej samej drogi, nie zawsze dawało ten sam rezultat.
+        Nie tylko w pierwotnej wersji nie było stałe - ustawienie stałego kąta kół oraz przejechanie tej samej drogi nie zawsze dawało ten sam rezultat.
         To pojazd cały czas miał tendencję do preferowania skrętu w jedną stronę.
 
         \subsubsection{Dyferencjał}
         \label{subsubsec:dyferencjal}
         Najprostszym do zauważenia problemem był brak dyferencjału.
-        Tylna oś pojazdu posiada dwa silniki, jednak w poprzednich testach, zostały one ,,software'owo połączona sztywną belką".
+        Tylna oś pojazdu posiada dwa silniki jednak w poprzednich testach, zostały one ,,software'owo połączona sztywną belką".
         Powodowało to poślizg pojazdu podczas skręcania a w konsekwencji uniemożliwiało powtarzalność manewru.
 
         Rozwiązaniem tego problemu jest zmiana prędkości pracy silników w zależności od promienia skrętu.
         Poniżej przedstawiono schemat algorytmu, na którego podstawie wyznaczono procentową wartość dyferencjału.
-        Rysunek \ref{draw:turning_car}, przedstawia schematyczną sytuację skręcania.
+        Rysunek \ref{draw:turning_car} przedstawia schematyczną sytuację skręcania.
         \input{Schematic/turning.tex}
 
-        Jak widać, skręt pojazdu można opisać jako ruch dwóch kół po okręgach o wspólnym środku, w których poszczególne prędkości liniowe nie są sobie równe.
+        Jak widać skręt pojazdu można opisać jako ruch dwóch kół po okręgach o wspólnym środku, w których poszczególne prędkości liniowe nie są sobie równe.
         Jednak występuje zależność:
         \begin{gather}
             \omega_{\text{wewnęrznego koła}} = \omega_{\text{zewnętrznego koła}}\\
@@ -200,6 +196,6 @@
 
 
 
-    Dzięki wszystkim wyżej wymiennym zabiegom, udało się uzyskać powtarzalne wyniki zarówno podczas jazdy prosto, cofania się oraz skręcania.
+    Dzięki wszystkim wyżej wymiennym zabiegom udało się uzyskać powtarzalne wyniki zarówno podczas jazdy prosto, cofania się oraz skręcania.
     Powyższe działania są niezbędne, jeśli budowany robot ma być sterowany autonomicznie.
 

@@ -1,0 +1,67 @@
+    \useNormalLandscape
+\section{Schemat ideowy}
+\begin{figure}[!ht]
+\centering
+\vspace{1cm}
+\begin{circuitikz}
+    \draw
+        % (0, -2) coordinate(GND_0)  node[right]{GND}
+
+        (0,  0.0) coordinate(GPIO_0 ) node[right]{GPIO 0 }
+        (0, -0.5) coordinate(GPIO_1 ) node[right]{GPIO 1 }
+        (0, -1.0) coordinate(GND_0)   node[right]{GND}
+
+        (0, -1.5) coordinate(GPIO_2 ) node[right]{GPIO 2 }
+        (0, -2.0) coordinate(GPIO_3 ) node[right]{GPIO 3 }
+        (0, -2.5) coordinate(GPIO_4 ) node[right]{GPIO 4 }
+        (0, -3.0) coordinate(GPIO_5 ) node[right]{GPIO 5 }
+        (0, -3.5) coordinate(GND_1)   node[right]{GND}
+
+        (0, -4.0) coordinate(GPIO_6 ) node[right]{GPIO 6 }
+        (0, -4.5) coordinate(GPIO_7 ) node[right]{GPIO 7 }
+        (0, -5.0) coordinate(GPIO_8 ) node[right]{GPIO 8 }
+        (0, -5.5) coordinate(GPIO_9 ) node[right]{GPIO 9 }
+        (0, -6.0) coordinate(GND_2)   node[right]{GND}
+
+        (0, -6.5) coordinate(GPIO_10) node[right]{GPIO 10}
+        (0, -7.0) coordinate(GPIO_11) node[right]{GPIO 11}
+        (0, -7.5) coordinate(GPIO_12) node[right]{GPIO 12}
+        (0, -8.0) coordinate(GPIO_13) node[right]{GPIO 13}
+        (0, -8.5) coordinate(GND_3)   node[right]{GND}
+
+        (0, -9.0) coordinate(GPIO_14) node[right]{GPIO 14}
+        (0, -9.5) coordinate(GPIO_15) node[right]{GPIO 15}
+
+%  ##############################
+
+        (5,  0.0) coordinate(VBUS)    node[left]{VBUS}
+        (5, -0.5) coordinate(VSYS)    node[left]{VSYS}
+        (5, -1.0) coordinate(GND_7)   node[left]{GND}
+
+        (5, -1.5) coordinate(ADC)     node[left]{ADC REF}
+        (5, -2.0) coordinate(3V3_EN)  node[left]{3V3 EN}
+        (5, -2.5) coordinate(3V3)     node[left]{3V3}
+        (5, -3.0) coordinate(GPIO_28) node[left]{GPIO 28}
+        (5, -3.5) coordinate(GND_6)   node[left]{GND}
+
+        (5, -4.0) coordinate(GPIO_27) node[left]{GPIO 27}
+        (5, -4.5) coordinate(GPIO_26) node[left]{GPIO 26}
+        (5, -5.0) coordinate(RUN)     node[left]{RUN}
+        (5, -5.5) coordinate(GPIO_22) node[left]{GPIO 22}
+        (5, -6.0) coordinate(GND_5)   node[left]{GND}
+
+        (5, -6.5) coordinate(GPIO_21) node[left]{GPIO 21}
+        (5, -7.0) coordinate(GPIO_20) node[left]{GPIO 20}
+        (5, -7.5) coordinate(GPIO_19) node[left]{GPIO 19}
+        (5, -8.0) coordinate(GPIO_18) node[left]{GPIO 18}
+        (5, -8.5) coordinate(GND_4)   node[left]{GND}
+
+        (5, -9.0) coordinate(GPIO_17) node[left]{GPIO 17}
+        (5, -9.5) coordinate(GPIO_16) node[left]{GPIO 16}
+
+
+        (0, 0.25) rectangle ++ (5, -10)
+    ;
+\end{circuitikz}
+\end{figure}
+    \useportrait

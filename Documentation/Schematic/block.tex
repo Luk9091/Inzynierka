@@ -1,12 +1,12 @@
     \useNormalLandscape
-\section{Schemat blokowy}
-    Na schemacie blokowym \ref{schema:block} przedstawiono przepływ sygnałów sterujących wraz z poszczególnymi blokami.
+\section{Schemat elektroniczny}
+    Na schemacie blokowym z rysunku \ref{schema:block} przedstawiono przepływ sygnałów sterujących wraz z połączeniem poszczególnych modułów.
 \begin{figure}[!ht]
 \centering
 \vspace{1cm}
 \begin{circuitikz}[fill = white]
     \draw[very thick]
-        (0, 0) node[draw, rectangle, fill, minimum width = 4cm, minimum height = 4cm, align = center] (MCU) {Mikrokontroler\\\scriptsize{Raspberry PI PICO W}}
+        (0, 0) node[draw, rectangle, fill, minimum width = 4cm, minimum height = 4cm, align = center] (MCU) {Mikrokontroler\\\scriptsize{Raspberry PI Pico W}}
 
         (0, -5) node[draw, rectangle, fill, minimum width = 3cm, minimum height = 3cm, align = center] (HBridge){Mostek H}
         (HBridge.south) ++(1, 0) --++(0, -1) to[Telmech=M, n = LMotor] ++ (2, 0) --++ (0, 2) --++ (-2, 0)
@@ -16,7 +16,7 @@
         (-7, 4) node[draw, rectangle, fill, minimum width = 2cm, minimum height = 2cm, align = center] (ToF2) {$\text{ToF}_2$}
         (-4, 4) node[draw, rectangle, fill, minimum width = 2cm, minimum height = 2cm, align = center] (ToF3) {$\text{ToF}_3$}
 
-        (-6, 0) node[draw, rectangle, fill, minimum width = 2cm, minimum height = 2cm, align = center] (MPU6050){MPU6050\\lub\\MPU6000}
+        (-6, 0) node[draw, rectangle, fill, minimum width = 2cm, minimum height = 2cm, align = center] (MPU6050){MPU6050}
         (-6, -4) node[draw, rectangle, fill, minimum width = 2cm, minimum height = 2cm, align = center] (Magneto){Magnetometr}
 
         (6, -4) node[draw, rectangle, fill, minimum width = 2cm, minimum height = 2cm, align = center] (LIR){Czujnik\\cofania}
@@ -44,13 +44,20 @@
         (I2C) to[short, -*]++ (-3, 0) coordinate(I2C) -- (ToF2.south)
         (I2C) -| (ToF1)
 
-        (LMotor) to[crossing] ++ (0, 4) --++ (0, 0.5) to[bmultiwire, a = 2] ++ (-1, 0) --++ (0, 1)
-        (RMotor) to[crossing] ++ (0, 4) --++ (0, 0.5) to[bmultiwire = 2] ++ ( 1, 0) --++ (0, 1)
+        (LMotor) to[crossing, i =\ ] ++ (0, 4) --++ (0, 0.5) to[bmultiwire, a = 2] ++ (-1, 0) --++ (0, 1)
+        (RMotor) to[crossing, i =\ ] ++ (0, 4) --++ (0, 0.5) to[bmultiwire, l = 2] ++ ( 1, 0) --++ (0, 1)
+
+        (ToF1.south) ++ (0.5, 0) -- ++ (0, -0.5)
+            --++ (2, 0) to[crossing] ++ (1, 0)
+            --++ (2, 0) to[crossing] ++ (1, 0)
+            --++ (0, -1.25) to[tmultiwire, l = xShut, i<= \ ] ++ (1.5, 0)
+        (ToF2.south) ++ (0.5, 0) to[short, -*] ++ (0, -0.5)
+        (ToF3.south) ++ (0.5, 0) to[short, -*] ++ (0, -0.5)
     ;
 \end{circuitikz}
-\renewcommand{\figurename}{Schemat}
-\caption{Schemat blokowy przedstawiający przepływ sygnałów w projekcie}
+\caption{Schemat blokowy przedstawiający przepływ sygnałów}
 \label{schema:block}
 \end{figure}
     \useportrait
-% \footnote{Pamięć dodatkowa do przechowywania map terenu}
+
+\input{Chapters/Schematic.tex}

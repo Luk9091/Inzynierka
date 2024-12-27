@@ -22,11 +22,7 @@
 \newcommand{\centerY}[2]{\multirow{#1}{*}{#2}}
 
 \usepackage{wrapfig}
-
-\usepackage{chngcntr}
-\counterwithin{figure}{section}
-\counterwithin{table}{section}
-\numberwithin{equation}{section}
+\usepackage{subcaption}
 
 \usepackage{hyperref}
 \hypersetup{
@@ -35,6 +31,11 @@
     linkcolor= black,
     citecolor= blue
 }
+
+\usepackage{chngcntr}
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+\numberwithin{equation}{section}
 
 \usepackage{graphicx}
 \graphicspath{{./Img/}}
@@ -120,8 +121,6 @@ literate=%
 \usepackage{titling}
 \renewcommand\maketitlehooka{\null\mbox{}\vfill}
 \renewcommand\maketitlehookd{\vfill\null}
-\newcommand{\figurePlotName}{\renewcommand{\figurename}{Wykres}}
-
 
 \begin{document}
     \begin{titlepage}
@@ -138,13 +137,14 @@ literate=%
         \newpage
     \pagenumbering{arabic}
     % \input{Chapters/Abstract.tex}
-    \input{Chapters/Introduction.tex}
-    \input{Schematic/block.tex}
-    \input{Chapters/Testing.tex}
-    \input{Chapters/Building.tex}
-    \input{Chapters/Issue.tex}
-    \input{Chapters/Controll.tex}
-    \input{Chapters/Map.tex}
+    \include{Chapters/Introduction.tex}
+    \include{Chapters/Building.tex}
+    \include{Schematic/block.tex}
+    \include{Chapters/Testing.tex}
+    \include{Chapters/Issue.tex}
+    \include{Chapters/Controll.tex}
+    \include{Chapters/Map.tex}
+\newpage
     \input{Chapters/Summary.tex}
 
     \vfill
@@ -156,5 +156,10 @@ literate=%
     \pagenumbering{gobble}
     \nocite{*}
     \printbibliography
+
+    % \include{Schematic/idea}
+    \listoffigures
+    \listoftables
+    \lstlistoflistings
 
 \end{document}

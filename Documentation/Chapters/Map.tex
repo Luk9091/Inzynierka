@@ -17,7 +17,7 @@
     \subsection{Budowa mapy}
         W założeniu aplikacja ma pozwalać jedynie na wyświetlanie, mapy zbudowanej przez samochód.
         Natomiast wszystkie obliczenia powinny zostać wykonane przez kontroler zarządzający pojazdem.
-        Jednak ze względu na duże skomplikowanie opisywanych problemów, w celach testowych, to aplikacja posiada zaimplementowany algorytm do wyszukiwania ścieżek.
+        Jednak ze względu na duże skomplikowanie opisywanych problemów w celach testowych, to aplikacja posiada zaimplementowany algorytm do wyszukiwania ścieżek.
         Następnie wyznaczona ścieżka zamieniana jest na proste instrukcje w stylu ,,uruchom oba silniki na 500mm'' czy ,,skręć kołami o $30^\circ$ w lewo''.
 
 
@@ -35,7 +35,7 @@
             Najpopularniejszymi algorytmami są:
             \begin{itemize}
                 \item algorytm A* (A star),
-                \item algorytm Dijkstra,
+                \item algorytm Dijkstry,
                 \item algorytm Bellmana-Forda.
             \end{itemize}
 
@@ -43,23 +43,21 @@
             autorstwa: Beata \citeauthor{AnalizaAlgorytmówŚcieżek}.
             \begin{figure}[!ht]
                 \centering
-                \figurePlotName
                 \includegraphics[width=0.7\textwidth]{PathFinding/Wykres_sredni_czas_algorytmu_pathfinding.png}
-                \caption{Porównanie średniego czasu wykonania algorytmów}
+                \caption{Wykres porównania średniego czasu wykonania algorytmów}
                 Źródło:\cite{AnalizaAlgorytmówŚcieżek} \citetitle{AnalizaAlgorytmówŚcieżek}
                 \label{fig:PathFindingTime}
             \end{figure}
             \begin{figure}[!ht]
                 \centering
-                \figurePlotName
                 \includegraphics[width=0.7\textwidth]{PathFinding/Wykres_sredni_koszt_algorytmu_pathfinding.png}
-                \caption{Porównanie średniego kosztu znalezionych ścieżek}
+                \caption{Wykres porównania średniego kosztu znalezionych ścieżek}
                 Źródło:\cite{AnalizaAlgorytmówŚcieżek} \citetitle{AnalizaAlgorytmówŚcieżek}
                 \label{fig:PathFindingCost}
             \end{figure}
 
             Z powyższej pracy wynika, że najlepszym rozwiązaniem jest algorytm Dijkstry.
-            Dodatkowym czynnikiem, potwierdzającą powyższe stwierdzenie jest samo skomplikowanie algorytmu.
+            Dodatkowym czynnikiem potwierdzającą powyższe stwierdzenie jest samo skomplikowanie algorytmu.
             Algorytm Dijkstry jest stosunkowo prosty w implementacji, a także posiada niski koszt obliczeniowy.
             Dzięki czemu wydaje się najlepszym rozwiązaniem dla zastosowań w układach embedded.
 
@@ -68,7 +66,7 @@
             \subsection{Wygładzanie ścieżek}
             \label{subsec:wygładzanie_ścieżek}
             Na rysunku \ref{fig:pathfinding_dikstra} przedstawiono przykładową ścieżkę wyznaczoną przez algorytm Dijkstry.
-            Algorytm ten, zwraca najkrótsze możliwe połączenie między dwoma punkami.
+            Algorytm ten zwraca najkrótsze możliwe połączenie między dwoma punkami.
             Najczęściej jest to prosta łącząca dwa punkty.
             Jednak ze względu na ograniczenia kontrakcyjne wyrysowana trasa jest niemożliwa do wykonania przez drona.
 
@@ -83,8 +81,8 @@
             Budowany pojazd ma tylko jedną oś skrętną, więc nie jest w stanie skręcić w miejscu.
             Dlatego koniecznym jest zastosowanie algorytmu wygładzania trasy.
             W artykule \citetitle{Simple_PathSmoothing} \cite{Simple_PathSmoothing}, przedstawiona jest najprostsza możliwa metoda wygładzania.
-            Przedstawiony algorytm, zakłada zbudowanie mapy punktów o nie całkowitych współrzędnych.
-            Dzięki czemu możliwe, jest przesunięcie punktów docelowych, z środka pojedynczej kratki, w kierunku łuku skrętu.
+            Przedstawiony algorytm zakłada zbudowanie mapy punktów o nie całkowitych współrzędnych.
+            Dzięki czemu możliwe jest przesunięcie punktów docelowych z środka pojedynczej kratki w kierunku łuku skrętu.
 
             \begin{figure}[!ht]
                 \centering
@@ -94,12 +92,12 @@
                 \label{fig:simple_pathSmooth}
             \end{figure}
 
-            Zaletami przedstawionego rozwiązania jest niewątpliwie jego prostota.
-            Jednak olbrzymią wadą, jest brak kontroli nad wygładzeniem trasy, a także pocięcie drogi na pojedyncze punkty między którymi pojazd będzie stawał i ponownie ruszał.
+            Zaletą przedstawionego rozwiązania jest niewątpliwie jego prostota.
+            Jednak olbrzymią wadą    jest brak kontroli nad wygładzeniem trasy, a także pocięcie drogi na pojedyncze punkty między którymi pojazd będzie stawał i ponownie ruszał.
             Dodatkowo, pojawia się problem przechowywania mapy w pamięci (problem ten został dokładniej opisany w rozdziale \ref{subsec:przechowywanie_mapy}).
-            W związku z powyższym, autor zdecydował się na zastosowanie bardziej skomplikowanego algorytmu.
+            W związku z powyższym autor zdecydował się na zastosowanie bardziej skomplikowanego algorytmu.
 
-            Alternatywnymi metodami wygładzenia ścieżek zostały opisane w artykułach: \citetitle{Compare_PathSmoothing} \cite{Compare_PathSmoothing} oraz \citetitle{Compare_PathSmoothing2} \cite{Compare_PathSmoothing2}.
+            Alternatywne metody wygładzenia ścieżek zostały opisane w artykułach: \citetitle{Compare_PathSmoothing} \cite{Compare_PathSmoothing} oraz \citetitle{Compare_PathSmoothing2} \cite{Compare_PathSmoothing2}.
             Oba artykuły przedstawiają i porównują różne metody dostosowywania wyznaczonej ścieżki do możliwości robota.
             Poniżej na wykresie \ref{fig:smoothingPath_res}
             \begin{figure}[!ht]
@@ -118,11 +116,11 @@
                 \label{fig:smoothingPath_res}
             \end{figure}
 
-            Ostatecznie, z wszystkich wymienionych w artykułach algorytmów został wybrany algorytm krzywych Dublina - zw względu na łatwą implementację oraz możliwość łatwego dostosowywania promienia skrętu.
+            Ostatecznie ze wszystkich wymienionych w artykułach algorytmów został wybrany algorytm krzywych Dublina - ze względu na łatwą implementację oraz możliwość łatwego dostosowywania promienia skrętu.
 
 % \newpage
             \subsubsection{Opis algorytmu krzywych Dublina}
-                Mechanizm wygładzania ścieżek za pomocą krzywych Dublina jest algorytmem przeznaczonym specjalnie dla pojazdów o ograniczonej sterowności.
+                Mechanizm wygładzania ścieżek za pomocą krzywych Dublina jest przeznaczony dla pojazdów o ograniczonej sterowności.
                 Przykładowo dla pojazdów z tylko jedną osią skrętną.
                 \begin{figure}[!ht]
                     \centering
@@ -156,23 +154,22 @@
 
 \newpage
             Poniżej przedstawiono implementację algorytmu krzywych Dublina zastosowanego w projekcie.
-            Przedstawiony algorytm jest modyfikacją oryginalnego algorytmu.
-            Jest także z założenie modyfikacją nie optymalną.
+            Przedstawiony wersja jest z założenie nieoptymalną modyfikacją oryginału.
 
             \vspace{0.25cm}
             \begin{minipage}[l]{0.6\textwidth}
                 \begin{enumerate}
-                    \item Zamiana punktów ścieżki na listę prostych z punktem początkowym i końcowym.
+                    \item Zamiana punktów ścieżki na listę prostych o punktach początkowych i końcowych.
                     \item Wyznaczenie punku przecięcia się dwóch kolejnych prostych.
-                    \item Wyznaczcie dwusiecznej kąta, tworzonego przez obie proste w punkcie przecięcia.
-                    \item Wyznaczcie kierunku w którym będzie poruszał się pojazd po zakręcie.
+                    \item Wyznaczenie dwusiecznej kąta tworzonego przez obie proste w punkcie przecięcia.
+                    \item Wyznaczenie kierunku, w którym będzie poruszał się pojazd po zakręcie.
                     \item Znalezienie na dwusiecznej środka okręgu. Punkt ten zawsze znajduje się w przeciwnym kierunku do ruchu pojazdu.
                     \item Znalezienie punktów styczności okręgu i obu prostych. Te punkty będą punktem początkowym i końcowym łuku, po którym porusza się pojazd.
                 \end{enumerate}
             \end{minipage}
             \vspace{0.25cm}
 
-            Pierwotne założenia zakładają, że nie należy łączyć dwóch prostych, a zawsze jeśli jest to możliwe to ścieżka powinna zaczynać się i kończyć łukiem.
+            Pierwotne założenia zakładają, że nie należy łączyć dwóch prostych, a zawsze jeśli jest to możliwe ścieżka powinna zaczynać się i kończyć łukiem.
             Jednak w tym projekcie dużo łatwiej jest wyznaczyć łuk łączący dwie proste, niż próbować na siłę wyznaczyć łuk do dowolnego punktu.
 
             \begin{figure}[!ht]
@@ -186,16 +183,16 @@
 
     \subsection{Przechowywanie mapy}
     \label{subsec:przechowywanie_mapy}
-        Przechowywanie mapy, jest niezwykle złożonym zagadnieniem.
-        W zależności od zastosowania oraz platformy na której pracujemy, ta sama mapa może być przedstawiona na różne sposoby.
-        Mapa zapisana na komputerze -- o bardzo dużej dostępnej pamięci, może być bardzo dokładna.
-        Natomiast ta sama mapa zapisana na mikrokontrolerze, o bardzo ograniczonej pamięci, musi zawierać uproszczenia.
+        Przechowywanie mapy jest niezwykle złożonym zagadnieniem.
+        W zależności od zastosowania oraz platformy, na której pracujemy, ta sama mapa może być przedstawiona na różne sposoby.
+        Mapa zapisana na komputerze -- o bardzo dużej dostępnej pamięci może być bardzo dokładna.
+        Natomiast ta sama mapa zapisana na mikrokontrolerze o bardzo ograniczonej pamięci musi zawierać uproszczenia.
 
         \subsubsection{Mapa jako tablica ścian}
-            W wielu projektach mapę przedstawia się jako tablicę dwu wymiarową, w której poszczególne komórki odpowiadają poszczególnym polom w labiryncie.
-            Każda komórka zawiera informacje w którym kierunku od niej można się poruszać.
+            W wielu projektach mapę przedstawia się jako tablicę dwuwymiarową, w której poszczególne komórki odpowiadają poszczególnym polom w labiryncie.
+            Każda komórka zawiera informacje, w którym kierunku od niej można się poruszać.
             Przykład takiego przechowywania labiryntu przedstawia artykuł \citetitle{maze_storage}\cite{maze_storage}.
-            A na rysunku \ref{fig:mazeCellStorage} przedstawione jest proponowane rozwiązanie.
+            Na rysunku \ref{fig:mazeCellStorage} przedstawione jest proponowane rozwiązanie.
 
             \begin{figure}[!ht]
                 \centering
@@ -205,10 +202,10 @@
                 \label{fig:mazeCellStorage}
             \end{figure}
 
-            Rozwiązanie to jest bardzo skuteczne, kiedy znane są dokładne wymiary każdej komórki labirynty.
+            Metoda ta jest bardzo skuteczna kiedy znane są dokładne wymiary każdej komórki labirynty.
             Jednak przechowywanie mapy otwartej przestrzeni w taki sposób jest bardzo nieefektywne.
-            Przykładowo, jeśli połaczymy z komórki $A$, nie możemy jechać prosto, to może zarówno oznaczać że w miejscu komórki $B$ jest ściana, jak i to że komórka $B$ jest nie przejezdna.
-            W labiryncie, gdzie znaczenie mają ściany to rozwiązanie jest bardzo dobre, jednak jeśli nie jesteśmy w stanie powiedzieć czy to co wykrywamy to cienka ścianka czy też duża przeszkoda to rozwiązanie staje się nie optymalne.
+            Przykładowo jeśli z komórki $A$, nie możemy jechać prosto to może oznaczać zarówno, że w miejscu komórki $B$ jest ściana, jak i to, że komórka $B$ jest nie przejezdna.
+            W labiryncie gdzie znaczenie mają ściany to rozwiązanie jest bardzo dobre, jednak jeśli nie jesteśmy w stanie powiedzieć czy to co wykrywamy to cienka ścianka czy też duża przeszkoda to rozwiązanie staje się nie optymalne.
 
             \begin{figure}[!ht]
                 \centering
@@ -223,8 +220,8 @@
                 \caption{Przykład niejednoznaczności wymiarów}
             \end{figure}
 
-            Dodatkową wadą przedstawionego rozwiązani jest rozmiar każdej takiej komórki oraz czas potrzebny na przeanalizowanie każdej możliwości.
-            Każda kwadrat w powyższej metodzie składa się z 4 bitów, dodatkowo, łącząc poszczególne kratki ze sobą, okazuje się że niektóre bity są nadmiarowe.
+            Dodatkowymi wadami przedstawionego rozwiązani są: rozmiar każdej komórki oraz czas potrzebny na przeanalizowanie wszystkich możliwości.
+            Pojedynczy kwadrat w powyższej metodzie składa się z 4 bitów dodatkowo łącząc poszczególne kratki ze sobą, okazuje się, że niektóre bity są nadmiarowe.
             Jeśli z punktu $A$ nie możemy jechać do góry, to znaczy że z punktu $C$ nie będzie można jechać w dół.
             Jednak ta informacji musi zostać zapisana dla każdej komórki osobno.
             \begin{figure}[!ht]
@@ -249,32 +246,31 @@
             \end{figure}\\
             Analogiczna sytuacja występuje kiedy trasa jest przejedza (tak jak dla połączenia między~$A$~i~$D$).
 
-            Podsumowując, powyższa metoda przechowywania mapy nadaje jedynie do labiryntów, o jasno określonych zasadach.
-            To rozwiązanie nie nadaje się do reprezentacji otwartej przestrzeni.
-            Posiada za dużo wad aby można było próbować ją zastosować w rzeczywistości.
+            Podsumowując, powyższa metoda przechowywania mapy nadaje się jedynie do labiryntów, o jasno określonych zasadach.
+            To rozwiązanie nie sprawdzi się do reprezentacji otwartej przestrzeni.
+            Posiada za dużo wad, aby można było próbować ją zastosować w rzeczywistości.
 
         \subsubsection{Mapy wektorowe}
             Innym podejściem do przedstawionego problemu jest zastosowanie wektorów.
-            W takim przypadku, nie rozważamy przeszkód, jako pojedyncze komórki a jako proste figure geometryczne.
+            W takim przypadku nie rozważamy terenu jako pojedyncze komórki, a proste figure geometryczne.
             Takie podejście zostało opisane w artykule \citetitle{vector_map}\cite{vector_map}.
             Na zdjęciu \ref{fig:buildVectMap} przedstawiono algorytm budowania takiej mapy.
 
             \begin{figure}[!ht]
                 \centering
                 \includegraphics[width = \textwidth]{VectMapAlogirthm.png}
-                \caption{Ogólny schemat przeważania pomiarów punktów w mapę wektorową}
+                \caption{Ogólny schemat przetwarzania punktów w mapę wektorową}
                 Źródło: \citetitle{vector_map}\cite{vector_map}
                 \label{fig:buildVectMap}
             \end{figure}
 
-            Jak widać przedstawiony na powyższym rusku algorytm nie należy do prostych.
+            Jak widać przedstawiony na powyższym rysunku (rys. \ref{fig:buildMap}) algorytm nie należy do prostych.
             Wymaga on bardzo dokładnego procesu pomiarowego, który nie ogranicza się tylko do minimalnej ilości punktów.
             A najlepsze efekty daje dla pełnego skanu otoczenia.
 
-            Powyższy algorytm, nie tylko wymaga do poprawnej pracy możliwości zaznaczenia za każdym razem połączeń między nowymi a poprzednimi pomiarami.
-            Ale także wymaga bardzo dużo czasu aby poprawnie odzwierciedlić zmierzone odległości w rzeczywistą mapę.
-
-            Dodatkowo wyznaczanie trasy w tak skomplikowanej mapie, trwa bardzo długo.
+            Przedstawiona metoda potrzebuje zarówno nadmiarowości - nowy obszar musi w jakimś stopniu pokrywać się z wcześniej zbadanym,
+            to również obliczenie nowego położenia oraz połączenie poszczególnych punktów w wektory wymaga dużo czasu.
+            Co więcej wyznaczanie trasy w tak skomplikowanej mapie trwa bardzo długo.
             Na schemacie \ref{schematic:vectorMapPathfinding} przedstawiono algorytm sprawdzania kolizji na trasie dla mapy wektorowej.
 
             \input{Schematic/vectMapPathfinding.tex}
@@ -283,9 +279,10 @@
             Jak również mały rozmiar takiej mapy oraz możliwość bardzo dokładnego wyznaczania trasy.
 
 
+\newpage
         \subsubsection{Mapa rastrowa}
             Ostatnim przedstawionym rozwiązaniem jest mapa rastrowa.
-            W tym przypadki, dzielimy całą przestrzeń na równe kwadraty, a każdy z kwadratów opisuje jeden z kilku możliwych stanów.
+            W tym przypadku dzielimy całą przestrzeń na równe kwadraty, a każdy z kwadratów opisuje jeden z kilku możliwych stanów.
             Przykładowe stany to:
             \begin{enumerate}
                 \item pole nieznane,
@@ -293,8 +290,8 @@
                 \item pole zajęte.
             \end{enumerate}
 
-            Olbrzymią wadą tej metody jest dyskretyzacja przestrzeni, która w zależności od rozmiary pojedynczej komórki może za bardzo przełamywać rzeczywistość.
-            Przykładowo dla komórek o rozmiarze $100mm \times 100mm$, obiekty o mniejszych wymiarach, mogą być albo całkowicie nie widoczne, albo zajmować całą komórkę.
+            Olbrzymią wadą tej metody jest dyskretyzacja przestrzeni, która w zależności od rozmiaru pojedynczej komórki może za bardzo przekłamywać rzeczywistość.
+            Przykładowo dla komórek o rozmiarze $100mm \times 100mm$, obiekty o mniejszych wymiarach, mogą być albo całkowicie niewidoczne, albo zajmować całą komórkę.
             Dlatego niezwykle ważne jest aby dostosować wymiary pojedynczej kratki, zarówno do wymiarów pojazdu, jak i wymiarów całej przestrzeni.
 
             Następnym problemem jest duża ilość pamięci potrzebna do przechowywania takiej mapy.
@@ -304,19 +301,19 @@
             \end{gather}
 
             Taką mapę należało również optymalnie rozłożyć w pamięci, tak aby możliwy był szybki dostęp do całej grupy komórek.
-            Przykładowo dla mapy przechowywanej na mikrokontrolerze, nie istotne jest czy pole jest nieznane czy wolne - w obu przypadkach, algorytm do wyznaczanie ścieżek zachowa się tak samo.
+            Przykładowo dla mapy przechowywanej na mikrokontrolerze, nie istotne jest czy pole jest nieznane czy wolne - w obu przypadkach algorytm do wyznaczanie ścieżek zachowa się tak samo.
             Dlatego można ograniczyć ilość bitów na kratkę do jednego.
-            Dodatkowo, możemy ułożyć poszczególne komórki w zbiory, odpowiadające większym kwadratom.
+            Dodatkowo możemy ułożyć poszczególne komórki w zbiory odpowiadające większym kwadratom.
             I tak:
             \begin{itemize}[label = -]
                 \item osiem komórek w rzędzie to jeden bajt,
                 \item osiem rzędów to jeden wiersz, a więc osiem bajtów,
             \end{itemize}
             dzięki czemu dostęp do całego wiersza jest bardzo szybki.
-            Jednoczesnie procesor, nie musi za każdym razem zwracać się o dostęp do pamięci, jeśli chce odczytać informacje o następnej komórce.
+            Jednocześnie procesor nie musi za każdym razem zwracać się o dostęp do pamięci, jeśli chce odczytać informacje o następnej komórce.
 
-            Ze względu na swoją proste i łatwość implementacji to właśnie ten sposób przechowywania mapy został zastosowany w projekcie.
-            Dla tego też sposobu dla komputera, został policzony średni czas potrzebny na wyznaczcie ścieżki na trasie testowej przedstawionej na zdjęciu \ref{fig:pathFindingTime}.
+            Ze względu na swoją prostote i łatwość implementacji to właśnie ten sposób przechowywania mapy został zastosowany w projekcie.
+            Dlatego też sposobu dla komputera został policzony średni czas potrzebny na wyznaczenie ścieżki na trasie testowej przedstawionej na zdjęciu \ref{fig:pathFindingTime}.
             \begin{figure}
                 \centering
                 \includegraphics[width=0.6\textwidth]{TestMap.png}
@@ -326,25 +323,26 @@
             \end{figure}
 
             Średni czas potrzebny na wyznaczenie ścieżki wynosił około $100ms$.
-            Złożoność mapy ma niewielki wpływ na czas wyznaczenia ścieżek, dla pustej mapy czas ten oscylował w okół $95ms$.
-            Pozycja pojazdu oraz odległość do celu, także mają nieznaczący wpływ na czas wyznaczenie trasy.
+            Złożoność mapy ma niewielki wpływ na czas wyznaczenia ścieżek.
+            Dla pustej mapy czas ten oscylował wokół $95ms$.
+            Pozycja pojazdu oraz odległość do celu także mają nieznaczący wpływ na czas wyznaczenie trasy.
 
     \subsection{Nanoszenie punktów pomiarowych}
-        Jednym z podstawowych założeń, była możliwość budowania mapy przez pojazd.
-        W tym celu, samochód, musi mierzyć odległość w trakcie ruchu.
-        Czujniki ToF, zamontowane na przedzie pojazdu zostały ustawione w tryb ciągłego pomiaru odległości z okresem pomiarowym $T ms$.
-        Takie ustawienie pozwala na regularne odczytywanie odległości, bez konieczności zajmowani procesora procedurą pomiarową.
+        Jednym z podstawowych założeń była możliwość budowania mapy przez pojazd.
+        W tym celu samochód musi mierzyć odległość w trakcie ruchu.
+        Czujniki ToF zamontowane na przedzie pojazdu zostały ustawione w tryb ciągłego pomiaru odległości z okresem pomiarowym $T ms$.
+        Takie ustawienie pozwala na regularne odczytywanie odległości bez konieczności zajmowani procesora procedurą pomiarową.
 
         \subsection{Czas pomiarowy}
             Czas odebrania pomiaru od pojedynczego czujnika wynosi około $3ms$.
-            Dlatego okres pomiarowy, powinien być na tyle długi aby pozwolić na odczytanie wszystkich czujników.
+            Dlatego okres pomiarowy powinien być na tyle długi, aby pozwolić na odczytanie wszystkich czujników.
             Wartość $T$ powinna być większa od $9ms$.
             Okres pomiarowy został ustawiony na $T = 100ms$.
-            Dzięki czemu pojazd jest w stanie w miarę na bieżąco reagować na zdarzenia.
+            Dzięki czemu pojazd jest w stanie, w miarę na bieżąco, reagować na zdarzenia.
 
         \subsection{Przykładowa mapa}
-            Regularny pomiar oraz znajomość przebytej drogi między każdym z odcinków, pozwala na dokładne określenie w którym miejscu zostały wykonane poszczególne pomiary.
-            Poniżej przedstawiono zrzut ekranu (zdjęcie \ref{fig:buildMap}) z aplikacji z początkiem budowanej mapy.
+            Regularny pomiar oraz znajomość przebytej drogi między każdym z odcinków pozwala na dokładne określenie, w którym miejscu zostały wykonane poszczególne pomiary.
+            Poniżej przedstawiono zrzut ekranu (rys. \ref{fig:buildMap}) z aplikacji z początkiem budowanej mapy o wymiarach $ 2.4m \times 2.4m$ i rozmiarze pojedynczej kratki $100mm \times 100mm$.
 
             \begin{figure}[!ht]
                 \centering
@@ -353,14 +351,11 @@
                 \label{fig:buildMap}
             \end{figure}
 
-            Załączone zdjęcie przedstawia obraz mapy, zbudowanej na kratkach o rozmiarze $100mm \times 100mm$.
-            A cała mapa ma wymiary $ 2.4m \times 2.4m$.
-            Oraz przedstawiają rzut powierzchni przedstawionej na schematycznym rysunku \ref{schematic:room}.
-
             \input{Schematic/room.tex}
 
-            Na czerwono, zostały zaznaczone przybliżone miejsca zatrzymania się pojazdu, a linią przerywaną, pokonaną trasę.
+            Na schematycznym rysunku \ref{schematic:room} przedstawiono rzut powierzchni, po której pojazd.
+            Na czerwono zaznaczono przybliżone miejsca zatrzymania się pojazdu, a linią przerywaną pokazuje pokonaną trasę.
             Jak widać odzwierciedlenie mapy, stworzonej przez drona, jest dość dokładne względem rzeczywistego terenu.
 
-            Widać pewne zniekształcenia, wynikające prawdopodobnie z niskiej rodzielczości mapy oraz nie idealność algorytmu rysującego.
+            Widać pewne zniekształcenia wynikające prawdopodobnie z niskiej rodzielczości mapy oraz nie idealność algorytmu rysującego.
             Pomimo tego przedstawioną próbę można uznać za udaną.

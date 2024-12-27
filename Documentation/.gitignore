@@ -10,3 +10,6 @@ main.pdf
 *.bcf
 *.blg
 *.run.xml
+*.lof
+*.lol
+*.lot
